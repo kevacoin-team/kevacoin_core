@@ -1,17 +1,19 @@
-Bitcoin Core integration/staging tree
+Kevacoin Core integration/staging tree
 =====================================
 
-https://bitcoincore.org
+https://kevacoin.org
 
-For an immediately usable, binary version of the Bitcoin Core software, see
-https://bitcoincore.org/en/download/.
+For the immediately usable version of Kevacoin, see
+https://github.com/kevacoin-team/kevacoin.
 
-What is Bitcoin Core?
+What is Kevacoin Core?
 ---------------------
 
-Bitcoin Core connects to the Bitcoin peer-to-peer network to download and fully
+Kevacoin Core connects to the Kevacoin peer-to-peer network to download and fully
 validate blocks and transactions. It also includes a wallet and graphical user
 interface, which can be optionally built.
+
+Kevacoin Core is a reintegration into the Bitcoin Core code base.
 
 Further information about Bitcoin Core is available in the [doc folder](/doc).
 
