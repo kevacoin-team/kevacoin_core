@@ -25,13 +25,17 @@ check_PROGRAMS =
 TESTS =
 BENCHMARKS =
 
+CN_UTILS_INCLUDE = -I$(srcdir)/cn_utils -I$(srcdir)/cn_utils/contrib -I$(srcdir)/cn_utils/external/easylogging++ -I$(srcdir)/cn_utils/contrib/epee/include
+
 BITCOIN_INCLUDES=-I$(builddir) -I$(srcdir)/$(MINISKETCH_INCLUDE_DIR_INT) -I$(srcdir)/secp256k1/include -I$(srcdir)/$(UNIVALUE_INCLUDE_DIR_INT)
+BITCOIN_INCLUDES += $(CN_UTILS_INCLUDE)
 
 LIBBITCOIN_NODE=libbitcoin_node.a
 LIBBITCOIN_COMMON=libbitcoin_common.a
 LIBBITCOIN_CONSENSUS=libbitcoin_consensus.a
 LIBBITCOIN_CLI=libbitcoin_cli.a
 LIBBITCOIN_UTIL=libbitcoin_util.a
+LIBBITCOIN_CNUTILS=libbitcoin_cnutils.a
 LIBBITCOIN_CRYPTO_BASE=crypto/libbitcoin_crypto_base.la
 LIBBITCOINQT=qt/libbitcoinqt.a
 LIBSECP256K1=secp256k1/libsecp256k1.la
@@ -83,6 +87,7 @@ EXTRA_LIBRARIES += \
   $(LIBBITCOIN_IPC) \
   $(LIBBITCOIN_WALLET) \
   $(LIBBITCOIN_WALLET_TOOL) \
+  $(LIBBITCOIN_CNUTILS) \
   $(LIBBITCOIN_ZMQ)
 
 if BUILD_BITCOIND
@@ -766,6 +771,81 @@ libbitcoin_util_a_SOURCES = \
   $(BITCOIN_CORE_H)
 #
 
+# cnutils: shared between bitcoind, and bitcoin-qt and non-server tools #
+libbitcoin_cnutils_a_CPPFLAGS = $(AM_CPPFLAGS) $(BOOST_CPPFLAGS) $(SSL_CFLAGS) -I$(srcdir)/cn_utils -I$(srcdir)/cn_utils/randomx -I$(srcdir)/cn_utils/contrib -I$(srcdir)/cn_utils/external/easylogging++ -I$(srcdir)/cn_utils/contrib/epee/include
+libbitcoin_cnutils_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) $(PIC_FLAGS)
+libbitcoin_cnutils_a_CFLAGS = $(PIC_FLAGS)
+libbitcoin_cnutils_a_SOURCES = \
+  cn_utils/cnutils.cpp \
+  cn_utils/cryptonote_basic/cryptonote_basic_impl.cpp \
+  cn_utils/cryptonote_basic/cryptonote_format_utils.cpp \
+  cn_utils/cryptonote_basic/difficulty.cpp \
+  cn_utils/cryptonote_basic/account.cpp \
+  cn_utils/crypto/random.c \
+  cn_utils/crypto/tree-hash.c \
+  cn_utils/crypto/rx-slow-hash.c \
+  cn_utils/crypto/oaes_lib.c \
+  cn_utils/crypto/aesb.c \
+  cn_utils/crypto/hash-extra-groestl.c \
+  cn_utils/crypto/hash-extra-skein.c \
+  cn_utils/crypto/hash-extra-blake.c \
+  cn_utils/crypto/hash-extra-jh.c \
+  cn_utils/crypto/jh.c \
+  cn_utils/crypto/blake256.c \
+  cn_utils/crypto/groestl.c \
+  cn_utils/crypto/skein.c \
+  cn_utils/crypto/chacha.c \
+  cn_utils/crypto/crypto_ops_builder/verify.c \
+  cn_utils/crypto/crypto.cpp \
+  cn_utils/crypto/crypto-ops.c \
+  cn_utils/crypto/crypto-ops-data.c \
+  cn_utils/crypto/slow-hash.c \
+  cn_utils/crypto/hash.c \
+  cn_utils/crypto/keccak.c \
+  cn_utils/crypto/CryptonightR_JIT.c \
+  cn_utils/crypto/CryptonightR_template.S \
+  cn_utils/common/base58.cpp \
+  cn_utils/common/aligned.c \
+  cn_utils/common/perf_timer.cpp \
+  cn_utils/contrib/epee/src/memwipe.c \
+  cn_utils/contrib/epee/src/mlocker.cpp \
+  cn_utils/contrib/epee/src/hex.cpp \
+  cn_utils/contrib/epee/src/wipeable_string.cpp \
+  cn_utils/ringct/rctTypes.cpp \
+  cn_utils/ringct/rctOps.cpp \
+  cn_utils/ringct/bulletproofs.cc \
+  cn_utils/ringct/multiexp.cc \
+  cn_utils/ringct/rctCryptoOps.c \
+  cn_utils/device/device.cpp \
+  cn_utils/device/device_default.cpp \
+  cn_utils/external/easylogging++/easylogging++.cc \
+  cn_utils/randomx/argon2_avx2.c \
+  cn_utils/randomx/argon2_core.c \
+  cn_utils/randomx/argon2_ref.c \
+  cn_utils/randomx/argon2_ssse3.c \
+  cn_utils/randomx/reciprocal.c \
+  cn_utils/randomx/blake2/blake2b.c \
+  cn_utils/randomx/aes_hash.cpp \
+  cn_utils/randomx/allocator.cpp \
+  cn_utils/randomx/assembly_generator_x86.cpp \
+  cn_utils/randomx/blake2_generator.cpp \
+  cn_utils/randomx/bytecode_machine.cpp \
+  cn_utils/randomx/cpu.cpp \
+  cn_utils/randomx/dataset.cpp \
+  cn_utils/randomx/instruction.cpp \
+  cn_utils/randomx/instructions_portable.cpp \
+  cn_utils/randomx/jit_compiler_x86.cpp \
+  cn_utils/randomx/jit_compiler_x86_static.S \
+  cn_utils/randomx/randomx.cpp \
+  cn_utils/randomx/soft_aes.cpp \
+  cn_utils/randomx/superscalar.cpp \
+  cn_utils/randomx/virtual_machine.cpp \
+  cn_utils/randomx/virtual_memory.cpp \
+  cn_utils/randomx/vm_compiled.cpp \
+  cn_utils/randomx/vm_compiled_light.cpp \
+  cn_utils/randomx/vm_interpreted.cpp \
+  cn_utils/randomx/vm_interpreted_light.cpp
+
 # cli #
 libbitcoin_cli_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_cli_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
@@ -795,6 +875,7 @@ bitcoin_bin_ldadd = \
   $(LIBUNIVALUE) \
   $(LIBBITCOIN_ZMQ) \
   $(LIBBITCOIN_CONSENSUS) \
+  $(LIBBITCOIN_CNUTILS) \
   $(LIBBITCOIN_CRYPTO) \
   $(LIBLEVELDB) \
   $(LIBMEMENV) \
@@ -829,6 +910,7 @@ bitcoin_cli_LDADD = \
   $(LIBUNIVALUE) \
   $(LIBBITCOIN_COMMON) \
   $(LIBBITCOIN_UTIL) \
+  $(LIBBITCOIN_CNUTILS) \
   $(LIBBITCOIN_CRYPTO)
 
 bitcoin_cli_LDADD += $(EVENT_LIBS)
@@ -850,7 +932,8 @@ bitcoin_tx_LDADD = \
   $(LIBBITCOIN_UTIL) \
   $(LIBBITCOIN_CONSENSUS) \
   $(LIBBITCOIN_CRYPTO) \
-  $(LIBSECP256K1)
+  $(LIBSECP256K1) \
+  $(LIBBITCOIN_CNUTILS)
 #
 
 # bitcoin-wallet binary #
@@ -869,7 +952,8 @@ bitcoin_wallet_LDADD = \
   $(LIBBITCOIN_CRYPTO) \
   $(LIBSECP256K1) \
   $(BDB_LIBS) \
-  $(SQLITE_LIBS)
+  $(SQLITE_LIBS) \
+  $(LIBBITCOIN_CNUTILS)
 
 if TARGET_WINDOWS
 bitcoin_wallet_SOURCES += bitcoin-wallet-res.rc
@@ -892,7 +976,8 @@ bitcoin_util_LDADD = \
   $(LIBUNIVALUE) \
   $(LIBBITCOIN_CONSENSUS) \
   $(LIBBITCOIN_CRYPTO) \
-  $(LIBSECP256K1)
+  $(LIBSECP256K1) \
+  $(LIBBITCOIN_CNUTILS)
 #
 
 # bitcoin-chainstate binary #
@@ -1018,8 +1103,8 @@ include_HEADERS = script/bitcoinconsensus.h
 libbitcoinconsensus_la_SOURCES = support/cleanse.cpp $(crypto_libbitcoin_crypto_base_la_SOURCES) $(libbitcoin_consensus_a_SOURCES)
 
 libbitcoinconsensus_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined $(RELDFLAGS)
-libbitcoinconsensus_la_LIBADD = $(LIBSECP256K1)
-libbitcoinconsensus_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include -DBUILD_BITCOIN_INTERNAL -DDISABLE_OPTIMIZED_SHA256
+libbitcoinconsensus_la_LIBADD = $(LIBSECP256K1) $(LIBBITCOIN_CNUTILS)
+libbitcoinconsensus_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include $(CN_UTILS_INCLUDE) -DBUILD_BITCOIN_INTERNAL -DDISABLE_OPTIMIZED_SHA256
 libbitcoinconsensus_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 
 endif
