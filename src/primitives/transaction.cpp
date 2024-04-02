@@ -78,6 +78,12 @@ bool CTransaction::ComputeHasWitness() const
     });
 }
 
+void CMutableTransaction::SetKevacoin()
+{
+    assert (nVersion == CTransaction::CURRENT_VERSION);
+    nVersion = CTransaction::KEVACOIN_VERSION;
+}
+
 Txid CTransaction::ComputeHash() const
 {
     return Txid::FromUint256((HashWriter{} << TX_NO_WITNESS(*this)).GetHash());
