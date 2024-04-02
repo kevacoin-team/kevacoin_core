@@ -518,6 +518,14 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                 case OP_NOP:
                     break;
 
+                //
+                // KEVA
+                //
+                case OP_KEVA_NAMESPACE:
+                case OP_KEVA_PUT:
+                case OP_KEVA_DELETE:
+                    break;
+
                 case OP_CHECKLOCKTIMEVERIFY:
                 {
                     if (!(flags & SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY)) {

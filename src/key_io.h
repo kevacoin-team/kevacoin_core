@@ -26,5 +26,6 @@ CTxDestination DecodeDestination(const std::string& str);
 CTxDestination DecodeDestination(const std::string& str, std::string& error_msg, std::vector<int>* error_locations = nullptr);
 bool IsValidDestinationString(const std::string& str);
 bool IsValidDestinationString(const std::string& str, const CChainParams& params);
+bool DecodeKevaNamespace(const std::string ns, const CChainParams& params, std::vector<unsigned char>& result);
 
 #endif // BITCOIN_KEY_IO_H

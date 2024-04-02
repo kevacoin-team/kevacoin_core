@@ -143,6 +143,12 @@ enum : uint32_t {
     // Making unknown public key versions (in BIP 342 scripts) non-standard
     SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_PUBKEYTYPE = (1U << 20),
 
+    // NS Fix
+    SCRIPT_VERIFY_NSFIX = (1U << 21),
+
+    // Making sure the Keva namespace is properly derived,
+    SCRIPT_VERIFY_KEVA_NAMESPACE = (1U << 21),
+
     // Constants to point to the highest flag in use. Add new flags above this line.
     //
     SCRIPT_VERIFY_END_MARKER

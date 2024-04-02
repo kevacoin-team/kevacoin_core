@@ -11,6 +11,7 @@
 #include <policy/policy.h>
 #include <policy/settings.h>
 #include <primitives/transaction.h>
+#include <script/keva.h>
 #include <util/epochguard.h>
 #include <util/overflow.h>
 
@@ -105,6 +106,9 @@ private:
     CAmount nModFeesWithAncestors;
     int64_t nSigOpCostWithAncestors;
 
+    /* Cache keva operation (if any) performed by this tx.  */
+    CKevaScript kevaOp;
+
 public:
     CTxMemPoolEntry(const CTransactionRef& tx, CAmount fee,
                     int64_t time, unsigned int entry_height, uint64_t entry_sequence,
@@ -186,6 +190,46 @@ public:
 
     mutable size_t idx_randomized; //!< Index in mempool's txns_randomized
     mutable Epoch::Marker m_epoch_marker; //!< epoch when last touched, useful for graph algorithms
+
+    inline CKevaScript& GetKevaOp()
+    {
+        return kevaOp;
+    }
+
+    inline bool isNamespaceRegistration() const
+    {
+        return kevaOp.isKevaOp() && kevaOp.getKevaOp() == OP_KEVA_NAMESPACE;
+    }
+
+    inline bool isKeyUpdate() const
+    {
+        return kevaOp.isKevaOp() && kevaOp.getKevaOp() == OP_KEVA_PUT;
+    }
+
+    inline bool isKeyDelete() const
+    {
+        return kevaOp.isKevaOp() && kevaOp.getKevaOp() == OP_KEVA_DELETE;
+    }
+
+    inline const valtype& getNamespace() const
+    {
+        return kevaOp.getOpNamespace();
+    }
+
+    inline const valtype& getDisplayName() const
+    {
+        return kevaOp.getOpNamespaceDisplayName();
+    }
+
+    inline const valtype& getKey() const
+    {
+        return kevaOp.getOpKey();
+    }
+
+    inline const valtype& getValue() const
+    {
+        return kevaOp.getOpValue();
+    }
 };
 
 using CTxMemPoolEntryRef = CTxMemPoolEntry::CTxMemPoolEntryRef;

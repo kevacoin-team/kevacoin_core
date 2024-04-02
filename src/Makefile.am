@@ -647,6 +647,8 @@ libbitcoin_consensus_a_SOURCES = \
   consensus/validation.h \
   hash.cpp \
   hash.h \
+  keva/main.cpp \
+  keva/main.h \
   prevector.h \
   primitives/block.cpp \
   primitives/block.h \
@@ -661,6 +663,8 @@ libbitcoin_consensus_a_SOURCES = \
   script/script.h \
   script/script_error.cpp \
   script/script_error.h \
+  script/keva.cpp \
+  script/keva.h \
   serialize.h \
   span.h \
   tinyformat.h \
