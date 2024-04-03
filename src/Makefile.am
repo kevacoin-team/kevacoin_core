@@ -27,51 +27,51 @@ BENCHMARKS =
 
 CN_UTILS_INCLUDE = -I$(srcdir)/cn_utils -I$(srcdir)/cn_utils/contrib -I$(srcdir)/cn_utils/external/easylogging++ -I$(srcdir)/cn_utils/contrib/epee/include
 
-BITCOIN_INCLUDES=-I$(builddir) -I$(srcdir)/$(MINISKETCH_INCLUDE_DIR_INT) -I$(srcdir)/secp256k1/include -I$(srcdir)/$(UNIVALUE_INCLUDE_DIR_INT)
-BITCOIN_INCLUDES += $(CN_UTILS_INCLUDE)
+KEVACOIN_INCLUDES=-I$(builddir) -I$(srcdir)/$(MINISKETCH_INCLUDE_DIR_INT) -I$(srcdir)/secp256k1/include -I$(srcdir)/$(UNIVALUE_INCLUDE_DIR_INT)
+KEVACOIN_INCLUDES += $(CN_UTILS_INCLUDE)
 
-LIBBITCOIN_NODE=libbitcoin_node.a
-LIBBITCOIN_COMMON=libbitcoin_common.a
-LIBBITCOIN_CONSENSUS=libbitcoin_consensus.a
-LIBBITCOIN_CLI=libbitcoin_cli.a
-LIBBITCOIN_UTIL=libbitcoin_util.a
-LIBBITCOIN_CNUTILS=libbitcoin_cnutils.a
-LIBBITCOIN_CRYPTO_BASE=crypto/libbitcoin_crypto_base.la
-LIBBITCOINQT=qt/libbitcoinqt.a
+LIBKEVACOIN_NODE=libkevacoin_node.a
+LIBKEVACOIN_COMMON=libkevacoin_common.a
+LIBKEVACOIN_CONSENSUS=libkevacoin_consensus.a
+LIBKEVACOIN_CLI=libkevacoin_cli.a
+LIBKEVACOIN_UTIL=libkevacoin_util.a
+LIBKEVACOIN_CNUTILS=libkevacoin_cnutils.a
+LIBKEVACOIN_CRYPTO_BASE=crypto/libkevacoin_crypto_base.la
+LIBKEVACOINQT=qt/libkevacoinqt.a
 LIBSECP256K1=secp256k1/libsecp256k1.la
 
 if ENABLE_ZMQ
-LIBBITCOIN_ZMQ=libbitcoin_zmq.a
+LIBKEVACOIN_ZMQ=libkevacoin_zmq.a
 endif
-if BUILD_BITCOIN_LIBS
-LIBBITCOINCONSENSUS=libbitcoinconsensus.la
+if BUILD_KEVACOIN_LIBS
+LIBKEVACOINCONSENSUS=libkevacoinconsensus.la
 endif
-if BUILD_BITCOIN_KERNEL_LIB
-LIBBITCOINKERNEL=libbitcoinkernel.la
+if BUILD_KEVACOIN_KERNEL_LIB
+LIBKEVACOINKERNEL=libkevacoinkernel.la
 endif
 if ENABLE_WALLET
-LIBBITCOIN_WALLET=libbitcoin_wallet.a
-LIBBITCOIN_WALLET_TOOL=libbitcoin_wallet_tool.a
+LIBKEVACOIN_WALLET=libkevacoin_wallet.a
+LIBKEVACOIN_WALLET_TOOL=libkevacoin_wallet_tool.a
 endif
 
-LIBBITCOIN_CRYPTO = $(LIBBITCOIN_CRYPTO_BASE)
+LIBKEVACOIN_CRYPTO = $(LIBKEVACOIN_CRYPTO_BASE)
 if ENABLE_SSE41
-LIBBITCOIN_CRYPTO_SSE41 = crypto/libbitcoin_crypto_sse41.la
-LIBBITCOIN_CRYPTO += $(LIBBITCOIN_CRYPTO_SSE41)
+LIBKEVACOIN_CRYPTO_SSE41 = crypto/libkevacoin_crypto_sse41.la
+LIBKEVACOIN_CRYPTO += $(LIBKEVACOIN_CRYPTO_SSE41)
 endif
 if ENABLE_AVX2
-LIBBITCOIN_CRYPTO_AVX2 = crypto/libbitcoin_crypto_avx2.la
-LIBBITCOIN_CRYPTO += $(LIBBITCOIN_CRYPTO_AVX2)
+LIBKEVACOIN_CRYPTO_AVX2 = crypto/libkevacoin_crypto_avx2.la
+LIBKEVACOIN_CRYPTO += $(LIBKEVACOIN_CRYPTO_AVX2)
 endif
 if ENABLE_X86_SHANI
-LIBBITCOIN_CRYPTO_X86_SHANI = crypto/libbitcoin_crypto_x86_shani.la
-LIBBITCOIN_CRYPTO += $(LIBBITCOIN_CRYPTO_X86_SHANI)
+LIBKEVACOIN_CRYPTO_X86_SHANI = crypto/libkevacoin_crypto_x86_shani.la
+LIBKEVACOIN_CRYPTO += $(LIBKEVACOIN_CRYPTO_X86_SHANI)
 endif
 if ENABLE_ARM_SHANI
-LIBBITCOIN_CRYPTO_ARM_SHANI = crypto/libbitcoin_crypto_arm_shani.la
-LIBBITCOIN_CRYPTO += $(LIBBITCOIN_CRYPTO_ARM_SHANI)
+LIBKEVACOIN_CRYPTO_ARM_SHANI = crypto/libkevacoin_crypto_arm_shani.la
+LIBKEVACOIN_CRYPTO += $(LIBKEVACOIN_CRYPTO_ARM_SHANI)
 endif
-noinst_LTLIBRARIES += $(LIBBITCOIN_CRYPTO)
+noinst_LTLIBRARIES += $(LIBKEVACOIN_CRYPTO)
 
 $(LIBSECP256K1): $(wildcard secp256k1/src/*.h) $(wildcard secp256k1/src/*.c) $(wildcard secp256k1/include/*)
 	$(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -C $(@D) $(@F)
@@ -79,50 +79,50 @@ $(LIBSECP256K1): $(wildcard secp256k1/src/*.h) $(wildcard secp256k1/src/*.c) $(w
 # Make is not made aware of per-object dependencies to avoid limiting building parallelization
 # But to build the less dependent modules first, we manually select their order here:
 EXTRA_LIBRARIES += \
-  $(LIBBITCOIN_UTIL) \
-  $(LIBBITCOIN_COMMON) \
-  $(LIBBITCOIN_CONSENSUS) \
-  $(LIBBITCOIN_NODE) \
-  $(LIBBITCOIN_CLI) \
-  $(LIBBITCOIN_IPC) \
-  $(LIBBITCOIN_WALLET) \
-  $(LIBBITCOIN_WALLET_TOOL) \
-  $(LIBBITCOIN_CNUTILS) \
-  $(LIBBITCOIN_ZMQ)
+  $(LIBKEVACOIN_UTIL) \
+  $(LIBKEVACOIN_COMMON) \
+  $(LIBKEVACOIN_CONSENSUS) \
+  $(LIBKEVACOIN_NODE) \
+  $(LIBKEVACOIN_CLI) \
+  $(LIBKEVACOIN_IPC) \
+  $(LIBKEVACOIN_WALLET) \
+  $(LIBKEVACOIN_WALLET_TOOL) \
+  $(LIBKEVACOIN_CNUTILS) \
+  $(LIBKEVACOIN_ZMQ)
 
-if BUILD_BITCOIND
-  bin_PROGRAMS += bitcoind
+if BUILD_KEVACOIND
+  bin_PROGRAMS += kevacoind
 endif
 
-if BUILD_BITCOIN_NODE
-  bin_PROGRAMS += bitcoin-node
+if BUILD_KEVACOIN_NODE
+  bin_PROGRAMS += kevacoin-node
 endif
 
-if BUILD_BITCOIN_CLI
-  bin_PROGRAMS += bitcoin-cli
+if BUILD_KEVACOIN_CLI
+  bin_PROGRAMS += kevacoin-cli
 endif
 
-if BUILD_BITCOIN_TX
-  bin_PROGRAMS += bitcoin-tx
+if BUILD_KEVACOIN_TX
+  bin_PROGRAMS += kevacoin-tx
 endif
 
 if ENABLE_WALLET
-if BUILD_BITCOIN_WALLET
-  bin_PROGRAMS += bitcoin-wallet
+if BUILD_KEVACOIN_WALLET
+  bin_PROGRAMS += kevacoin-wallet
 endif
 endif
 
-if BUILD_BITCOIN_UTIL
-  bin_PROGRAMS += bitcoin-util
+if BUILD_KEVACOIN_UTIL
+  bin_PROGRAMS += kevacoin-util
 endif
 
-if BUILD_BITCOIN_CHAINSTATE
-  bin_PROGRAMS += bitcoin-chainstate
+if BUILD_KEVACOIN_CHAINSTATE
+  bin_PROGRAMS += kevacoin-chainstate
 endif
 
 .PHONY: FORCE check-symbols check-security
-# bitcoin core #
-BITCOIN_CORE_H = \
+# kevacoin core #
+KEVACOIN_CORE_H = \
   addresstype.h \
   addrdb.h \
   addrman.h \
@@ -381,12 +381,12 @@ obj/build.h: FORCE
 	@$(MKDIR_P) $(builddir)/obj
 	$(AM_V_GEN) $(top_srcdir)/share/genbuild.sh "$(abs_top_builddir)/src/obj/build.h" \
 	  "$(abs_top_srcdir)"
-libbitcoin_util_a-clientversion.$(OBJEXT): obj/build.h
+libkevacoin_util_a-clientversion.$(OBJEXT): obj/build.h
 
 # node #
-libbitcoin_node_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(LEVELDB_CPPFLAGS) $(BOOST_CPPFLAGS) $(MINIUPNPC_CPPFLAGS) $(NATPMP_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS)
-libbitcoin_node_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libbitcoin_node_a_SOURCES = \
+libkevacoin_node_a_CPPFLAGS = $(AM_CPPFLAGS) $(KEVACOIN_INCLUDES) $(LEVELDB_CPPFLAGS) $(BOOST_CPPFLAGS) $(MINIUPNPC_CPPFLAGS) $(NATPMP_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS)
+libkevacoin_node_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libkevacoin_node_a_SOURCES = \
   addrdb.cpp \
   addrman.cpp \
   banman.cpp \
@@ -477,22 +477,22 @@ libbitcoin_node_a_SOURCES = \
   validation.cpp \
   validationinterface.cpp \
   versionbits.cpp \
-  $(BITCOIN_CORE_H)
+  $(KEVACOIN_CORE_H)
 
 if ENABLE_WALLET
-libbitcoin_node_a_SOURCES += wallet/init.cpp
-libbitcoin_node_a_CPPFLAGS += $(BDB_CPPFLAGS)
+libkevacoin_node_a_SOURCES += wallet/init.cpp
+libkevacoin_node_a_CPPFLAGS += $(BDB_CPPFLAGS)
 endif
 if !ENABLE_WALLET
-libbitcoin_node_a_SOURCES += dummywallet.cpp
+libkevacoin_node_a_SOURCES += dummywallet.cpp
 endif
 #
 
 # zmq #
 if ENABLE_ZMQ
-libbitcoin_zmq_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(ZMQ_CFLAGS)
-libbitcoin_zmq_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libbitcoin_zmq_a_SOURCES = \
+libkevacoin_zmq_a_CPPFLAGS = $(AM_CPPFLAGS) $(KEVACOIN_INCLUDES) $(ZMQ_CFLAGS)
+libkevacoin_zmq_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libkevacoin_zmq_a_SOURCES = \
   zmq/zmqabstractnotifier.cpp \
   zmq/zmqnotificationinterface.cpp \
   zmq/zmqpublishnotifier.cpp \
@@ -502,9 +502,9 @@ endif
 #
 
 # wallet #
-libbitcoin_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(BOOST_CPPFLAGS) $(BDB_CPPFLAGS) $(SQLITE_CFLAGS)
-libbitcoin_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libbitcoin_wallet_a_SOURCES = \
+libkevacoin_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(KEVACOIN_INCLUDES) $(BOOST_CPPFLAGS) $(BDB_CPPFLAGS) $(SQLITE_CFLAGS)
+libkevacoin_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libkevacoin_wallet_a_SOURCES = \
   wallet/coincontrol.cpp \
   wallet/context.cpp \
   wallet/crypter.cpp \
@@ -532,22 +532,22 @@ libbitcoin_wallet_a_SOURCES = \
   wallet/walletdb.cpp \
   wallet/walletutil.cpp \
   wallet/coinselection.cpp \
-  $(BITCOIN_CORE_H)
+  $(KEVACOIN_CORE_H)
 
 if USE_SQLITE
-libbitcoin_wallet_a_SOURCES += wallet/sqlite.cpp
+libkevacoin_wallet_a_SOURCES += wallet/sqlite.cpp
 endif
 if USE_BDB
-libbitcoin_wallet_a_SOURCES += wallet/bdb.cpp wallet/salvage.cpp
+libkevacoin_wallet_a_SOURCES += wallet/bdb.cpp wallet/salvage.cpp
 endif
 #
 
 # wallet tool #
-libbitcoin_wallet_tool_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(BOOST_CPPFLAGS)
-libbitcoin_wallet_tool_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libbitcoin_wallet_tool_a_SOURCES = \
+libkevacoin_wallet_tool_a_CPPFLAGS = $(AM_CPPFLAGS) $(KEVACOIN_INCLUDES) $(BOOST_CPPFLAGS)
+libkevacoin_wallet_tool_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libkevacoin_wallet_tool_a_SOURCES = \
   wallet/wallettool.cpp \
-  $(BITCOIN_CORE_H)
+  $(KEVACOIN_CORE_H)
 #
 
 # crypto #
@@ -555,16 +555,16 @@ libbitcoin_wallet_tool_a_SOURCES = \
 # crypto_base contains the unspecialized (unoptimized) versions of our
 # crypto functions. Functions that require custom compiler flags and/or
 # runtime opt-in are omitted.
-crypto_libbitcoin_crypto_base_la_CPPFLAGS = $(AM_CPPFLAGS)
+crypto_libkevacoin_crypto_base_la_CPPFLAGS = $(AM_CPPFLAGS)
 
 # Specify -static in both CXXFLAGS and LDFLAGS so libtool will only build a
 # static version of this library. We don't need a dynamic version, and a dynamic
 # version can't be used on windows anyway because the library doesn't currently
 # export DLL symbols.
-crypto_libbitcoin_crypto_base_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
-crypto_libbitcoin_crypto_base_la_LDFLAGS = $(AM_LDFLAGS) -static
+crypto_libkevacoin_crypto_base_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
+crypto_libkevacoin_crypto_base_la_LDFLAGS = $(AM_LDFLAGS) -static
 
-crypto_libbitcoin_crypto_base_la_SOURCES = \
+crypto_libkevacoin_crypto_base_la_SOURCES = \
   crypto/aes.cpp \
   crypto/aes.h \
   crypto/chacha20.h \
@@ -596,47 +596,47 @@ crypto_libbitcoin_crypto_base_la_SOURCES = \
   crypto/siphash.cpp \
   crypto/siphash.h
 
-# See explanation for -static in crypto_libbitcoin_crypto_base_la's LDFLAGS and
+# See explanation for -static in crypto_libkevacoin_crypto_base_la's LDFLAGS and
 # CXXFLAGS above
-crypto_libbitcoin_crypto_sse41_la_LDFLAGS = $(AM_LDFLAGS) -static
-crypto_libbitcoin_crypto_sse41_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
-crypto_libbitcoin_crypto_sse41_la_CPPFLAGS = $(AM_CPPFLAGS)
-crypto_libbitcoin_crypto_sse41_la_CXXFLAGS += $(SSE41_CXXFLAGS)
-crypto_libbitcoin_crypto_sse41_la_CPPFLAGS += -DENABLE_SSE41
-crypto_libbitcoin_crypto_sse41_la_SOURCES = crypto/sha256_sse41.cpp
+crypto_libkevacoin_crypto_sse41_la_LDFLAGS = $(AM_LDFLAGS) -static
+crypto_libkevacoin_crypto_sse41_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
+crypto_libkevacoin_crypto_sse41_la_CPPFLAGS = $(AM_CPPFLAGS)
+crypto_libkevacoin_crypto_sse41_la_CXXFLAGS += $(SSE41_CXXFLAGS)
+crypto_libkevacoin_crypto_sse41_la_CPPFLAGS += -DENABLE_SSE41
+crypto_libkevacoin_crypto_sse41_la_SOURCES = crypto/sha256_sse41.cpp
 
-# See explanation for -static in crypto_libbitcoin_crypto_base_la's LDFLAGS and
+# See explanation for -static in crypto_libkevacoin_crypto_base_la's LDFLAGS and
 # CXXFLAGS above
-crypto_libbitcoin_crypto_avx2_la_LDFLAGS = $(AM_LDFLAGS) -static
-crypto_libbitcoin_crypto_avx2_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
-crypto_libbitcoin_crypto_avx2_la_CPPFLAGS = $(AM_CPPFLAGS)
-crypto_libbitcoin_crypto_avx2_la_CXXFLAGS += $(AVX2_CXXFLAGS)
-crypto_libbitcoin_crypto_avx2_la_CPPFLAGS += -DENABLE_AVX2
-crypto_libbitcoin_crypto_avx2_la_SOURCES = crypto/sha256_avx2.cpp
+crypto_libkevacoin_crypto_avx2_la_LDFLAGS = $(AM_LDFLAGS) -static
+crypto_libkevacoin_crypto_avx2_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
+crypto_libkevacoin_crypto_avx2_la_CPPFLAGS = $(AM_CPPFLAGS)
+crypto_libkevacoin_crypto_avx2_la_CXXFLAGS += $(AVX2_CXXFLAGS)
+crypto_libkevacoin_crypto_avx2_la_CPPFLAGS += -DENABLE_AVX2
+crypto_libkevacoin_crypto_avx2_la_SOURCES = crypto/sha256_avx2.cpp
 
-# See explanation for -static in crypto_libbitcoin_crypto_base_la's LDFLAGS and
+# See explanation for -static in crypto_libkevacoin_crypto_base_la's LDFLAGS and
 # CXXFLAGS above
-crypto_libbitcoin_crypto_x86_shani_la_LDFLAGS = $(AM_LDFLAGS) -static
-crypto_libbitcoin_crypto_x86_shani_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
-crypto_libbitcoin_crypto_x86_shani_la_CPPFLAGS = $(AM_CPPFLAGS)
-crypto_libbitcoin_crypto_x86_shani_la_CXXFLAGS += $(X86_SHANI_CXXFLAGS)
-crypto_libbitcoin_crypto_x86_shani_la_CPPFLAGS += -DENABLE_X86_SHANI
-crypto_libbitcoin_crypto_x86_shani_la_SOURCES = crypto/sha256_x86_shani.cpp
+crypto_libkevacoin_crypto_x86_shani_la_LDFLAGS = $(AM_LDFLAGS) -static
+crypto_libkevacoin_crypto_x86_shani_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
+crypto_libkevacoin_crypto_x86_shani_la_CPPFLAGS = $(AM_CPPFLAGS)
+crypto_libkevacoin_crypto_x86_shani_la_CXXFLAGS += $(X86_SHANI_CXXFLAGS)
+crypto_libkevacoin_crypto_x86_shani_la_CPPFLAGS += -DENABLE_X86_SHANI
+crypto_libkevacoin_crypto_x86_shani_la_SOURCES = crypto/sha256_x86_shani.cpp
 
-# See explanation for -static in crypto_libbitcoin_crypto_base_la's LDFLAGS and
+# See explanation for -static in crypto_libkevacoin_crypto_base_la's LDFLAGS and
 # CXXFLAGS above
-crypto_libbitcoin_crypto_arm_shani_la_LDFLAGS = $(AM_LDFLAGS) -static
-crypto_libbitcoin_crypto_arm_shani_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
-crypto_libbitcoin_crypto_arm_shani_la_CPPFLAGS = $(AM_CPPFLAGS)
-crypto_libbitcoin_crypto_arm_shani_la_CXXFLAGS += $(ARM_SHANI_CXXFLAGS)
-crypto_libbitcoin_crypto_arm_shani_la_CPPFLAGS += -DENABLE_ARM_SHANI
-crypto_libbitcoin_crypto_arm_shani_la_SOURCES = crypto/sha256_arm_shani.cpp
+crypto_libkevacoin_crypto_arm_shani_la_LDFLAGS = $(AM_LDFLAGS) -static
+crypto_libkevacoin_crypto_arm_shani_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -static
+crypto_libkevacoin_crypto_arm_shani_la_CPPFLAGS = $(AM_CPPFLAGS)
+crypto_libkevacoin_crypto_arm_shani_la_CXXFLAGS += $(ARM_SHANI_CXXFLAGS)
+crypto_libkevacoin_crypto_arm_shani_la_CPPFLAGS += -DENABLE_ARM_SHANI
+crypto_libkevacoin_crypto_arm_shani_la_SOURCES = crypto/sha256_arm_shani.cpp
 #
 
 # consensus #
-libbitcoin_consensus_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-libbitcoin_consensus_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libbitcoin_consensus_a_SOURCES = \
+libkevacoin_consensus_a_CPPFLAGS = $(AM_CPPFLAGS) $(KEVACOIN_INCLUDES)
+libkevacoin_consensus_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libkevacoin_consensus_a_SOURCES = \
   arith_uint256.cpp \
   arith_uint256.h \
   consensus/amount.h \
@@ -675,9 +675,9 @@ libbitcoin_consensus_a_SOURCES = \
 #
 
 # common #
-libbitcoin_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(BOOST_CPPFLAGS)
-libbitcoin_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libbitcoin_common_a_SOURCES = \
+libkevacoin_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(KEVACOIN_INCLUDES) $(BOOST_CPPFLAGS)
+libkevacoin_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libkevacoin_common_a_SOURCES = \
   addresstype.cpp \
   base58.cpp \
   bech32.cpp \
@@ -722,18 +722,18 @@ libbitcoin_common_a_SOURCES = \
   script/signingprovider.cpp \
   script/solver.cpp \
   warnings.cpp \
-  $(BITCOIN_CORE_H)
+  $(KEVACOIN_CORE_H)
 
 if USE_LIBEVENT
-libbitcoin_common_a_CPPFLAGS += $(EVENT_CFLAGS)
-libbitcoin_common_a_SOURCES += common/url.cpp
+libkevacoin_common_a_CPPFLAGS += $(EVENT_CFLAGS)
+libkevacoin_common_a_SOURCES += common/url.cpp
 endif
 #
 
 # util #
-libbitcoin_util_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-libbitcoin_util_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libbitcoin_util_a_SOURCES = \
+libkevacoin_util_a_CPPFLAGS = $(AM_CPPFLAGS) $(KEVACOIN_INCLUDES)
+libkevacoin_util_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libkevacoin_util_a_SOURCES = \
   support/lockedpool.cpp \
   chainparamsbase.cpp \
   clientversion.cpp \
@@ -772,14 +772,14 @@ libbitcoin_util_a_SOURCES = \
   util/string.cpp \
   util/time.cpp \
   util/tokenpipe.cpp \
-  $(BITCOIN_CORE_H)
+  $(KEVACOIN_CORE_H)
 #
 
-# cnutils: shared between bitcoind, and bitcoin-qt and non-server tools #
-libbitcoin_cnutils_a_CPPFLAGS = $(AM_CPPFLAGS) $(BOOST_CPPFLAGS) $(SSL_CFLAGS) -I$(srcdir)/cn_utils -I$(srcdir)/cn_utils/randomx -I$(srcdir)/cn_utils/contrib -I$(srcdir)/cn_utils/external/easylogging++ -I$(srcdir)/cn_utils/contrib/epee/include
-libbitcoin_cnutils_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) $(PIC_FLAGS)
-libbitcoin_cnutils_a_CFLAGS = $(PIC_FLAGS)
-libbitcoin_cnutils_a_SOURCES = \
+# cnutils: shared between kevacoind, and kevacoin-qt and non-server tools #
+libkevacoin_cnutils_a_CPPFLAGS = $(AM_CPPFLAGS) $(BOOST_CPPFLAGS) $(SSL_CFLAGS) -I$(srcdir)/cn_utils -I$(srcdir)/cn_utils/randomx -I$(srcdir)/cn_utils/contrib -I$(srcdir)/cn_utils/external/easylogging++ -I$(srcdir)/cn_utils/contrib/epee/include
+libkevacoin_cnutils_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) $(PIC_FLAGS)
+libkevacoin_cnutils_a_CFLAGS = $(PIC_FLAGS)
+libkevacoin_cnutils_a_SOURCES = \
   cn_utils/cnutils.cpp \
   cn_utils/cryptonote_basic/cryptonote_basic_impl.cpp \
   cn_utils/cryptonote_basic/cryptonote_format_utils.cpp \
@@ -851,172 +851,172 @@ libbitcoin_cnutils_a_SOURCES = \
   cn_utils/randomx/vm_interpreted_light.cpp
 
 # cli #
-libbitcoin_cli_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-libbitcoin_cli_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-libbitcoin_cli_a_SOURCES = \
+libkevacoin_cli_a_CPPFLAGS = $(AM_CPPFLAGS) $(KEVACOIN_INCLUDES)
+libkevacoin_cli_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libkevacoin_cli_a_SOURCES = \
   compat/stdin.h \
   compat/stdin.cpp \
   rpc/client.cpp \
-  $(BITCOIN_CORE_H)
+  $(KEVACOIN_CORE_H)
 
-nodist_libbitcoin_util_a_SOURCES = $(srcdir)/obj/build.h
+nodist_libkevacoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
-# bitcoind & bitcoin-node binaries #
-bitcoin_daemon_sources = bitcoind.cpp
-bitcoin_bin_cppflags = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-bitcoin_bin_cxxflags = $(AM_CXXFLAGS) $(PIE_FLAGS)
-bitcoin_bin_ldflags = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
+# kevacoind & kevacoin-node binaries #
+kevacoin_daemon_sources = bitcoind.cpp
+kevacoin_bin_cppflags = $(AM_CPPFLAGS) $(KEVACOIN_INCLUDES)
+kevacoin_bin_cxxflags = $(AM_CXXFLAGS) $(PIE_FLAGS)
+kevacoin_bin_ldflags = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
 
 if TARGET_WINDOWS
-bitcoin_daemon_sources += bitcoind-res.rc
+kevacoin_daemon_sources += bitcoind-res.rc
 endif
 
-bitcoin_bin_ldadd = \
-  $(LIBBITCOIN_WALLET) \
-  $(LIBBITCOIN_COMMON) \
-  $(LIBBITCOIN_UTIL) \
+kevacoin_bin_ldadd = \
+  $(LIBKEVACOIN_WALLET) \
+  $(LIBKEVACOIN_COMMON) \
+  $(LIBKEVACOIN_UTIL) \
   $(LIBUNIVALUE) \
-  $(LIBBITCOIN_ZMQ) \
-  $(LIBBITCOIN_CONSENSUS) \
-  $(LIBBITCOIN_CNUTILS) \
-  $(LIBBITCOIN_CRYPTO) \
+  $(LIBKEVACOIN_ZMQ) \
+  $(LIBKEVACOIN_CONSENSUS) \
+  $(LIBKEVACOIN_CNUTILS) \
+  $(LIBKEVACOIN_CRYPTO) \
   $(LIBLEVELDB) \
   $(LIBMEMENV) \
   $(LIBSECP256K1)
 
-bitcoin_bin_ldadd += $(BDB_LIBS) $(MINIUPNPC_LIBS) $(NATPMP_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(SQLITE_LIBS)
+kevacoin_bin_ldadd += $(BDB_LIBS) $(MINIUPNPC_LIBS) $(NATPMP_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS) $(SQLITE_LIBS)
 
-bitcoind_SOURCES = $(bitcoin_daemon_sources) init/bitcoind.cpp
-bitcoind_CPPFLAGS = $(bitcoin_bin_cppflags)
-bitcoind_CXXFLAGS = $(bitcoin_bin_cxxflags)
-bitcoind_LDFLAGS = $(bitcoin_bin_ldflags)
-bitcoind_LDADD = $(LIBBITCOIN_NODE) $(bitcoin_bin_ldadd)
+kevacoind_SOURCES = $(kevacoin_daemon_sources) init/bitcoind.cpp
+kevacoind_CPPFLAGS = $(kevacoin_bin_cppflags)
+kevacoind_CXXFLAGS = $(kevacoin_bin_cxxflags)
+kevacoind_LDFLAGS = $(kevacoin_bin_ldflags)
+kevacoind_LDADD = $(LIBKEVACOIN_NODE) $(kevacoin_bin_ldadd)
 
-bitcoin_node_SOURCES = $(bitcoin_daemon_sources) init/bitcoin-node.cpp
-bitcoin_node_CPPFLAGS = $(bitcoin_bin_cppflags)
-bitcoin_node_CXXFLAGS = $(bitcoin_bin_cxxflags)
-bitcoin_node_LDFLAGS = $(bitcoin_bin_ldflags)
-bitcoin_node_LDADD = $(LIBBITCOIN_NODE) $(bitcoin_bin_ldadd) $(LIBBITCOIN_IPC) $(LIBMULTIPROCESS_LIBS)
+kevacoin_node_SOURCES = $(kevacoin_daemon_sources) init/bitcoin-node.cpp
+kevacoin_node_CPPFLAGS = $(kevacoin_bin_cppflags)
+kevacoin_node_CXXFLAGS = $(kevacoin_bin_cxxflags)
+kevacoin_node_LDFLAGS = $(kevacoin_bin_ldflags)
+kevacoin_node_LDADD = $(LIBKEVACOIN_NODE) $(kevacoin_bin_ldadd) $(LIBKEVACOIN_IPC) $(LIBMULTIPROCESS_LIBS)
 
-# bitcoin-cli binary #
-bitcoin_cli_SOURCES = bitcoin-cli.cpp
-bitcoin_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
-bitcoin_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-bitcoin_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
+# kevacoin-cli binary #
+kevacoin_cli_SOURCES = bitcoin-cli.cpp
+kevacoin_cli_CPPFLAGS = $(AM_CPPFLAGS) $(KEVACOIN_INCLUDES) $(EVENT_CFLAGS)
+kevacoin_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+kevacoin_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
 
 if TARGET_WINDOWS
-bitcoin_cli_SOURCES += bitcoin-cli-res.rc
+kevacoin_cli_SOURCES += bitcoin-cli-res.rc
 endif
 
-bitcoin_cli_LDADD = \
-  $(LIBBITCOIN_CLI) \
+kevacoin_cli_LDADD = \
+  $(LIBKEVACOIN_CLI) \
   $(LIBUNIVALUE) \
-  $(LIBBITCOIN_COMMON) \
-  $(LIBBITCOIN_UTIL) \
-  $(LIBBITCOIN_CNUTILS) \
-  $(LIBBITCOIN_CRYPTO)
+  $(LIBKEVACOIN_COMMON) \
+  $(LIBKEVACOIN_UTIL) \
+  $(LIBKEVACOIN_CNUTILS) \
+  $(LIBKEVACOIN_CRYPTO)
 
-bitcoin_cli_LDADD += $(EVENT_LIBS)
+kevacoin_cli_LDADD += $(EVENT_LIBS)
 #
 
-# bitcoin-tx binary #
-bitcoin_tx_SOURCES = bitcoin-tx.cpp
-bitcoin_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-bitcoin_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-bitcoin_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
+# kevacoin-tx binary #
+kevacoin_tx_SOURCES = bitcoin-tx.cpp
+kevacoin_tx_CPPFLAGS = $(AM_CPPFLAGS) $(KEVACOIN_INCLUDES)
+kevacoin_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+kevacoin_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
 
 if TARGET_WINDOWS
-bitcoin_tx_SOURCES += bitcoin-tx-res.rc
+kevacoin_tx_SOURCES += bitcoin-tx-res.rc
 endif
 
-bitcoin_tx_LDADD = \
+kevacoin_tx_LDADD = \
   $(LIBUNIVALUE) \
-  $(LIBBITCOIN_COMMON) \
-  $(LIBBITCOIN_UTIL) \
-  $(LIBBITCOIN_CONSENSUS) \
-  $(LIBBITCOIN_CRYPTO) \
+  $(LIBKEVACOIN_COMMON) \
+  $(LIBKEVACOIN_UTIL) \
+  $(LIBKEVACOIN_CONSENSUS) \
+  $(LIBKEVACOIN_CRYPTO) \
   $(LIBSECP256K1) \
-  $(LIBBITCOIN_CNUTILS)
+  $(LIBKEVACOIN_CNUTILS)
 #
 
-# bitcoin-wallet binary #
-bitcoin_wallet_SOURCES = bitcoin-wallet.cpp
-bitcoin_wallet_SOURCES += init/bitcoin-wallet.cpp
-bitcoin_wallet_CPPFLAGS = $(bitcoin_bin_cppflags)
-bitcoin_wallet_CXXFLAGS = $(bitcoin_bin_cxxflags)
-bitcoin_wallet_LDFLAGS = $(bitcoin_bin_ldflags)
-bitcoin_wallet_LDADD = \
-  $(LIBBITCOIN_WALLET_TOOL) \
-  $(LIBBITCOIN_WALLET) \
-  $(LIBBITCOIN_COMMON) \
-  $(LIBBITCOIN_UTIL) \
+# kevacoin-wallet binary #
+kevacoin_wallet_SOURCES = bitcoin-wallet.cpp
+kevacoin_wallet_SOURCES += init/bitcoin-wallet.cpp
+kevacoin_wallet_CPPFLAGS = $(kevacoin_bin_cppflags)
+kevacoin_wallet_CXXFLAGS = $(kevacoin_bin_cxxflags)
+kevacoin_wallet_LDFLAGS = $(kevacoin_bin_ldflags)
+kevacoin_wallet_LDADD = \
+  $(LIBKEVACOIN_WALLET_TOOL) \
+  $(LIBKEVACOIN_WALLET) \
+  $(LIBKEVACOIN_COMMON) \
+  $(LIBKEVACOIN_UTIL) \
   $(LIBUNIVALUE) \
-  $(LIBBITCOIN_CONSENSUS) \
-  $(LIBBITCOIN_CRYPTO) \
+  $(LIBKEVACOIN_CONSENSUS) \
+  $(LIBKEVACOIN_CRYPTO) \
   $(LIBSECP256K1) \
   $(BDB_LIBS) \
   $(SQLITE_LIBS) \
-  $(LIBBITCOIN_CNUTILS)
+  $(LIBKEVACOIN_CNUTILS)
 
 if TARGET_WINDOWS
-bitcoin_wallet_SOURCES += bitcoin-wallet-res.rc
+kevacoin_wallet_SOURCES += bitcoin-wallet-res.rc
 endif
 #
 
-# bitcoin-util binary #
-bitcoin_util_SOURCES = bitcoin-util.cpp
-bitcoin_util_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-bitcoin_util_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-bitcoin_util_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
+# kevacoin-util binary #
+kevacoin_util_SOURCES = bitcoin-util.cpp
+kevacoin_util_CPPFLAGS = $(AM_CPPFLAGS) $(KEVACOIN_INCLUDES)
+kevacoin_util_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+kevacoin_util_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
 
 if TARGET_WINDOWS
-bitcoin_util_SOURCES += bitcoin-util-res.rc
+kevacoin_util_SOURCES += bitcoin-util-res.rc
 endif
 
-bitcoin_util_LDADD = \
-  $(LIBBITCOIN_COMMON) \
-  $(LIBBITCOIN_UTIL) \
+kevacoin_util_LDADD = \
+  $(LIBKEVACOIN_COMMON) \
+  $(LIBKEVACOIN_UTIL) \
   $(LIBUNIVALUE) \
-  $(LIBBITCOIN_CONSENSUS) \
-  $(LIBBITCOIN_CRYPTO) \
+  $(LIBKEVACOIN_CONSENSUS) \
+  $(LIBKEVACOIN_CRYPTO) \
   $(LIBSECP256K1) \
-  $(LIBBITCOIN_CNUTILS)
+  $(LIBKEVACOIN_CNUTILS)
 #
 
-# bitcoin-chainstate binary #
-bitcoin_chainstate_SOURCES = bitcoin-chainstate.cpp
-bitcoin_chainstate_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(BOOST_CPPFLAGS)
-bitcoin_chainstate_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+# kevacoin-chainstate binary #
+kevacoin_chainstate_SOURCES = bitcoin-chainstate.cpp
+kevacoin_chainstate_CPPFLAGS = $(AM_CPPFLAGS) $(KEVACOIN_INCLUDES) $(BOOST_CPPFLAGS)
+kevacoin_chainstate_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 
-bitcoin_chainstate_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(PTHREAD_FLAGS) $(LIBTOOL_APP_LDFLAGS) -static
-bitcoin_chainstate_LDADD = $(LIBBITCOINKERNEL)
+kevacoin_chainstate_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(PTHREAD_FLAGS) $(LIBTOOL_APP_LDFLAGS) -static
+kevacoin_chainstate_LDADD = $(LIBKEVACOINKERNEL)
 
 # libtool is unable to calculate this indirect dependency, presumably because it's a subproject.
-# libsecp256k1 only needs to be linked in when libbitcoinkernel is static.
-bitcoin_chainstate_LDADD += $(LIBSECP256K1)
+# libsecp256k1 only needs to be linked in when libkevacoinkernel is static.
+kevacoin_chainstate_LDADD += $(LIBSECP256K1)
 #
 
-# bitcoinkernel library #
-if BUILD_BITCOIN_KERNEL_LIB
-lib_LTLIBRARIES += $(LIBBITCOINKERNEL)
+# kevacoinkernel library #
+if BUILD_KEVACOIN_KERNEL_LIB
+lib_LTLIBRARIES += $(LIBKEVACOINKERNEL)
 
-libbitcoinkernel_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined $(RELDFLAGS) $(PTHREAD_FLAGS)
-libbitcoinkernel_la_LIBADD = $(LIBBITCOIN_CRYPTO) $(LIBLEVELDB) $(LIBMEMENV) $(LIBSECP256K1)
-libbitcoinkernel_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS)
+libkevacoinkernel_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined $(RELDFLAGS) $(PTHREAD_FLAGS)
+libkevacoinkernel_la_LIBADD = $(LIBKEVACOIN_CRYPTO) $(LIBLEVELDB) $(LIBMEMENV) $(LIBSECP256K1)
+libkevacoinkernel_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS)
 
-# libbitcoinkernel requires default symbol visibility, explicitly specify that
+# libkevacoinkernel requires default symbol visibility, explicitly specify that
 # here so that things still work even when user configures with
 #   --enable-reduce-exports
 #
 # Note this is a quick hack that will be removed as we incrementally define what
 # to export from the library.
-libbitcoinkernel_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -fvisibility=default
+libkevacoinkernel_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) -fvisibility=default
 
-# TODO: libbitcoinkernel is a work in progress consensus engine library, as more
+# TODO: libkevacoinkernel is a work in progress consensus engine library, as more
 #       and more modules are decoupled from the consensus engine, this list will
 #       shrink to only those which are absolutely necessary.
-libbitcoinkernel_la_SOURCES = \
+libkevacoinkernel_la_SOURCES = \
   kernel/bitcoinkernel.cpp \
   arith_uint256.cpp \
   chain.cpp \
@@ -1095,21 +1095,21 @@ libbitcoinkernel_la_SOURCES = \
 
 # Required for obj/build.h to be generated first.
 # More details: https://www.gnu.org/software/automake/manual/html_node/Built-Sources-Example.html
-libbitcoinkernel_la-clientversion.l$(OBJEXT): obj/build.h
-endif # BUILD_BITCOIN_KERNEL_LIB
+libkevacoinkernel_la-clientversion.l$(OBJEXT): obj/build.h
+endif # BUILD_KEVACOIN_KERNEL_LIB
 #
 
-# bitcoinconsensus library #
-if BUILD_BITCOIN_LIBS
-lib_LTLIBRARIES += $(LIBBITCOINCONSENSUS)
+# kevacoinconsensus library #
+if BUILD_KEVACOIN_LIBS
+lib_LTLIBRARIES += $(LIBKEVACOINCONSENSUS)
 
 include_HEADERS = script/bitcoinconsensus.h
-libbitcoinconsensus_la_SOURCES = support/cleanse.cpp $(crypto_libbitcoin_crypto_base_la_SOURCES) $(libbitcoin_consensus_a_SOURCES)
+libkevacoinconsensus_la_SOURCES = support/cleanse.cpp $(crypto_libkevacoin_crypto_base_la_SOURCES) $(libkevacoin_consensus_a_SOURCES)
 
-libbitcoinconsensus_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined $(RELDFLAGS)
-libbitcoinconsensus_la_LIBADD = $(LIBSECP256K1) $(LIBBITCOIN_CNUTILS)
-libbitcoinconsensus_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include $(CN_UTILS_INCLUDE) -DBUILD_BITCOIN_INTERNAL -DDISABLE_OPTIMIZED_SHA256
-libbitcoinconsensus_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libkevacoinconsensus_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined $(RELDFLAGS)
+libkevacoinconsensus_la_LIBADD = $(LIBSECP256K1) $(LIBKEVACOIN_CNUTILS)
+libkevacoinconsensus_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include $(CN_UTILS_INCLUDE) -DBUILD_KEVACOIN_INTERNAL -DDISABLE_OPTIMIZED_SHA256
+libkevacoinconsensus_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 
 endif
 #
@@ -1173,19 +1173,19 @@ if HARDEN
 	$(AM_V_at) $(PYTHON) $(top_srcdir)/contrib/devtools/security-check.py $(bin_PROGRAMS)
 endif
 
-libbitcoin_ipc_mpgen_input = \
+libkevacoin_ipc_mpgen_input = \
   ipc/capnp/echo.capnp \
   ipc/capnp/init.capnp
-EXTRA_DIST += $(libbitcoin_ipc_mpgen_input)
+EXTRA_DIST += $(libkevacoin_ipc_mpgen_input)
 %.capnp:
 
 # Explicitly list dependencies on generated headers as described in
 # https://www.gnu.org/software/automake/manual/html_node/Built-Sources-Example.html#Recording-Dependencies-manually
-ipc/capnp/libbitcoin_ipc_a-protocol.$(OBJEXT): $(libbitcoin_ipc_mpgen_input:=.h)
+ipc/capnp/libkevacoin_ipc_a-protocol.$(OBJEXT): $(libkevacoin_ipc_mpgen_input:=.h)
 
 if BUILD_MULTIPROCESS
-LIBBITCOIN_IPC=libbitcoin_ipc.a
-libbitcoin_ipc_a_SOURCES = \
+LIBKEVACOIN_IPC=libkevacoin_ipc.a
+libkevacoin_ipc_a_SOURCES = \
   ipc/capnp/common-types.h \
   ipc/capnp/context.h \
   ipc/capnp/init-types.h \
@@ -1197,20 +1197,20 @@ libbitcoin_ipc_a_SOURCES = \
   ipc/process.cpp \
   ipc/process.h \
   ipc/protocol.h
-libbitcoin_ipc_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-libbitcoin_ipc_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) $(LIBMULTIPROCESS_CFLAGS)
+libkevacoin_ipc_a_CPPFLAGS = $(AM_CPPFLAGS) $(KEVACOIN_INCLUDES)
+libkevacoin_ipc_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) $(LIBMULTIPROCESS_CFLAGS)
 
 include $(MPGEN_PREFIX)/include/mpgen.mk
-libbitcoin_ipc_mpgen_output = \
-  $(libbitcoin_ipc_mpgen_input:=.c++) \
-  $(libbitcoin_ipc_mpgen_input:=.h) \
-  $(libbitcoin_ipc_mpgen_input:=.proxy-client.c++) \
-  $(libbitcoin_ipc_mpgen_input:=.proxy-server.c++) \
-  $(libbitcoin_ipc_mpgen_input:=.proxy-types.c++) \
-  $(libbitcoin_ipc_mpgen_input:=.proxy-types.h) \
-  $(libbitcoin_ipc_mpgen_input:=.proxy.h)
-nodist_libbitcoin_ipc_a_SOURCES = $(libbitcoin_ipc_mpgen_output)
-CLEANFILES += $(libbitcoin_ipc_mpgen_output)
+libkevacoin_ipc_mpgen_output = \
+  $(libkevacoin_ipc_mpgen_input:=.c++) \
+  $(libkevacoin_ipc_mpgen_input:=.h) \
+  $(libkevacoin_ipc_mpgen_input:=.proxy-client.c++) \
+  $(libkevacoin_ipc_mpgen_input:=.proxy-server.c++) \
+  $(libkevacoin_ipc_mpgen_input:=.proxy-types.c++) \
+  $(libkevacoin_ipc_mpgen_input:=.proxy-types.h) \
+  $(libkevacoin_ipc_mpgen_input:=.proxy.h)
+nodist_libkevacoin_ipc_a_SOURCES = $(libkevacoin_ipc_mpgen_output)
+CLEANFILES += $(libkevacoin_ipc_mpgen_output)
 endif
 
 %.raw.h: %.raw
