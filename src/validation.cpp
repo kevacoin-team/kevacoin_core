@@ -799,6 +799,10 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
         }
     }
 
+    if (!m_pool.checkKevaOps(tx, m_active_chainstate.m_chain.Tip())) {
+        return false;
+    }
+
     m_view.SetBackend(m_viewmempool);
 
     const CCoinsViewCache& coins_cache = m_active_chainstate.CoinsTip();
@@ -1754,7 +1758,7 @@ CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
     if (halvings >= 64)
         return 0;
 
-    CAmount nSubsidy = 50 * COIN;
+    CAmount nSubsidy = 500 * COIN;
     // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
     nSubsidy >>= halvings;
     return nSubsidy;
@@ -2535,6 +2539,7 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
     }
 
     if (!control.Wait()) {
+        // TODO FIX
         LogPrintf("ERROR: %s: CheckQueue failed\n", __func__);
         return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "block-validation-failed");
     }
@@ -3749,7 +3754,7 @@ void ChainstateManager::ReceivedBlockTransactions(const CBlock& block, CBlockInd
 static bool CheckBlockHeader(const CBlockHeader& block, BlockValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true)
 {
     // Check proof of work matches claimed amount
-    if (fCheckPOW && !CheckProofOfWork(block.GetHash(), block.nBits, consensusParams))
+    if (fCheckPOW && !CheckProofOfWork(block, block.nBits, consensusParams))
         return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "high-hash", "proof of work failed");
 
     return true;
@@ -3943,7 +3948,7 @@ std::vector<unsigned char> ChainstateManager::GenerateCoinbaseCommitment(CBlock&
 bool HasValidProofOfWork(const std::vector<CBlockHeader>& headers, const Consensus::Params& consensusParams)
 {
     return std::all_of(headers.cbegin(), headers.cend(),
-            [&](const auto& header) { return CheckProofOfWork(header.GetHash(), header.nBits, consensusParams);});
+            [&](const auto& header) { return CheckProofOfWork(header, header.nBits, consensusParams);});
 }
 
 bool IsBlockMutated(const CBlock& block, bool check_witness_root)
@@ -4001,6 +4006,10 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidatio
     AssertLockHeld(::cs_main);
     assert(pindexPrev != nullptr);
     const int nHeight = pindexPrev->nHeight + 1;
+
+    // Kevacoin: the nNonce should be the current height.
+    if ((int32_t)block.nNonce != nHeight)
+        return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "nonce-not-height", "nNonce not equal height");
 
     // Check proof of work
     const Consensus::Params& consensusParams = chainman.GetConsensus();

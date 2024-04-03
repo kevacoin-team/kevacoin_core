@@ -102,7 +102,7 @@ bool BlockTreeDB::ReadFlag(const std::string& name, bool& fValue)
     return true;
 }
 
-bool BlockTreeDB::LoadBlockIndexGuts(const Consensus::Params& consensusParams, std::function<CBlockIndex*(const uint256&)> insertBlockIndex, const util::SignalInterrupt& interrupt)
+bool BlockTreeDB::LoadBlockIndexGuts(const Consensus::Params& consensusParams, std::function<CBlockIndex*(const uint256&, int)> insertBlockIndex, const util::SignalInterrupt& interrupt)
 {
     AssertLockHeld(::cs_main);
     std::unique_ptr<CDBIterator> pcursor(NewIterator());
@@ -116,8 +116,8 @@ bool BlockTreeDB::LoadBlockIndexGuts(const Consensus::Params& consensusParams, s
             CDiskBlockIndex diskindex;
             if (pcursor->GetValue(diskindex)) {
                 // Construct block index object
-                CBlockIndex* pindexNew = insertBlockIndex(diskindex.ConstructBlockHash());
-                pindexNew->pprev          = insertBlockIndex(diskindex.hashPrev);
+                CBlockIndex* pindexNew = insertBlockIndex(diskindex.ConstructBlockHash(), diskindex.nHeight);
+                pindexNew->pprev          = insertBlockIndex(diskindex.hashPrev, diskindex.nHeight - 1);
                 pindexNew->nHeight        = diskindex.nHeight;
                 pindexNew->nFile          = diskindex.nFile;
                 pindexNew->nDataPos       = diskindex.nDataPos;
@@ -129,12 +129,21 @@ bool BlockTreeDB::LoadBlockIndexGuts(const Consensus::Params& consensusParams, s
                 pindexNew->nNonce         = diskindex.nNonce;
                 pindexNew->nStatus        = diskindex.nStatus;
                 pindexNew->nTx            = diskindex.nTx;
+                pindexNew->cnHeader       = diskindex.cnHeader;
 
-                if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits, consensusParams)) {
-                    LogError("%s: CheckProofOfWork failed: %s\n", __func__, pindexNew->ToString());
-                    return false;
-                }
+                // Kevacoin: Disable PoW Sanity check while loading block index from disk.
+                // We use the sha256 hash for the block index for performance reasons, which is recorded for later use.
+                // CheckProofOfWork() uses the Cryptonight/RandomX hash which is discarded after a block is accepted.
+                // While it is technically feasible to verify the PoW, doing so takes several minutes as it
+                // requires recomputing every PoW hash during every Kevacoin startup.
+                // We opt instead to simply trust the data that is on your local disk.
+                
+                // if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits, consensusParams)) {
+                //     LogError("%s: CheckProofOfWork failed: %s\n", __func__, pindexNew->ToString());
+                //     return false;
+                // }
 
+                // InsertBlockIndex(pindexNew->GetBlockHash(), pindexNew->nHeight);
                 pcursor->Next();
             } else {
                 LogError("%s: failed to read value\n", __func__);
@@ -233,6 +242,17 @@ CBlockIndex* BlockManager::AddToBlockIndex(const CBlockHeader& block, CBlockInde
     m_dirty_blockindex.insert(pindexNew);
 
     return pindexNew;
+}
+
+CBlockIndex* BlockManager::GetBlockSeedHeight(uint64_t seedHeight)
+{
+    AssertLockHeld(cs_main);
+    std::map<uint64_t, CBlockIndex*>::iterator iter = m_block_seed_height.find(seedHeight);
+    if (iter != m_block_seed_height.end()) {
+        return iter->second;
+    }
+
+    return nullptr;
 }
 
 void BlockManager::PruneOneBlockFile(const int fileNumber)
@@ -378,7 +398,7 @@ void BlockManager::UpdatePruneLock(const std::string& name, const PruneLockInfo&
     m_prune_locks[name] = lock_info;
 }
 
-CBlockIndex* BlockManager::InsertBlockIndex(const uint256& hash)
+CBlockIndex* BlockManager::InsertBlockIndex(const uint256& hash, int nHeight)
 {
     AssertLockHeld(cs_main);
 
@@ -391,13 +411,18 @@ CBlockIndex* BlockManager::InsertBlockIndex(const uint256& hash)
     if (inserted) {
         pindex->phashBlock = &((*mi).first);
     }
+
+    if (crypto::is_a_seed_height(nHeight)) {
+        m_block_seed_height.insert(std::make_pair(nHeight, pindex));
+    }
+
     return pindex;
 }
 
 bool BlockManager::LoadBlockIndex(const std::optional<uint256>& snapshot_blockhash)
 {
     if (!m_block_tree_db->LoadBlockIndexGuts(
-            GetConsensus(), [this](const uint256& hash) EXCLUSIVE_LOCKS_REQUIRED(cs_main) { return this->InsertBlockIndex(hash); }, m_interrupt)) {
+            GetConsensus(), [this](const uint256& hash, int nHeight) EXCLUSIVE_LOCKS_REQUIRED(cs_main) { return this->InsertBlockIndex(hash, nHeight); }, m_interrupt)) {
         return false;
     }
 
@@ -1056,7 +1081,7 @@ bool BlockManager::ReadBlockFromDisk(CBlock& block, const FlatFilePos& pos) cons
     }
 
     // Check the header
-    if (!CheckProofOfWork(block.GetHash(), block.nBits, GetConsensus())) {
+    if (!CheckProofOfWork(block, block.nBits, GetConsensus())) {
         LogError("ReadBlockFromDisk: Errors in block header at %s\n", pos.ToString());
         return false;
     }
@@ -1078,8 +1103,8 @@ bool BlockManager::ReadBlockFromDisk(CBlock& block, const CBlockIndex& index) co
         return false;
     }
     if (block.GetHash() != index.GetBlockHash()) {
-        LogError("ReadBlockFromDisk(CBlock&, CBlockIndex*): GetHash() doesn't match index for %s at %s\n",
-                     index.ToString(), block_pos.ToString());
+        LogError("ReadBlockFromDisk(CBlock&, CBlockIndex*): GetHash() doesn't match index for %s at %s\nHash:%s\n%s\n%s\n",
+                     index.ToString(), block_pos.ToString(), block.GetHash().ToString(), block.GetOriginalBlockHash().ToString(), block.ToString());
         return false;
     }
     return true;

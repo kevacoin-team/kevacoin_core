@@ -149,6 +149,11 @@ std::string GetOpName(opcodetype opcode)
     // Opcode added by BIP 342 (Tapscript)
     case OP_CHECKSIGADD            : return "OP_CHECKSIGADD";
 
+    // Keva
+    case OP_KEVA_NAMESPACE         : return "OP_KEVA_NAMESPACE";
+    case OP_KEVA_PUT               : return "OP_KEVA_PUT";
+    case OP_KEVA_DELETE            : return "OP_KEVA_DELETE";
+
     case OP_INVALIDOPCODE          : return "OP_INVALIDOPCODE";
 
     default:

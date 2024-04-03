@@ -78,8 +78,8 @@ private:
 
 public:
 
-  SERIALIZE_METHODS(CKevaData, obj) { READWRITE(obj.value, obj.nHeight, obj.prevout, obj.addr); }
-  // ADD_SERIALIZE_METHODS;
+  // SERIALIZE_METHODS(CKevaData, obj) { READWRITE(obj.value, obj.nHeight, obj.prevout, obj.addr); }
+  ADD_SERIALIZE_METHODS;
 
   template<typename Stream, typename Operation>
     inline void SerializationOp (Stream& s, Operation ser_action)
@@ -192,8 +192,8 @@ private:
 
 public:
 
-  SERIALIZE_METHODS(CNameHistory, obj) { READWRITE(obj.data); }
-  // ADD_SERIALIZE_METHODS;
+  // SERIALIZE_METHODS(CNameHistory, obj) { READWRITE(obj.data); }
+  ADD_SERIALIZE_METHODS;
 
   template<typename Stream, typename Operation>
     inline void SerializationOp (Stream& s, Operation ser_action)

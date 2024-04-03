@@ -88,8 +88,8 @@ public:
     }
 
 
-    SERIALIZE_METHODS(CryptoNoteHeader, obj) { READWRITE(obj.major_version, obj.minor_version, obj.timestamp, obj.prev_id, obj.nonce, obj.merkle_root, obj.nTxes); }
-    // ADD_SERIALIZE_METHODS;
+    // SERIALIZE_METHODS(CryptoNoteHeader, obj) { READWRITE(obj.major_version, obj.minor_version, obj.timestamp, obj.prev_id, obj.nonce, obj.merkle_root, obj.nTxes); }
+    ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action) {
@@ -139,7 +139,7 @@ public:
         SetNull();
     }
 
-    SERIALIZE_METHODS(CBlockHeader, obj) { READWRITE(obj.nVersion, obj.hashPrevBlock, obj.hashMerkleRoot, obj.nTime, obj.nBits, obj.nNonce); }
+    SERIALIZE_METHODS(CBlockHeader, obj) { READWRITE(obj.nVersion, obj.hashPrevBlock, obj.hashMerkleRoot, obj.nTime, obj.nBits, obj.nNonce, obj.cnHeader); }
 
     void SetNull()
     {

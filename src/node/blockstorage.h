@@ -58,7 +58,7 @@ public:
     void ReadReindexing(bool& fReindexing);
     bool WriteFlag(const std::string& name, bool fValue);
     bool ReadFlag(const std::string& name, bool& fValue);
-    bool LoadBlockIndexGuts(const Consensus::Params& consensusParams, std::function<CBlockIndex*(const uint256&)> insertBlockIndex, const util::SignalInterrupt& interrupt)
+    bool LoadBlockIndexGuts(const Consensus::Params& consensusParams, std::function<CBlockIndex*(const uint256&, int)> insertBlockIndex, const util::SignalInterrupt& interrupt)
         EXCLUSIVE_LOCKS_REQUIRED(::cs_main);
 };
 } // namespace kernel
@@ -283,6 +283,11 @@ public:
      */
     std::multimap<CBlockIndex*, CBlockIndex*> m_blocks_unlinked;
 
+    /**
+     * Kevacoin: map the blockhash to seed height for Randomx hash computation.
+     */
+    std::map<uint64_t, CBlockIndex*> m_block_seed_height GUARDED_BY(::cs_main);
+
     std::unique_ptr<BlockTreeDB> m_block_tree_db GUARDED_BY(::cs_main);
 
     bool WriteBlockIndexDB() EXCLUSIVE_LOCKS_REQUIRED(::cs_main);
@@ -298,7 +303,10 @@ public:
 
     CBlockIndex* AddToBlockIndex(const CBlockHeader& block, CBlockIndex*& best_header) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
     /** Create a new block index entry for a given block hash */
-    CBlockIndex* InsertBlockIndex(const uint256& hash) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+    CBlockIndex* InsertBlockIndex(const uint256& hash, int nHeight) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+
+    /** Kevacoin: get the block hash of the given seed height. */
+    CBlockIndex* GetBlockSeedHeight(uint64_t seedHeight) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 
     //! Mark one block file as pruned (modify associated database entries)
     void PruneOneBlockFile(const int fileNumber) EXCLUSIVE_LOCKS_REQUIRED(cs_main);

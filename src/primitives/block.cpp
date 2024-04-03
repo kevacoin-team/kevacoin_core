@@ -38,7 +38,7 @@ bool CBlockHeader::isCNConsistent() const
 uint256 CBlockHeader::GetHash() const
 {    
     if (!isCNConsistent()) {
-        return SerializeHash(*this);
+        return (HashWriter{} << *this).GetHash();
     }
     uint256 thash;
     cryptonote::blobdata blob = cryptonote::t_serializable_object_to_blob(cnHeader);

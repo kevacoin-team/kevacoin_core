@@ -14,9 +14,11 @@
 #include <kernel/mempool_limits.h>         // IWYU pragma: export
 #include <kernel/mempool_options.h>        // IWYU pragma: export
 #include <kernel/mempool_removal_reason.h> // IWYU pragma: export
+#include <keva/main.h>
 #include <policy/feerate.h>
 #include <policy/packages.h>
 #include <primitives/transaction.h>
+#include <script/keva.h>
 #include <sync.h>
 #include <util/epochguard.h>
 #include <util/hasher.h>
@@ -317,6 +319,9 @@ protected:
     // This number is incremented once every time a transaction
     // is added or removed from the mempool for any reason.
     mutable uint64_t m_sequence_number GUARDED_BY(cs){1};
+
+    /** Keva-related mempool data.  */
+    CKevaMemPool kevaMemPool;
 
     void trackPackageRemoved(const CFeeRate& rate) EXCLUSIVE_LOCKS_REQUIRED(cs);
 
@@ -686,6 +691,27 @@ public:
 
     const CTxMemPoolEntry* GetEntry(const Txid& txid) const LIFETIMEBOUND EXCLUSIVE_LOCKS_REQUIRED(cs);
 
+    inline bool checkKevaOps(const CTransaction& tx, const CBlockIndex* activeChainTip) const
+    {
+        AssertLockHeld(cs);
+        return kevaMemPool.checkTx(tx, activeChainTip);
+    }
+
+    inline void addKevaUnchecked(const uint256& hash, const CKevaScript& kevaOp)
+    {
+        LOCK(cs);
+        kevaMemPool.addUnchecked(hash, kevaOp);
+    }
+
+    /** Keva get unconfirmed key values. */
+    bool getUnconfirmedKeyValue(const valtype& nameSpace, const valtype& key, valtype& value) const;
+
+    /** Keva get unconfirmed namespaces. */
+    void getUnconfirmedNamespaceList(std::vector<std::tuple<valtype, valtype, uint256>>& nameSpaces) const;
+
+    /** Keva get list of unconfirmed key value list. */
+    void getUnconfirmedKeyValueList(std::vector<std::tuple<valtype, valtype, valtype, uint256>>& keyValueList, const valtype& nameSpace);
+   
     CTransactionRef get(const uint256& hash) const;
     txiter get_iter_from_wtxid(const uint256& wtxid) const EXCLUSIVE_LOCKS_REQUIRED(cs)
     {

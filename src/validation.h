@@ -101,6 +101,9 @@ double GuessVerificationProgress(const ChainTxData& data, const CBlockIndex* pin
 /** Prune block files up to a given height */
 void PruneBlockFilesManual(Chainstate& active_chainstate, int nManualPruneHeight);
 
+/** Check whether Keva namespace creation fix is enabled. */
+bool IsNsFixEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params);
+
 /**
 * Validation result for a transaction evaluated by MemPoolAccept (single or package).
 * Here are the expected fields and properties of a result depending on its ResultType, applicable to
@@ -365,6 +368,15 @@ static_assert(std::is_nothrow_destructible_v<CScriptCheck>);
 [[nodiscard]] bool InitScriptExecutionCache(size_t max_size_bytes);
 
 /** Functions for validating blocks and updating the block tree */
+
+/** Get seed height for RandomX */
+uint64_t GetSeedHeight(const CBlock& block);
+
+/** Get seed block hash for RandomX */
+uint256 GetSeedBlockHash(CChain& chain, uint64_t seed_height);
+
+/** Get seed block hash for RandomX */
+uint256 GetSeedBlockHash(ChainstateManager& chainMgr, uint64_t seed_height);
 
 /** Context-independent validity checks */
 bool CheckBlock(const CBlock& block, BlockValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true, bool fCheckMerkleRoot = true);
@@ -960,6 +972,9 @@ public:
 
     const util::SignalInterrupt& m_interrupt;
     const Options m_options;
+    //! Map between height and block for RandomX.
+    std::map<uint64_t, CBlockIndex*> blockSeedHeightMap GUARDED_BY(::cs_main);
+    
     std::thread m_thread_load;
     //! A single BlockManager instance is shared across each constructed
     //! chainstate to avoid duplicating block metadata.
@@ -1273,6 +1288,21 @@ public:
     std::optional<int> GetSnapshotBaseHeight() const EXCLUSIVE_LOCKS_REQUIRED(::cs_main);
 
     CCheckQueue<CScriptCheck>& GetCheckQueue() { return m_script_check_queue; }
+
+    // //! Add seed and block mapping.
+    // void AddSeedBlock(uint64_t height, CBlockIndex* pindex) EXCLUSIVE_LOCKS_REQUIRED(::cs_main) {
+    //     blockSeedHeightMap.insert(std::make_pair(height, pindex));
+    // }
+
+    // //! Get seed block from height.
+    // CBlockIndex* GetSeedBlock(uint64_t height) EXCLUSIVE_LOCKS_REQUIRED(::cs_main) {
+    //     //pblockindex = mapBlockSeedHeight.find(seed_height)->second;
+    //     std::map<uint64_t, CBlockIndex*>::iterator iter = blockSeedHeightMap.find(height);
+    //     if (iter != blockSeedHeightMap.end()) {
+    //         return iter->second;
+    //     }
+    //     return nullptr;
+    // }
 
     ~ChainstateManager();
 };

@@ -48,6 +48,16 @@ static const unsigned int MAX_VECTOR_ALLOCATE = 5000000;
 struct deserialize_type {};
 constexpr deserialize_type deserialize {};
 
+/**
+ * Used to acquire a non-const pointer "this" to generate bodies
+ * of const serialization operations from a template
+ */
+template<typename T>
+inline T* NCONST_PTR(const T* val)
+{
+    return const_cast<T*>(val);
+}
+
 /*
  * Lowest-level serialization and conversion.
  */
@@ -242,6 +252,22 @@ const Out& AsBase(const In& x)
     {                                                                                               \
         static_assert(std::is_same<cls&, decltype(*this)>::value, "Unserialize type mismatch");     \
         Unser(s, *this);                                                                            \
+    }
+
+/**
+ * Implement three methods for serializable objects. These are actually wrappers over
+ * "SerializationOp" template, which implements the body of each class' serialization
+ * code. Adding "ADD_SERIALIZE_METHODS" in the body of the class causes these wrappers to be
+ * added as members.
+ */
+#define ADD_SERIALIZE_METHODS                                         \
+    template<typename Stream>                                         \
+    void Serialize(Stream& s) const {                                 \
+        NCONST_PTR(this)->SerializationOp(s, ActionSerialize{});  \
+    }                                                                 \
+    template<typename Stream>                                         \
+    void Unserialize(Stream& s) {                                     \
+        SerializationOp(s, ActionUnserialize{});                  \
     }
 
 /**

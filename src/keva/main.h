@@ -72,8 +72,8 @@ private:
 
 public:
 
-  SERIALIZE_METHODS(CKevaTxUndo, obj) { READWRITE(obj.nameSpace, obj.key, obj.isNew, obj.oldData); }
-  // ADD_SERIALIZE_METHODS;
+  // SERIALIZE_METHODS(CKevaTxUndo, obj) { READWRITE(obj.nameSpace, obj.key, obj.isNew, obj.oldData); }
+  ADD_SERIALIZE_METHODS;
 
   template<typename Stream, typename Operation>
     inline void SerializationOp (Stream& s, Operation ser_action)
