@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_QT_KEVATABLEMODEL_H
-#define BITCOIN_QT_KEVATABLEMODEL_H
+#ifndef KEVACOIN_QT_KEVATABLEMODEL_H
+#define KEVACOIN_QT_KEVATABLEMODEL_H
 
 #include <qt/walletmodel.h>
 
@@ -36,7 +36,7 @@ private:
     Qt::SortOrder order;
 };
 
-/** Model for list of recently generated payment requests / bitcoin: URIs.
+/** Model for list of recently generated payment requests / kevacoin: URIs.
  * Part of wallet model.
  */
 class KevaTableModel: public QAbstractTableModel
@@ -88,4 +88,4 @@ private:
     QString getAmountTitle();
 };
 
-#endif // BITCOIN_QT_KEVATABLEMODEL_H
+#endif // KEVACOIN_QT_KEVATABLEMODEL_H

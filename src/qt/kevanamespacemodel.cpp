@@ -4,7 +4,7 @@
 
 #include <qt/kevanamespacemodel.h>
 
-#include <qt/bitcoinunits.h>
+#include <qt/kevacoinunits.h>
 #include <qt/guiutil.h>
 #include <qt/optionsmodel.h>
 

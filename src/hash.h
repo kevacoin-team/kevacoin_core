@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_HASH_H
-#define BITCOIN_HASH_H
+#ifndef KEVACOIN_HASH_H
+#define KEVACOIN_HASH_H
 
 #include <attributes.h>
 #include <crypto/common.h>
@@ -302,4 +302,4 @@ inline uint160 RIPEMD160(Span<const unsigned char> data)
     return result;
 }
 
-#endif // BITCOIN_HASH_H
+#endif // KEVACOIN_HASH_H

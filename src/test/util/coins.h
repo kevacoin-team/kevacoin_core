@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_TEST_UTIL_COINS_H
-#define BITCOIN_TEST_UTIL_COINS_H
+#ifndef KEVACOIN_TEST_UTIL_COINS_H
+#define KEVACOIN_TEST_UTIL_COINS_H
 
 #include <primitives/transaction.h>
 
@@ -16,4 +16,4 @@ class CCoinsViewCache;
  */
 COutPoint AddTestCoin(CCoinsViewCache& coins_view);
 
-#endif // BITCOIN_TEST_UTIL_COINS_H
+#endif // KEVACOIN_TEST_UTIL_COINS_H

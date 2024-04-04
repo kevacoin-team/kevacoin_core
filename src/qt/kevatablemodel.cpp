@@ -4,7 +4,7 @@
 
 #include <qt/kevatablemodel.h>
 
-#include <qt/bitcoinunits.h>
+#include <qt/kevacoinunits.h>
 #include <qt/guiutil.h>
 #include <qt/optionsmodel.h>
 
@@ -107,13 +107,13 @@ QString KevaTableModel::getAmountTitle()
 {
     if (this->walletModel->getOptionsModel() != nullptr)
     {
-        return tr("Requested") + " ("+BitcoinUnits::shortName(this->walletModel->getOptionsModel()->getDisplayUnit()) + ")";
+        return tr("Requested") + " ("+KevacoinUnits::shortName(this->walletModel->getOptionsModel()->getDisplayUnit()) + ")";
     }
     else
     {
         return "";
     }
-    // return (this->walletModel->getOptionsModel() != nullptr) ? tr("Requested") + " ("+BitcoinUnits::shortName(this->walletModel->getOptionsModel()->getDisplayUnit()) + ")" : "";
+    // return (this->walletModel->getOptionsModel() != nullptr) ? tr("Requested") + " ("+KevacoinUnits::shortName(this->walletModel->getOptionsModel()->getDisplayUnit()) + ")" : "";
 }
 
 QModelIndex KevaTableModel::index(int row, int column, const QModelIndex &parent) const

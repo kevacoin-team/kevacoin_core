@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_KERNEL_NOTIFICATIONS_INTERFACE_H
-#define BITCOIN_KERNEL_NOTIFICATIONS_INTERFACE_H
+#ifndef KEVACOIN_KERNEL_NOTIFICATIONS_INTERFACE_H
+#define KEVACOIN_KERNEL_NOTIFICATIONS_INTERFACE_H
 
 #include <cstdint>
 #include <variant>
@@ -59,4 +59,4 @@ public:
 };
 } // namespace kernel
 
-#endif // BITCOIN_KERNEL_NOTIFICATIONS_INTERFACE_H
+#endif // KEVACOIN_KERNEL_NOTIFICATIONS_INTERFACE_H

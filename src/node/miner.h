@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_NODE_MINER_H
-#define BITCOIN_NODE_MINER_H
+#ifndef KEVACOININ_NODE_MINER_H
+#define KEVACOININ_NODE_MINER_H
 
 #include <policy/policy.h>
 #include <primitives/block.h>
@@ -208,4 +208,4 @@ void RegenerateCommitments(CBlock& block, ChainstateManager& chainman);
 void ApplyArgsManOptions(const ArgsManager& gArgs, BlockAssembler::Options& options);
 } // namespace node
 
-#endif // BITCOIN_NODE_MINER_H
+#endif // KEVACOININ_NODE_MINER_H

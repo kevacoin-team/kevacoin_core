@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_NODE_CONNECTION_TYPES_H
-#define BITCOIN_NODE_CONNECTION_TYPES_H
+#ifndef KEVACOIN_NODE_CONNECTION_TYPES_H
+#define KEVACOIN_NODE_CONNECTION_TYPES_H
 
 #include <string>
 #include <stdint.h>
@@ -14,7 +14,7 @@
  *
  * If adding or removing types, please update CONNECTION_TYPE_DOC in
  * src/rpc/net.cpp and src/qt/rpcconsole.cpp, as well as the descriptions in
- * src/qt/guiutil.cpp and src/bitcoin-cli.cpp::NetinfoRequestHandler. */
+ * src/qt/guiutil.cpp and src/kevacoin-cli.cpp::NetinfoRequestHandler. */
 enum class ConnectionType {
     /**
      * Inbound connections are those initiated by a peer. This is the only
@@ -90,4 +90,4 @@ enum class TransportProtocolType : uint8_t {
 /** Convert TransportProtocolType enum to a string value */
 std::string TransportTypeAsString(TransportProtocolType transport_type);
 
-#endif // BITCOIN_NODE_CONNECTION_TYPES_H
+#endif // KEVACOIN_NODE_CONNECTION_TYPES_H

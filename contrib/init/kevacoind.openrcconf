@@ -1,0 +1,33 @@
+# /etc/conf.d/kevacoind: config file for /etc/init.d/kevacoind
+
+# Config file location
+#KEVACOIND_CONFIGFILE="/etc/kevacoin/kevacoin.conf"
+
+# What directory to write pidfile to?  (created and owned by $KEVACOIND_USER)
+#KEVACOIND_PIDDIR="/var/run/kevacoind"
+
+# What filename to give the pidfile
+#KEVACOIND_PIDFILE="${KEVACOIND_PIDDIR}/kevacoind.pid"
+
+# Where to write kevacoind data (be mindful that the blockchain is large)
+#KEVACOIND_DATADIR="/var/lib/kevacoind"
+
+# User and group to own kevacoind process
+#KEVACOIND_USER="kevacoin"
+#KEVACOIND_GROUP="kevacoin"
+
+# Path to kevacoind executable
+#KEVACOIND_BIN="/usr/bin/kevacoind"
+
+# Nice value to run kevacoind under
+#KEVACOIND_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+#KEVACOIND_OPTS=""
+
+# The timeout in seconds OpenRC will wait for kevacoind to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+KEVACOIND_SIGTERM_TIMEOUT=600

@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_KEY_IO_H
-#define BITCOIN_KEY_IO_H
+#ifndef KEVACOIN_KEY_IO_H
+#define KEVACOIN_KEY_IO_H
 
 #include <addresstype.h>
 #include <chainparams.h>
@@ -28,4 +28,4 @@ bool IsValidDestinationString(const std::string& str);
 bool IsValidDestinationString(const std::string& str, const CChainParams& params);
 bool DecodeKevaNamespace(const std::string ns, const CChainParams& params, std::vector<unsigned char>& result);
 
-#endif // BITCOIN_KEY_IO_H
+#endif // KEVACOIN_KEY_IO_H

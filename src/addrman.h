@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_ADDRMAN_H
-#define BITCOIN_ADDRMAN_H
+#ifndef KEVACOIN_ADDRMAN_H
+#define KEVACOIN_ADDRMAN_H
 
 #include <netaddress.h>
 #include <netgroup.h>
@@ -210,4 +210,4 @@ public:
     std::optional<AddressPosition> FindAddressEntry(const CAddress& addr);
 };
 
-#endif // BITCOIN_ADDRMAN_H
+#endif // KEVACOIN_ADDRMAN_H

@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef H_BITCOIN_SCRIPT_KEVA
-#define H_BITCOIN_SCRIPT_KEVA
+#ifndef H_KEVACOIN_SCRIPT_KEVA
+#define H_KEVACOIN_SCRIPT_KEVA
 
 #include <uint256.h>
 #include <chainparams.h>
@@ -279,4 +279,4 @@ public:
 
 };
 
-#endif // H_BITCOIN_SCRIPT_KEVA
+#endif // H_KEVACOIN_SCRIPT_KEVA

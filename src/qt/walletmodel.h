@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_QT_WALLETMODEL_H
-#define BITCOIN_QT_WALLETMODEL_H
+#ifndef KEVACOIN_QT_WALLETMODEL_H
+#define KEVACOIN_QT_WALLETMODEL_H
 
 #include <key.h>
 
@@ -266,4 +266,4 @@ public Q_SLOTS:
     void pollBalanceChanged();
 };
 
-#endif // BITCOIN_QT_WALLETMODEL_H
+#endif // KEVACOIN_QT_WALLETMODEL_H

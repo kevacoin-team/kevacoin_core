@@ -6,8 +6,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef H_BITCOIN_KEVA_MAIN
-#define H_BITCOIN_KEVA_MAIN
+#ifndef H_KEVACOIN_KEVA_MAIN
+#define H_KEVACOIN_KEVA_MAIN
 
 #include <consensus/amount.h>
 #include <chain.h>
@@ -305,4 +305,4 @@ bool DeploymentActiveAt(const CBlockIndex& index, const Consensus::Params& param
     return DeploymentActiveAt(index, params, dep);
 }
 
-#endif // H_BITCOIN_KEVA_MAIN
+#endif // H_KEVACOIN_KEVA_MAIN

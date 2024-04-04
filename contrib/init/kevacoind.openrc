@@ -1,0 +1,93 @@
+#!/sbin/openrc-run
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/kevacoin/.kevacoin" ]; then
+	KEVACOIND_DEFAULT_DATADIR="/var/lib/kevacoin/.kevacoin"
+else
+	KEVACOIND_DEFAULT_DATADIR="/var/lib/kevacoind"
+fi
+
+KEVACOIND_CONFIGFILE=${KEVACOIND_CONFIGFILE:-/etc/kevacoin/kevacoin.conf}
+KEVACOIND_PIDDIR=${KEVACOIND_PIDDIR:-/var/run/kevacoind}
+KEVACOIND_PIDFILE=${KEVACOIND_PIDFILE:-${KEVACOIND_PIDDIR}/kevacoind.pid}
+KEVACOIND_DATADIR=${KEVACOIND_DATADIR:-${KEVACOIND_DEFAULT_DATADIR}}
+KEVACOIND_USER=${KEVACOIND_USER:-${KEVACOIN_USER:-kevacoin}}
+KEVACOIND_GROUP=${KEVACOIND_GROUP:-kevacoin}
+KEVACOIND_BIN=${KEVACOIND_BIN:-/usr/bin/kevacoind}
+KEVACOIND_NICE=${KEVACOIND_NICE:-${NICELEVEL:-0}}
+KEVACOIND_OPTS="${KEVACOIND_OPTS:-${KEVACOIN_OPTS}}"
+
+name="Bitcoin Core Daemon"
+description="Bitcoin cryptocurrency P2P network daemon"
+
+command="/usr/bin/kevacoind"
+command_args="-pid=\"${KEVACOIND_PIDFILE}\" \
+		-conf=\"${KEVACOIND_CONFIGFILE}\" \
+		-datadir=\"${KEVACOIND_DATADIR}\" \
+		-daemon \
+		${KEVACOIND_OPTS}"
+
+required_files="${KEVACOIND_CONFIGFILE}"
+start_stop_daemon_args="-u ${KEVACOIND_USER} \
+			-N ${KEVACOIND_NICE} -w 2000"
+pidfile="${KEVACOIND_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${KEVACOIND_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${KEVACOIND_USER}:${KEVACOIND_GROUP}" \
+	"${KEVACOIND_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${KEVACOIND_USER}:${KEVACOIND_GROUP}" \
+	"${KEVACOIND_PIDDIR}"
+
+	checkpath -f \
+	-o "${KEVACOIND_USER}:${KEVACOIND_GROUP}" \
+	-m 0660 \
+	"${KEVACOIND_CONFIGFILE}"
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if grep -qs '^rpcuser=' "${KEVACOIND_CONFIGFILE}" && \
+		! grep -qs '^rpcpassword=' "${KEVACOIND_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run kevacoind."
+		eerror "The setting must appear in ${KEVACOIND_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following "
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"Bitcoin Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

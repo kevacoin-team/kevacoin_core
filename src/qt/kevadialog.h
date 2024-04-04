@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_QT_KEVADIALOG_H
-#define BITCOIN_QT_KEVADIALOG_H
+#ifndef KEVACOIN_QT_KEVADIALOG_H
+#define KEVACOIN_QT_KEVADIALOG_H
 
 #include <qt/guiutil.h>
 
@@ -27,7 +27,7 @@ QT_BEGIN_NAMESPACE
 class QModelIndex;
 QT_END_NAMESPACE
 
-/** Dialog for requesting payment of bitcoins */
+/** Dialog for requesting payment of kevacoins */
 class KevaDialog : public QDialog
 {
     Q_OBJECT
@@ -88,4 +88,4 @@ private Q_SLOTS:
     void copyAmount();
 };
 
-#endif // BITCOIN_QT_KEVADIALOG_H
+#endif // KEVACOIN_QT_KEVADIALOG_H

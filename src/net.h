@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_NET_H
-#define BITCOIN_NET_H
+#ifndef KEVACOIN_NET_H
+#define KEVACOIN_NET_H
 
 #include <bip324.h>
 #include <chainparams.h>
@@ -1658,4 +1658,4 @@ extern std::function<void(const CAddress& addr,
                           bool is_incoming)>
     CaptureMessage;
 
-#endif // BITCOIN_NET_H
+#endif // KEVACOIN_NET_H

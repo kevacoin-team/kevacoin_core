@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_QT_KEVADETAILDIALOG_H
-#define BITCOIN_QT_KEVADETAILDIALOG_H
+#ifndef KEVACOIN_QT_KEVADETAILDIALOG_H
+#define KEVACOIN_QT_KEVADETAILDIALOG_H
 
 #include <QObject>
 #include <QString>
@@ -37,4 +37,4 @@ private:
     QString key;
 };
 
-#endif // BITCOIN_QT_KEVADETAILDIALOG_H
+#endif // KEVACOIN_QT_KEVADETAILDIALOG_H

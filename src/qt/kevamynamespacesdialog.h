@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_QT_KEVAMYNMAESPACESDIALOG_H
-#define BITCOIN_QT_KEVAMYNMAESPACESDIALOG_H
+#ifndef KEVACOIN_QT_KEVAMYNMAESPACESDIALOG_H
+#define KEVACOIN_QT_KEVAMYNMAESPACESDIALOG_H
 
 #include <QObject>
 #include <QString>
@@ -49,4 +49,4 @@ private:
     QModelIndex selectedIndex;
 };
 
-#endif // BITCOIN_QT_KEVAMYNMAESPACESDIALOG_H
+#endif // KEVACOIN_QT_KEVAMYNMAESPACESDIALOG_H

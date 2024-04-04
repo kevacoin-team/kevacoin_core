@@ -5,8 +5,8 @@
 /**
  * Functionality for communicating with Tor.
  */
-#ifndef BITCOIN_TORCONTROL_H
-#define BITCOIN_TORCONTROL_H
+#ifndef KEVACOIN_TORCONTROL_H
+#define KEVACOIN_TORCONTROL_H
 
 #include <netaddress.h>
 #include <util/fs.h>
@@ -153,4 +153,4 @@ public:
     static void reconnect_cb(evutil_socket_t fd, short what, void *arg);
 };
 
-#endif // BITCOIN_TORCONTROL_H
+#endif // KEVACOIN_TORCONTROL_H

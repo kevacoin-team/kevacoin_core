@@ -17,7 +17,7 @@ bench_bench_kevacoin_SOURCES = \
   bench/bech32.cpp \
   bench/bench.cpp \
   bench/bench.h \
-  bench/bench_bitcoin.cpp \
+  bench/bench_kevacoin.cpp \
   bench/bip324_ecdh.cpp \
   bench/block_assemble.cpp \
   bench/ccoins_caching.cpp \

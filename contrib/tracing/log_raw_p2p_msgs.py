@@ -132,15 +132,15 @@ def print_message(event, inbound):
           )
 
 
-def main(bitcoind_path):
-    bitcoind_with_usdts = USDT(path=str(bitcoind_path))
+def main(kevacoind_path):
+    kevacoind_with_usdts = USDT(path=str(kevacoind_path))
 
     # attaching the trace functions defined in the BPF program to the tracepoints
-    bitcoind_with_usdts.enable_probe(
+    kevacoind_with_usdts.enable_probe(
         probe="inbound_message", fn_name="trace_inbound_message")
-    bitcoind_with_usdts.enable_probe(
+    kevacoind_with_usdts.enable_probe(
         probe="outbound_message", fn_name="trace_outbound_message")
-    bpf = BPF(text=program, usdt_contexts=[bitcoind_with_usdts])
+    bpf = BPF(text=program, usdt_contexts=[kevacoind_with_usdts])
 
     # BCC: perf buffer handle function for inbound_messages
     def handle_inbound(_, data, size):
@@ -177,7 +177,7 @@ def main(bitcoind_path):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("USAGE:", sys.argv[0], "path/to/bitcoind")
+        print("USAGE:", sys.argv[0], "path/to/kevacoind")
         exit()
     path = sys.argv[1]
     main(path)

@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_VALIDATIONINTERFACE_H
-#define BITCOIN_VALIDATIONINTERFACE_H
+#ifndef KEVACOIN_VALIDATIONINTERFACE_H
+#define KEVACOIN_VALIDATIONINTERFACE_H
 
 #include <kernel/chain.h>
 #include <kernel/cs_main.h>
@@ -224,4 +224,4 @@ public:
     void NewPoWValidBlock(const CBlockIndex *, const std::shared_ptr<const CBlock>&);
 };
 
-#endif // BITCOIN_VALIDATIONINTERFACE_H
+#endif // KEVACOIN_VALIDATIONINTERFACE_H

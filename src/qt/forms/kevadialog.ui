@@ -50,7 +50,7 @@
                           <string>Bookmark this namespace</string>
                         </property>
                         <property name="icon">
-                          <iconset resource="../bitcoin.qrc">
+                          <iconset resource="../kevacoin.qrc">
                             <normaloff>:/icons/star_empty</normaloff>:/icons/star_empty
                           </iconset>
                         </property>
@@ -111,7 +111,7 @@
                           <string>Show</string>
                         </property>
                         <property name="icon">
-                          <iconset resource="../bitcoin.qrc">
+                          <iconset resource="../kevacoin.qrc">
                             <normaloff>:/icons/eye</normaloff>:/icons/eye</iconset>
                         </property>
                         <property name="autoDefault">
@@ -134,7 +134,7 @@
                           <string>&amp;Create namespace</string>
                         </property>
                         <property name="icon">
-                          <iconset resource="../bitcoin.qrc">
+                          <iconset resource="../kevacoin.qrc">
                             <normaloff>:/icons/add</normaloff>:/icons/add</iconset>
                         </property>
                       </widget>
@@ -154,7 +154,7 @@
                           <string>&amp;My Namespaces</string>
                         </property>
                         <property name="icon">
-                          <iconset resource="../bitcoin.qrc">
+                          <iconset resource="../kevacoin.qrc">
                             <normaloff>:/icons/editpaste</normaloff>:/icons/editpaste</iconset>
                         </property>
                       </widget>
@@ -174,7 +174,7 @@
                           <string>&amp;Bookmarks</string>
                         </property>
                         <property name="icon">
-                          <iconset resource="../bitcoin.qrc">
+                          <iconset resource="../kevacoin.qrc">
                             <normaloff>:/icons/address-book</normaloff>:/icons/address-book</iconset>
                         </property>
                       </widget>
@@ -274,7 +274,7 @@
                       <string>Show</string>
                     </property>
                     <property name="icon">
-                      <iconset resource="../bitcoin.qrc">
+                      <iconset resource="../kevacoin.qrc">
                         <normaloff>:/icons/edit</normaloff>:/icons/edit</iconset>
                     </property>
                     <property name="autoDefault">
@@ -294,7 +294,7 @@
                       <string>Remove</string>
                     </property>
                     <property name="icon">
-                      <iconset resource="../bitcoin.qrc">
+                      <iconset resource="../kevacoin.qrc">
                         <normaloff>:/icons/remove</normaloff>:/icons/remove</iconset>
                     </property>
                     <property name="autoDefault">
@@ -314,7 +314,7 @@
                       <string>Add key-value</string>
                     </property>
                     <property name="icon">
-                      <iconset resource="../bitcoin.qrc">
+                      <iconset resource="../kevacoin.qrc">
                         <normaloff>:/icons/add</normaloff>:/icons/add</iconset>
                     </property>
                     <property name="autoDefault">
@@ -346,7 +346,7 @@
     <customwidget>
       <class>BitcoinAmountField</class>
       <extends>QLineEdit</extends>
-      <header>qt/bitcoinamountfield.h</header>
+      <header>qt/kevacoinamountfield.h</header>
       <container>1</container>
     </customwidget>
   </customwidgets>
@@ -359,7 +359,7 @@
     <tabstop>removeButton</tabstop>
   </tabstops>
   <resources>
-    <include location="../bitcoin.qrc"/>
+    <include location="../kevacoin.qrc"/>
   </resources>
   <connections/>
 </ui>

@@ -7,8 +7,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 
-#ifndef H_BITCOIN_NAMES_COMMON
-#define H_BITCOIN_NAMES_COMMON
+#ifndef H_KEVACOIN_NAMES_COMMON
+#define H_KEVACOIN_NAMES_COMMON
 
 #include <compat/endian.h>
 #include <primitives/transaction.h>
@@ -447,4 +447,4 @@ public:
 
 };
 
-#endif // H_BITCOIN_NAMES_COMMON
+#endif // H_KEVACOIN_NAMES_COMMON

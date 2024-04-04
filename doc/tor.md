@@ -1,4 +1,4 @@
-# TOR SUPPORT IN BITCOIN
+# TOR SUPPORT IN KEVACOIN
 
 It is possible to run Bitcoin Core as a Tor onion service, and connect to such services.
 

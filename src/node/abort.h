@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_NODE_ABORT_H
-#define BITCOIN_NODE_ABORT_H
+#ifndef KEVACOIN_NODE_ABORT_H
+#define KEVACOIN_NODE_ABORT_H
 
 #include <atomic>
 
@@ -17,4 +17,4 @@ namespace node {
 void AbortNode(util::SignalInterrupt* shutdown, std::atomic<int>& exit_status, const bilingual_str& message);
 } // namespace node
 
-#endif // BITCOIN_NODE_ABORT_H
+#endif // KEVACOIN_NODE_ABORT_H

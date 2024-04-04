@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_TEST_UTIL_LOGGING_H
-#define BITCOIN_TEST_UTIL_LOGGING_H
+#ifndef KEVACOIN_TEST_UTIL_LOGGING_H
+#define KEVACOIN_TEST_UTIL_LOGGING_H
 
 #include <util/macros.h>
 
@@ -38,4 +38,4 @@ public:
 
 #define ASSERT_DEBUG_LOG(message) DebugLogHelper UNIQUE_NAME(debugloghelper)(message)
 
-#endif // BITCOIN_TEST_UTIL_LOGGING_H
+#endif // KEVACOIN_TEST_UTIL_LOGGING_H

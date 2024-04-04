@@ -94,7 +94,7 @@ chain for " target " development."))
 (define base-gcc gcc-12)
 (define base-linux-kernel-headers linux-libre-headers-6.1)
 
-(define* (make-bitcoin-cross-toolchain target
+(define* (make-kevacoin-cross-toolchain target
                                        #:key
                                        (base-gcc-for-libc linux-base-gcc)
                                        (base-kernel-headers base-linux-kernel-headers)
@@ -526,7 +526,7 @@ inspecting signatures in Mach-O binaries.")
            (list ;; Native GCC 12 toolchain
                  gcc-toolchain-12
                  (list gcc-toolchain-12 "static")
-                 (make-bitcoin-cross-toolchain target)))
+                 (make-kevacoin-cross-toolchain target)))
           ((string-contains target "darwin")
            (list ;; Native GCC 10 toolchain
                  gcc-toolchain-10

@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_LOGGING_H
-#define BITCOIN_LOGGING_H
+#ifndef KEVACOIN_LOGGING_H
+#define KEVACOIN_LOGGING_H
 
 #include <threadsafety.h>
 #include <tinyformat.h>
@@ -263,4 +263,4 @@ static inline void LogPrintf_(const std::string& logging_function, const std::st
 // Deprecated conditional logging
 #define LogPrint(category, ...)  LogDebug(category, __VA_ARGS__)
 
-#endif // BITCOIN_LOGGING_H
+#endif // KEVACOIN_LOGGING_H

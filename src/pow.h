@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_POW_H
-#define BITCOIN_POW_H
+#ifndef KEVACOIN_POW_H
+#define KEVACOIN_POW_H
 
 #include <consensus/params.h>
 
@@ -37,4 +37,4 @@ bool CheckProofOfWork(const CBlockHeader& block, unsigned int nBits, const Conse
  */
 bool PermittedDifficultyTransition(const Consensus::Params& params, int64_t height, uint32_t old_nbits, uint32_t new_nbits);
 
-#endif // BITCOIN_POW_H
+#endif // KEVACOIN_POW_H

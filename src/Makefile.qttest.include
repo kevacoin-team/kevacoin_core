@@ -30,7 +30,7 @@ qt_test_test_kevacoin_qt_CPPFLAGS = $(AM_CPPFLAGS) $(KEVACOIN_INCLUDES) $(KEVACO
   $(QT_INCLUDES) $(QT_TEST_INCLUDES) $(BOOST_CPPFLAGS)
 
 qt_test_test_kevacoin_qt_SOURCES = \
-  init/bitcoin-qt.cpp \
+  init/kevacoin-qt.cpp \
   qt/test/apptests.cpp \
   qt/test/optiontests.cpp \
   qt/test/rpcnestedtests.cpp \

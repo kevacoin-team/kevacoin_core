@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_UTIL_FEEFRAC_H
-#define BITCOIN_UTIL_FEEFRAC_H
+#ifndef KEVACOIN_UTIL_FEEFRAC_H
+#define KEVACOIN_UTIL_FEEFRAC_H
 
 #include <stdint.h>
 #include <compare>
@@ -157,4 +157,4 @@ std::vector<FeeFrac> BuildDiagramFromChunks(Span<const FeeFrac> chunks);
  */
 std::partial_ordering CompareFeerateDiagram(Span<const FeeFrac> dia0, Span<const FeeFrac> dia1);
 
-#endif // BITCOIN_UTIL_FEEFRAC_H
+#endif // KEVACOIN_UTIL_FEEFRAC_H

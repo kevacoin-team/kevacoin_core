@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_CRYPTO_POLY1305_H
-#define BITCOIN_CRYPTO_POLY1305_H
+#ifndef KEVACOIN_CRYPTO_POLY1305_H
+#define KEVACOIN_CRYPTO_POLY1305_H
 
 #include <span.h>
 
@@ -67,4 +67,4 @@ public:
     }
 };
 
-#endif // BITCOIN_CRYPTO_POLY1305_H
+#endif // KEVACOIN_CRYPTO_POLY1305_H
