@@ -21,6 +21,13 @@ QT_FORMS_UI = \
   qt/forms/editaddressdialog.ui \
   qt/forms/helpmessagedialog.ui \
   qt/forms/intro.ui \
+  qt/forms/kevadialog.ui \
+  qt/forms/kevadetaildialog.ui \
+  qt/forms/kevaaddkeydialog.ui \
+  qt/forms/kevabookmarksdialog.ui \
+  qt/forms/kevaeditbookmarkdialog.ui \
+  qt/forms/kevanewnamespacedialog.ui \
+  qt/forms/kevamynamespacesdialog.ui \
   qt/forms/modaloverlay.ui \
   qt/forms/openuridialog.ui \
   qt/forms/optionsdialog.ui \
@@ -53,6 +60,16 @@ QT_MOC_CPP = \
   qt/moc_guiutil.cpp \
   qt/moc_initexecutor.cpp \
   qt/moc_intro.cpp \
+  qt/moc_kevadialog.cpp \
+  qt/moc_kevatablemodel.cpp \
+  qt/moc_kevanamespacemodel.cpp \
+  qt/moc_kevabookmarksmodel.cpp \
+  qt/moc_kevadetaildialog.cpp \
+  qt/moc_kevaaddkeydialog.cpp \
+  qt/moc_kevabookmarksdialog.cpp \
+  qt/moc_kevaeditbookmarkdialog.cpp \
+  qt/moc_kevanewnamespacedialog.cpp \
+  qt/moc_kevamynamespacesdialog.cpp \
   qt/moc_macdockiconhandler.cpp \
   qt/moc_macnotificationhandler.cpp \
   qt/moc_modaloverlay.cpp \
@@ -125,6 +142,16 @@ KEVACOIN_QT_H = \
   qt/guiutil.h \
   qt/initexecutor.h \
   qt/intro.h \
+  qt/kevadialog.h \
+  qt/kevatablemodel.h \
+  qt/kevanamespacemodel.h \
+  qt/kevabookmarksmodel.h \
+  qt/kevadetaildialog.h \
+  qt/kevaaddkeydialog.h \
+  qt/kevabookmarksdialog.h \
+  qt/kevaeditbookmarkdialog.h \
+  qt/kevanewnamespacedialog.h \
+  qt/kevamynamespacesdialog.h \
   qt/macdockiconhandler.h \
   qt/macnotificationhandler.h \
   qt/macos_appnap.h \
@@ -200,6 +227,7 @@ QT_RES_ICONS = \
   qt/res/icons/hd_disabled.png \
   qt/res/icons/hd_enabled.png \
   qt/res/icons/history.png \
+  qt/res/icons/keva.png \
   qt/res/icons/lock_closed.png \
   qt/res/icons/lock_open.png \
   qt/res/icons/network_disabled.png \
@@ -256,6 +284,16 @@ KEVACOIN_QT_WALLET_CPP = \
   qt/coincontroltreewidget.cpp \
   qt/createwalletdialog.cpp \
   qt/editaddressdialog.cpp \
+  qt/kevadialog.cpp \
+  qt/kevatablemodel.cpp \
+  qt/kevanamespacemodel.cpp \
+  qt/kevabookmarksmodel.cpp \
+  qt/kevadetaildialog.cpp \
+  qt/kevaaddkeydialog.cpp \
+  qt/kevabookmarksdialog.cpp \
+  qt/kevaeditbookmarkdialog.cpp \
+  qt/kevanewnamespacedialog.cpp \
+  qt/kevamynamespacesdialog.cpp \
   qt/openuridialog.cpp \
   qt/overviewpage.cpp \
   qt/paymentserver.cpp \

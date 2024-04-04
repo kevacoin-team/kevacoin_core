@@ -20,6 +20,12 @@ enum class OutputType;
 
 class AddressTableModel;
 class ClientModel;
+class KevaTableModel;
+class KevaNamespaceModel;
+class KevaBookmarksModel;
+class KevaEntry;
+class NamespaceEntry;
+class BookmarkEntry;
 class OptionsModel;
 class PlatformStyle;
 class RecentRequestsTableModel;
@@ -61,7 +67,16 @@ public:
         AmountWithFeeExceedsBalance,
         DuplicateAddress,
         TransactionCreationFailed, // Error returned when wallet is still locked
-        AbsurdFee
+        AbsurdFee,
+        // Keva status
+        InvalidNamespace,
+        KeyTooLong,
+        NamespaceTooLong,
+        KeyNotFound,
+        ValueTooLong,
+        CannotUpdate,
+        InsufficientFund,
+        WalletLocked
     };
 
     enum EncryptionStatus
@@ -76,6 +91,9 @@ public:
     AddressTableModel* getAddressTableModel() const;
     TransactionTableModel* getTransactionTableModel() const;
     RecentRequestsTableModel* getRecentRequestsTableModel() const;
+    KevaTableModel* getKevaTableModel() const;
+    KevaNamespaceModel* getKevaNamespaceModel() const;
+    KevaBookmarksModel* getKevaBookmarksModel() const;
 
     EncryptionStatus getEncryptionStatus() const;
 
@@ -105,6 +123,13 @@ public:
     // Passphrase only needed when unlocking
     bool setWalletLocked(bool locked, const SecureString &passPhrase=SecureString());
     bool changePassphrase(const SecureString &oldPass, const SecureString &newPass);
+
+    // Keva
+    void getKevaEntries(std::vector<KevaEntry>& vKevaEntries, std::string nameSpace);
+    void getNamespaceEntries(std::vector<NamespaceEntry>& vNamespaceEntries);
+    int createNamespace(std::string displayName, std::string& namespaceId);
+    int deleteKevaEntry(std::string nameSpace, std::string key);
+    int addKeyValue(std::string& namespaceStr, std::string& keyStr, std::string& valueStr);
 
     // RAII object for unlocking wallet, returned by requestUnlock()
     class UnlockContext
@@ -177,6 +202,9 @@ private:
     AddressTableModel* addressTableModel{nullptr};
     TransactionTableModel* transactionTableModel{nullptr};
     RecentRequestsTableModel* recentRequestsTableModel{nullptr};
+    KevaTableModel *kevaTableModel;
+    KevaNamespaceModel *kevaNamespaceModel;
+    KevaBookmarksModel *kevaBookmarksModel;
 
     // Cache some values to be able to detect changes
     interfaces::WalletBalances m_cached_balances;

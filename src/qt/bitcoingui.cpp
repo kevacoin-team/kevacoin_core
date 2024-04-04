@@ -279,6 +279,13 @@ void BitcoinGUI::createActions()
     historyAction->setShortcut(QKeySequence(QStringLiteral("Alt+4")));
     tabGroup->addAction(historyAction);
 
+    kevaAction = new QAction(platformStyle->SingleColorIcon(":/icons/keva"), tr("&Keva"), this);
+    kevaAction->setStatusTip(tr("Keva related operations"));
+    kevaAction->setToolTip(kevaAction->statusTip());
+    kevaAction->setCheckable(true);
+    kevaAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
+    tabGroup->addAction(kevaAction);
+
 #ifdef ENABLE_WALLET
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
     // can be triggered from the tray menu, and need to show the GUI to be useful.
@@ -578,6 +585,7 @@ void BitcoinGUI::createToolBars()
         toolbar->addAction(sendCoinsAction);
         toolbar->addAction(receiveCoinsAction);
         toolbar->addAction(historyAction);
+        toolbar->addAction(kevaAction);
         overviewAction->setChecked(true);
 
 #ifdef ENABLE_WALLET
@@ -958,6 +966,12 @@ void BitcoinGUI::gotoHistoryPage()
 {
     historyAction->setChecked(true);
     if (walletFrame) walletFrame->gotoHistoryPage();
+}
+
+void BitcoinGUI::gotoKevaPage()
+{
+    kevaAction->setChecked(true);
+    if (walletFrame) walletFrame->gotoKevaPage();
 }
 
 void BitcoinGUI::gotoReceiveCoinsPage()
