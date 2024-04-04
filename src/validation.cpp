@@ -2541,7 +2541,7 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
     if (!control.Wait()) {
         // TODO FIX
         LogPrintf("ERROR: %s: CheckQueue failed\n", __func__);
-        // return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "block-validation-failed");
+        return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "block-validation-failed");
     }
     const auto time_4{SteadyClock::now()};
     time_verify += time_4 - time_2;
