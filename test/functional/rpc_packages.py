@@ -366,9 +366,9 @@ class RPCPackagesTest(BitcoinTestFramework):
 
         self.log.info("Submitpackage maxfeerate arg testing")
         chained_txns = self.wallet.create_self_transfer_chain(chain_length=2)
-        minrate_btc_kvb = min([chained_txn["fee"] / chained_txn["tx"].get_vsize() * 1000 for chained_txn in chained_txns])
+        minrate_kva_kvb = min([chained_txn["fee"] / chained_txn["tx"].get_vsize() * 1000 for chained_txn in chained_txns])
         chain_hex = [t["hex"] for t in chained_txns]
-        pkg_result = node.submitpackage(chain_hex, maxfeerate=minrate_btc_kvb - Decimal("0.00000001"))
+        pkg_result = node.submitpackage(chain_hex, maxfeerate=minrate_kva_kvb - Decimal("0.00000001"))
         assert_equal(pkg_result["tx-results"][chained_txns[0]["wtxid"]]["error"], "max feerate exceeded")
         assert_equal(pkg_result["tx-results"][chained_txns[1]["wtxid"]]["error"], "bad-txns-inputs-missingorspent")
         assert_equal(node.getrawmempool(), [])
@@ -382,7 +382,7 @@ class RPCPackagesTest(BitcoinTestFramework):
         assert_equal(node.getrawmempool(), [])
 
         # Relax the restrictions for both and send it; parent gets through as own subpackage
-        pkg_result = node.submitpackage(chain_hex, maxfeerate=minrate_btc_kvb, maxburnamount=chained_txns[1]["new_utxo"]["value"])
+        pkg_result = node.submitpackage(chain_hex, maxfeerate=minrate_kva_kvb, maxburnamount=chained_txns[1]["new_utxo"]["value"])
         assert "error" not in pkg_result["tx-results"][chained_txns[0]["wtxid"]]
         assert_equal(pkg_result["tx-results"][tx.getwtxid()]["error"], "scriptpubkey")
         assert_equal(node.getrawmempool(), [chained_txns[0]["txid"]])
