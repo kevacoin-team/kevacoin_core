@@ -20,7 +20,7 @@
  * for both kevacoind and kevacoin-qt, to make it harder for attackers to
  * target servers or GUI users specifically.
  */
-const std::string CLIENT_NAME("Satoshi");
+const std::string CLIENT_NAME("KevacoinCore");
 
 
 #ifdef HAVE_BUILD_INFO

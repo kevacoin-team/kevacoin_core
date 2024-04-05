@@ -3,6 +3,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include <script/keva.h>
 #include <script/script.h>
 
 #include <crypto/common.h>
@@ -187,7 +188,7 @@ unsigned int CScript::GetSigOpCount(bool fAccurate) const
 
 unsigned int CScript::GetSigOpCount(const CScript& scriptSig) const
 {
-    if (!IsPayToScriptHash())
+    if (!IsPayToScriptHash(true))
         return GetSigOpCount(true);
 
     // This is a pay-to-script-hash scriptPubKey;
@@ -209,21 +210,34 @@ unsigned int CScript::GetSigOpCount(const CScript& scriptSig) const
     return subscript.GetSigOpCount(true);
 }
 
-bool CScript::IsPayToScriptHash() const
+bool CScript::IsPayToScriptHash(bool allowKeva) const
 {
     // Extra-fast test for pay-to-script-hash CScripts:
-    return (this->size() == 23 &&
-            (*this)[0] == OP_HASH160 &&
-            (*this)[1] == 0x14 &&
-            (*this)[22] == OP_EQUAL);
+    if (!allowKeva) {
+        return (this->size() == 23 &&
+                (*this)[0] == OP_HASH160 &&
+                (*this)[1] == 0x14 &&
+                (*this)[22] == OP_EQUAL);
+    }
+
+    
+    // Strip off a keva prefix if present.
+    const CKevaScript kevaOp(*this);
+    return kevaOp.getAddress().IsPayToScriptHash(false);
 }
 
-bool CScript::IsPayToWitnessScriptHash() const
+bool CScript::IsPayToWitnessScriptHash(bool allowKeva) const
 {
     // Extra-fast test for pay-to-witness-script-hash CScripts:
-    return (this->size() == 34 &&
-            (*this)[0] == OP_0 &&
-            (*this)[1] == 0x20);
+    if (!allowKeva) {
+        return (this->size() == 34 &&
+                (*this)[0] == OP_0 &&
+                (*this)[1] == 0x20);
+    }
+    
+    // Strip off a keva prefix if present.
+    const CKevaScript kevaOp(*this);
+    return kevaOp.getAddress().IsPayToWitnessScriptHash(false);
 }
 
 // A witness program is any valid CScript that consists of a 1-byte push opcode

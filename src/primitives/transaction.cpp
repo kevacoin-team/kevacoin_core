@@ -7,6 +7,7 @@
 
 #include <consensus/amount.h>
 #include <hash.h>
+#include <script/keva.h>
 #include <script/script.h>
 #include <serialize.h>
 #include <tinyformat.h>
@@ -101,13 +102,16 @@ Wtxid CTransaction::ComputeWitnessHash() const
 CTransaction::CTransaction(const CMutableTransaction& tx) : vin(tx.vin), vout(tx.vout), nVersion(tx.nVersion), nLockTime(tx.nLockTime), m_has_witness{ComputeHasWitness()}, hash{ComputeHash()}, m_witness_hash{ComputeWitnessHash()} {}
 CTransaction::CTransaction(CMutableTransaction&& tx) : vin(std::move(tx.vin)), vout(std::move(tx.vout)), nVersion(tx.nVersion), nLockTime(tx.nLockTime), m_has_witness{ComputeHasWitness()}, hash{ComputeHash()}, m_witness_hash{ComputeWitnessHash()} {}
 
-CAmount CTransaction::GetValueOut() const
+CAmount CTransaction::GetValueOut(bool fExcludeKeva) const
 {
     CAmount nValueOut = 0;
     for (const auto& tx_out : vout) {
+        if (!fExcludeKeva || !CKevaScript::isKevaScript(tx_out.scriptPubKey)) {
+            nValueOut += tx_out.nValue;
+        }
         if (!MoneyRange(tx_out.nValue) || !MoneyRange(nValueOut + tx_out.nValue))
             throw std::runtime_error(std::string(__func__) + ": value out of range");
-        nValueOut += tx_out.nValue;
+        // nValueOut += tx_out.nValue;
     }
     assert(MoneyRange(nValueOut));
     return nValueOut;

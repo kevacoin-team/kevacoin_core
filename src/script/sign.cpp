@@ -767,7 +767,7 @@ bool IsSegWitOutput(const SigningProvider& provider, const CScript& script)
     int version;
     valtype program;
     if (script.IsWitnessProgram(version, program)) return true;
-    if (script.IsPayToScriptHash()) {
+    if (script.IsPayToScriptHash(true)) {
         std::vector<valtype> solutions;
         auto whichtype = Solver(script, solutions);
         if (whichtype == TxoutType::SCRIPTHASH) {

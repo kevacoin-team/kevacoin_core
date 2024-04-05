@@ -486,6 +486,7 @@ void CTxMemPool::addUnchecked(const CTxMemPoolEntry &entry, setEntries &setAnces
 
 void CTxMemPool::removeUnchecked(txiter it, MemPoolRemovalReason reason)
 {
+    kevaMemPool.remove (*it);
     // We increment mempool sequence value no matter removal reason
     // even if not directly reported below.
     uint64_t mempool_sequence = GetAndIncrementSequence();
@@ -624,6 +625,9 @@ void CTxMemPool::removeConflicts(const CTransaction &tx)
             }
         }
     }
+
+    /* Remove conflicting keva registrations.  */
+    kevaMemPool.removeConflicts(tx);
 }
 
 /**
@@ -1368,4 +1372,16 @@ util::Result<std::pair<std::vector<FeeFrac>, std::vector<FeeFrac>>> CTxMemPool::
     std::sort(new_chunks.begin(), new_chunks.end(), std::greater());
     std::vector<FeeFrac> new_diagram = BuildDiagramFromChunks(new_chunks);
     return std::make_pair(old_diagram, new_diagram);
+}
+
+bool CTxMemPool::getUnconfirmedKeyValue(const valtype& nameSpace, const valtype& key, valtype& value) const {
+    return kevaMemPool.getUnconfirmedKeyValue(nameSpace, key, value);
+}
+
+void CTxMemPool::getUnconfirmedNamespaceList(std::vector<std::tuple<valtype, valtype, uint256>>& nameSpaces) const {
+    return kevaMemPool.getUnconfirmedNamespaceList(nameSpaces);
+}
+
+void CTxMemPool::getUnconfirmedKeyValueList(std::vector<std::tuple<valtype, valtype, valtype, uint256>>& keyValueList, const valtype& nameSpace) {
+    kevaMemPool.getUnconfirmedKeyValueList(keyValueList, nameSpace);
 }

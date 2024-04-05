@@ -17,8 +17,7 @@
 
 const std::string CKevaData::ASSOCIATE_PREFIX = "_g:";
 
-void
-CKevaData::fromScript (unsigned h, const COutPoint& out,
+void CKevaData::fromScript (unsigned h, const COutPoint& out,
                        const CKevaScript& script)
 {
   if (script.isAnyUpdate()) {
@@ -110,8 +109,7 @@ CCacheKeyIterator::~CCacheKeyIterator()
   delete base;
 }
 
-void
-CCacheKeyIterator::advanceBaseIterator()
+void CCacheKeyIterator::advanceBaseIterator()
 {
   assert (baseHasMore);
   if (isAssociation) {
@@ -125,8 +123,7 @@ CCacheKeyIterator::advanceBaseIterator()
   }
 }
 
-void
-CCacheKeyIterator::seek(const valtype& start)
+void CCacheKeyIterator::seek(const valtype& start)
 {
   auto &entries = isAssociation ? cache.associations : cache.entries;
   cacheIter = entries.lower_bound(std::make_tuple(nameSpace, start));
@@ -195,8 +192,7 @@ bool CCacheKeyIterator::next(valtype& key, CKevaData& data)
 /* ************************************************************************** */
 /* CKevaCache.  */
 
-bool
-CKevaCache::get(const valtype& nameSpace, const valtype& key, CKevaData& data) const
+bool CKevaCache::get(const valtype& nameSpace, const valtype& key, CKevaData& data) const
 {
   const EntryMap::const_iterator i = entries.find(std::make_tuple(nameSpace, key));
   if (i == entries.end ())
@@ -206,20 +202,17 @@ CKevaCache::get(const valtype& nameSpace, const valtype& key, CKevaData& data) c
   return true;
 }
 
-bool
-CKevaCache::GetNamespace(const valtype& nameSpace, CKevaData& data) const
+bool CKevaCache::GetNamespace(const valtype& nameSpace, CKevaData& data) const
 {
   return get(nameSpace, ValtypeFromString(CKevaScript::KEVA_DISPLAY_NAME_KEY), data);
 }
 
-void
-CKevaCache::setNamespace(const valtype& nameSpace, const CKevaData& data)
+void CKevaCache::setNamespace(const valtype& nameSpace, const CKevaData& data)
 {
   set(nameSpace, ValtypeFromString(CKevaScript::KEVA_DISPLAY_NAME_KEY), data);
 }
 
-void
-CKevaCache::set(const valtype& nameSpace, const valtype& key, const CKevaData& data)
+void CKevaCache::set(const valtype& nameSpace, const valtype& key, const CKevaData& data)
 {
   auto name = std::make_tuple(nameSpace, key);
   const std::set<NamespaceKeyType>::iterator di = deleted.find(name);
@@ -234,8 +227,7 @@ CKevaCache::set(const valtype& nameSpace, const valtype& key, const CKevaData& d
     entries.insert(std::make_pair(name, data));
 }
 
-void
-CKevaCache::remove(const valtype& nameSpace, const valtype& key)
+void CKevaCache::remove(const valtype& nameSpace, const valtype& key)
 {
   auto name = std::make_tuple(nameSpace, key);
   const EntryMap::iterator ei = entries.find(name);
@@ -247,8 +239,7 @@ CKevaCache::remove(const valtype& nameSpace, const valtype& key)
 }
 
 /* If the value is an associated namespace (_A_N...), return the namespace */
-bool
-CKevaCache::getAssociateNamespaces(const valtype& value, valtype& nameSpace)
+bool CKevaCache::getAssociateNamespaces(const valtype& value, valtype& nameSpace)
 {
   std::string valueStr = ValtypeToString(value);
   if (valueStr.rfind(CKevaData::ASSOCIATE_PREFIX, 0) != 0) {
@@ -261,8 +252,7 @@ CKevaCache::getAssociateNamespaces(const valtype& value, valtype& nameSpace)
   return true;
 }
 
-void
-CKevaCache::associateNamespaces(const valtype& nameSpace, const valtype& nameSpaceOther, const CKevaData& data)
+void CKevaCache::associateNamespaces(const valtype& nameSpace, const valtype& nameSpaceOther, const CKevaData& data)
 {
   auto name = std::make_tuple(nameSpaceOther, nameSpace);
   const std::set<NamespaceKeyType>::iterator di = disassociations.find(name);
@@ -278,8 +268,7 @@ CKevaCache::associateNamespaces(const valtype& nameSpace, const valtype& nameSpa
   }
 }
 
-void
-CKevaCache::disassociateNamespaces(const valtype& nameSpace, const valtype& nameSpaceOther)
+void CKevaCache::disassociateNamespaces(const valtype& nameSpace, const valtype& nameSpaceOther)
 {
   auto name = std::make_tuple(nameSpaceOther, nameSpace);
   const NamespaceMap::iterator ei = associations.find(name);
@@ -290,20 +279,17 @@ CKevaCache::disassociateNamespaces(const valtype& nameSpace, const valtype& name
   disassociations.insert(name);
 }
 
-CKevaIterator*
-CKevaCache::iterateKeys(CKevaIterator* base) const
+CKevaIterator* CKevaCache::iterateKeys(CKevaIterator* base) const
 {
   return new CCacheKeyIterator(*this, base);
 }
 
-CKevaIterator*
-CKevaCache::IterateAssociatedNamespaces(CKevaIterator* base) const
+CKevaIterator* CKevaCache::IterateAssociatedNamespaces(CKevaIterator* base) const
 {
   return new CCacheKeyIterator(*this, base, true);
 }
 
-void
-CKevaCache::updateNamesForHeight (unsigned nHeight,
+void CKevaCache::updateNamesForHeight(unsigned nHeight,
                                   std::set<valtype>& names) const
 {
   /* Seek in the map of cached entries to the first one corresponding

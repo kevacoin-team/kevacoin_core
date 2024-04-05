@@ -9,6 +9,7 @@
 #include <consensus/amount.h>
 #include <consensus/consensus.h>
 #include <consensus/validation.h>
+#include <keva/main.h>
 #include <primitives/transaction.h>
 #include <script/interpreter.h>
 #include <util/check.h>
@@ -138,7 +139,7 @@ unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& in
         const Coin& coin = inputs.AccessCoin(tx.vin[i].prevout);
         assert(!coin.IsSpent());
         const CTxOut &prevout = coin.out;
-        if (prevout.scriptPubKey.IsPayToScriptHash())
+        if (prevout.scriptPubKey.IsPayToScriptHash(true))
             nSigOps += prevout.scriptPubKey.GetSigOpCount(tx.vin[i].scriptSig);
     }
     return nSigOps;
@@ -171,6 +172,10 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, TxValidationState& state, 
     if (!inputs.HaveInputs(tx)) {
         return state.Invalid(TxValidationResult::TX_MISSING_INPUTS, "bad-txns-inputs-missingorspent",
                          strprintf("%s: inputs missing/spent", __func__));
+    }
+
+    if (!CheckKevaTransaction (tx, nSpendHeight, inputs, state, SCRIPT_VERIFY_KEVA_MEMPOOL)) {
+        return state.Invalid(TxValidationResult::TX_UNKNOWN, "Tx invalid for Kevacoin", "Tx invalid for Kevacoin");
     }
 
     CAmount nValueIn = 0;

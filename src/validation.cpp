@@ -75,6 +75,10 @@
 #include <tuple>
 #include <utility>
 
+#if defined(NDEBUG)
+#error "Kevacoin cannot be compiled without assertions."
+#endif
+
 using kernel::CCoinsStats;
 using kernel::CoinStatsHashType;
 using kernel::ComputeUTXOStats;
@@ -831,6 +835,38 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
     // This is const, but calls into the back end CoinsViews. The CCoinsViewDB at the bottom of the
     // hierarchy brings the best block into scope. See CCoinsViewDB::GetBestBlock().
     m_view.GetBestBlock();
+
+    /* If this is a name update (or firstupdate), make sure that the
+        existing name entry (if any) is in the dummy cache.  Otherwise
+        tx validation done below (in CheckInputs) will not be correct.  */
+    for (const auto& txout : tx.vout)
+    {
+        const CKevaScript kevaOp(txout.scriptPubKey);
+        if (!kevaOp.isKevaOp()) {
+            continue;
+        }
+        if (kevaOp.isAnyUpdate()) {
+            const valtype& nameSpace = kevaOp.getOpNamespace();
+            const valtype& key = kevaOp.getOpKey();
+            CKevaData data;
+            // Make sure namespace info is in cache.
+            if (m_view.GetNamespace(nameSpace, data)) {
+                m_view.SetKeyValue(nameSpace, ValtypeFromString(CKevaScript::KEVA_DISPLAY_NAME_KEY), data, false);
+            }
+            if (m_view.GetName(nameSpace, key, data)) {
+                m_view.SetKeyValue(nameSpace, key, data, false);
+            }
+        } else if (kevaOp.isNamespaceRegistration()) {
+            const valtype& nameSpace = kevaOp.getOpNamespace();
+            const valtype& key = ValtypeFromString(CKevaScript::KEVA_DISPLAY_NAME_KEY);
+            CKevaData data;
+            if (m_view.GetName(nameSpace, key, data)) {
+                m_view.SetKeyValue(nameSpace, key, data, false);
+            }
+        } else {
+            assert(false);
+        }
+    }
 
     // we have all inputs cached now, so switch back to dummy (to protect
     // against bugs where we pull more inputs from disk that miss being added
@@ -1713,6 +1749,11 @@ MempoolAcceptResult AcceptToMemoryPool(Chainstate& active_chainstate, const CTra
                 result.m_state.GetRejectReason().c_str()
         );
     }
+
+    // if (!pool.checkKevaOps(tx)) {
+    //     return false;
+    // }
+
     // After we've (potentially) uncached entries, ensure our coins cache is still within its size limits
     BlockValidationState state_dummy;
     active_chainstate.FlushStateToDisk(state_dummy, FlushStateMode::PERIODIC);
@@ -2163,6 +2204,12 @@ DisconnectResult Chainstate::DisconnectBlock(const CBlock& block, const CBlockIn
         }
     }
 
+    // undo keva operations in reverse order
+    std::vector<CKevaTxUndo>::const_reverse_iterator kevaUndoIter;
+    for (kevaUndoIter = blockUndo.vkevaundo.rbegin(); kevaUndoIter != blockUndo.vkevaundo.rend(); ++kevaUndoIter) {
+        kevaUndoIter->apply(view);
+    }
+
     // move best block pointer to prevout block
     view.SetBestBlock(pindex->pprev->GetBlockHash());
 
@@ -2507,7 +2554,9 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
             std::vector<CScriptCheck> vChecks;
             bool fCacheResults = fJustCheck; /* Don't cache results if we're actually connecting blocks (still consult the cache, though) */
             TxValidationState tx_state;
-            if (fScriptChecks && !CheckInputScripts(tx, tx_state, view, flags, fCacheResults, fCacheResults, txsdata[i], parallel_script_checks ? &vChecks : nullptr)) {
+            bool vb = CheckInputScripts(tx, tx_state, view, flags, fCacheResults, fCacheResults, txsdata[i], parallel_script_checks ? &vChecks : nullptr);
+            if (fScriptChecks && !vb) {
+            // if (fScriptChecks && !CheckInputScripts(tx, tx_state, view, flags, fCacheResults, fCacheResults, txsdata[i], parallel_script_checks ? &vChecks : nullptr)) {
                 // Any transaction validation failure in ConnectBlock is a block consensus failure
                 state.Invalid(BlockValidationResult::BLOCK_CONSENSUS,
                               tx_state.GetRejectReason(), tx_state.GetDebugMessage());
@@ -2523,6 +2572,10 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
             blockundo.vtxundo.emplace_back();
         }
         UpdateCoins(tx, view, i == 0 ? undoDummy : blockundo.vtxundo.back(), pindex->nHeight);
+
+        // TODO: Fix This
+        // CKevaNotifier kevaNotifier(&GetMainSignals());
+        // ApplyKevaTransaction(tx, *pindex, view, blockundo, kevaNotifier);
     }
     const auto time_3{SteadyClock::now()};
     time_connect += time_3 - time_2;

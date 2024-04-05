@@ -194,7 +194,6 @@ public:
 
 };
 
-#if 0
 /* ************************************************************************** */
 /* CNameConflictTracker.  */
 
@@ -224,7 +223,6 @@ public:
   void AddConflictedEntry (CTransactionRef txRemoved);
 
 };
-#endif
 
 /**
  * Notify Keva transactions. This is for ZMQ notification.

@@ -14,11 +14,11 @@ BOOST_AUTO_TEST_CASE(IsPayToWitnessScriptHash_Valid)
     uint256 dummy;
     CScript p2wsh;
     p2wsh << OP_0 << ToByteVector(dummy);
-    BOOST_CHECK(p2wsh.IsPayToWitnessScriptHash());
+    BOOST_CHECK(p2wsh.IsPayToWitnessScriptHash(true));
 
     std::vector<unsigned char> bytes = {OP_0, 32};
     bytes.insert(bytes.end(), 32, 0);
-    BOOST_CHECK(CScript(bytes.begin(), bytes.end()).IsPayToWitnessScriptHash());
+    BOOST_CHECK(CScript(bytes.begin(), bytes.end()).IsPayToWitnessScriptHash(true));
 }
 
 BOOST_AUTO_TEST_CASE(IsPayToWitnessScriptHash_Invalid_NotOp0)
@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE(IsPayToWitnessScriptHash_Invalid_NotOp0)
     uint256 dummy;
     CScript notp2wsh;
     notp2wsh << OP_1 << ToByteVector(dummy);
-    BOOST_CHECK(!notp2wsh.IsPayToWitnessScriptHash());
+    BOOST_CHECK(!notp2wsh.IsPayToWitnessScriptHash(true));
 }
 
 BOOST_AUTO_TEST_CASE(IsPayToWitnessScriptHash_Invalid_Size)
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(IsPayToWitnessScriptHash_Invalid_Size)
     uint160 dummy;
     CScript notp2wsh;
     notp2wsh << OP_0 << ToByteVector(dummy);
-    BOOST_CHECK(!notp2wsh.IsPayToWitnessScriptHash());
+    BOOST_CHECK(!notp2wsh.IsPayToWitnessScriptHash(true));
 }
 
 BOOST_AUTO_TEST_CASE(IsPayToWitnessScriptHash_Invalid_Nop)
@@ -42,13 +42,13 @@ BOOST_AUTO_TEST_CASE(IsPayToWitnessScriptHash_Invalid_Nop)
     uint256 dummy;
     CScript notp2wsh;
     notp2wsh << OP_0 << OP_NOP << ToByteVector(dummy);
-    BOOST_CHECK(!notp2wsh.IsPayToWitnessScriptHash());
+    BOOST_CHECK(!notp2wsh.IsPayToWitnessScriptHash(true));
 }
 
 BOOST_AUTO_TEST_CASE(IsPayToWitnessScriptHash_Invalid_EmptyScript)
 {
     CScript notp2wsh;
-    BOOST_CHECK(!notp2wsh.IsPayToWitnessScriptHash());
+    BOOST_CHECK(!notp2wsh.IsPayToWitnessScriptHash(true));
 }
 
 BOOST_AUTO_TEST_CASE(IsPayToWitnessScriptHash_Invalid_Pushdata)
@@ -56,15 +56,15 @@ BOOST_AUTO_TEST_CASE(IsPayToWitnessScriptHash_Invalid_Pushdata)
     // A script is not P2WSH if OP_PUSHDATA is used to push the hash.
     std::vector<unsigned char> bytes = {OP_0, OP_PUSHDATA1, 32};
     bytes.insert(bytes.end(), 32, 0);
-    BOOST_CHECK(!CScript(bytes.begin(), bytes.end()).IsPayToWitnessScriptHash());
+    BOOST_CHECK(!CScript(bytes.begin(), bytes.end()).IsPayToWitnessScriptHash(true));
 
     bytes = {OP_0, OP_PUSHDATA2, 32, 0};
     bytes.insert(bytes.end(), 32, 0);
-    BOOST_CHECK(!CScript(bytes.begin(), bytes.end()).IsPayToWitnessScriptHash());
+    BOOST_CHECK(!CScript(bytes.begin(), bytes.end()).IsPayToWitnessScriptHash(true));
 
     bytes = {OP_0, OP_PUSHDATA4, 32, 0, 0, 0};
     bytes.insert(bytes.end(), 32, 0);
-    BOOST_CHECK(!CScript(bytes.begin(), bytes.end()).IsPayToWitnessScriptHash());
+    BOOST_CHECK(!CScript(bytes.begin(), bytes.end()).IsPayToWitnessScriptHash(true));
 }
 
 namespace {

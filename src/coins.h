@@ -9,6 +9,7 @@
 #include <compressor.h>
 #include <core_memusage.h>
 #include <memusage.h>
+#include <keva/common.h>
 #include <primitives/transaction.h>
 #include <serialize.h>
 #include <support/allocators/pool.h>
@@ -171,6 +172,10 @@ private:
 /** Abstract view on the open txout dataset. */
 class CCoinsView
 {
+protected:
+    /** Name changes cache.  */
+    CKevaCache cacheNames;
+
 public:
     /** Retrieve the Coin (unspent transaction output) for a given outpoint.
      *  Returns true only when an unspent coin was found, which is returned in coin.
@@ -190,12 +195,30 @@ public:
     //! the old block hash, in that order.
     virtual std::vector<uint256> GetHeadBlocks() const;
 
+    // Check if a namespace exists.
+    virtual bool GetNamespace(const valtype& nameSpace, CKevaData& data) const;
+
+    // Get a name (if it exists)
+    virtual bool GetName(const valtype& nameSpace, const valtype& key, CKevaData& data) const;
+
+    // Query for names that were updated at the given height
+    virtual bool GetNamesForHeight(unsigned nHeight, std::set<valtype>& names) const;
+
+    // Get a key iterator.
+    virtual CKevaIterator* IterateKeys(const valtype& nameSpace) const;
+
+    // Get the associated namespace iterator.
+    virtual CKevaIterator* IterateAssociatedNamespaces(const valtype& nameSpace) const;
+
     //! Do a bulk modification (multiple Coin changes + BestBlock change).
     //! The passed mapCoins can be modified.
-    virtual bool BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock, bool erase = true);
+    virtual bool BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock, const CKevaCache &names, bool erase = true);
 
     //! Get a cursor to iterate over the whole state
     virtual std::unique_ptr<CCoinsViewCursor> Cursor() const;
+
+    // Validate the name database.
+    virtual bool ValidateKevaDB() const;
 
     //! As we use CCoinsViews polymorphically, have a virtual destructor
     virtual ~CCoinsView() {}
@@ -217,8 +240,13 @@ public:
     bool HaveCoin(const COutPoint &outpoint) const override;
     uint256 GetBestBlock() const override;
     std::vector<uint256> GetHeadBlocks() const override;
+    bool GetNamespace(const valtype& nameSpace, CKevaData& data) const override;
+    bool GetName(const valtype& nameSpace, const valtype& key, CKevaData& data) const override;
+    bool GetNamesForHeight(unsigned nHeight, std::set<valtype>& names) const override;
+    CKevaIterator* IterateKeys(const valtype& nameSpace) const override;
+    virtual CKevaIterator* IterateAssociatedNamespaces(const valtype& nameSpace) const override;
     void SetBackend(CCoinsView &viewIn);
-    bool BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock, bool erase = true) override;
+    bool BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock, const CKevaCache &names, bool erase = true) override;
     std::unique_ptr<CCoinsViewCursor> Cursor() const override;
     size_t EstimateSize() const override;
 };
@@ -255,10 +283,19 @@ public:
     bool HaveCoin(const COutPoint &outpoint) const override;
     uint256 GetBestBlock() const override;
     void SetBestBlock(const uint256 &hashBlock);
-    bool BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock, bool erase = true) override;
+    bool GetNamespace(const valtype &nameSpace, CKevaData& data) const override;
+    bool GetName(const valtype &nameSpace, const valtype &key, CKevaData& data) const override;
+    bool GetNamesForHeight(unsigned nHeight, std::set<valtype>& names) const override;
+    CKevaIterator* IterateKeys(const valtype& nameSpace) const override;
+    virtual CKevaIterator* IterateAssociatedNamespaces(const valtype& nameSpace) const override;
+    bool BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock, const CKevaCache &names, bool erase = true) override;
     std::unique_ptr<CCoinsViewCursor> Cursor() const override {
         throw std::logic_error("CCoinsViewCache cursor iteration not supported.");
     }
+
+    /* Changes to the name database.  */
+    void SetKeyValue(const valtype &nameSpace, const valtype &key, const CKevaData &data, bool undo);
+    void DeleteKey(const valtype &nameSpace, const valtype &key);
 
     /**
      * Check if we have the given utxo already loaded in this cache.

@@ -376,6 +376,9 @@ KEVACOIN_CORE_H = \
   zmq/zmqrpc.h \
   zmq/zmqutil.h
 
+KEVACOIN_CORE_H += \
+  keva/main.h \
+  keva/common.h
 
 obj/build.h: FORCE
 	@$(MKDIR_P) $(builddir)/obj
@@ -477,6 +480,7 @@ libkevacoin_node_a_SOURCES = \
   validation.cpp \
   validationinterface.cpp \
   versionbits.cpp \
+  keva/main.cpp \
   $(KEVACOIN_CORE_H)
 
 if ENABLE_WALLET
@@ -647,8 +651,6 @@ libkevacoin_consensus_a_SOURCES = \
   consensus/validation.h \
   hash.cpp \
   hash.h \
-  keva/main.cpp \
-  keva/main.h \
   prevector.h \
   primitives/block.cpp \
   primitives/block.h \
@@ -722,6 +724,7 @@ libkevacoin_common_a_SOURCES = \
   script/signingprovider.cpp \
   script/solver.cpp \
   warnings.cpp \
+  keva/common.cpp \
   $(KEVACOIN_CORE_H)
 
 if USE_LIBEVENT

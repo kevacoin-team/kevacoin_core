@@ -345,7 +345,7 @@ public:
     const Wtxid& GetWitnessHash() const LIFETIMEBOUND { return m_witness_hash; };
 
     // Return sum of txouts.
-    CAmount GetValueOut() const;
+    CAmount GetValueOut(bool fExcludeKeva = false) const;
 
     /**
      * Get the total transaction size in bytes, including witness data.

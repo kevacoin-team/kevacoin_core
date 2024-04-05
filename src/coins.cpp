@@ -4,6 +4,8 @@
 
 #include <coins.h>
 
+#include <keva/common.h>
+
 #include <consensus/consensus.h>
 #include <logging.h>
 #include <random.h>
@@ -12,8 +14,18 @@
 bool CCoinsView::GetCoin(const COutPoint &outpoint, Coin &coin) const { return false; }
 uint256 CCoinsView::GetBestBlock() const { return uint256(); }
 std::vector<uint256> CCoinsView::GetHeadBlocks() const { return std::vector<uint256>(); }
-bool CCoinsView::BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock, bool erase) { return false; }
+bool CCoinsView::GetNamespace(const valtype &nameSpace, CKevaData &data) const { return false; }
+bool CCoinsView::GetName(const valtype &nameSpace, const valtype &key, CKevaData &data) const { return false; }
+bool CCoinsView::GetNamesForHeight(unsigned nHeight, std::set<valtype>& names) const { return false; }
+CKevaIterator* CCoinsView::IterateKeys(const valtype& nameSpace) const { assert (false); }
+CKevaIterator* CCoinsView::IterateAssociatedNamespaces(const valtype& nameSpace) const { assert (false); }
+bool CCoinsView::BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock, const CKevaCache &names, bool erase) { return false; }
 std::unique_ptr<CCoinsViewCursor> CCoinsView::Cursor() const { return nullptr; }
+bool CCoinsView::ValidateKevaDB() const {
+    // TODO: return false, and implement it in txdb.cpp.
+    // Need to figure out what to check.
+    return true;
+}
 
 bool CCoinsView::HaveCoin(const COutPoint &outpoint) const
 {
@@ -26,8 +38,19 @@ bool CCoinsViewBacked::GetCoin(const COutPoint &outpoint, Coin &coin) const { re
 bool CCoinsViewBacked::HaveCoin(const COutPoint &outpoint) const { return base->HaveCoin(outpoint); }
 uint256 CCoinsViewBacked::GetBestBlock() const { return base->GetBestBlock(); }
 std::vector<uint256> CCoinsViewBacked::GetHeadBlocks() const { return base->GetHeadBlocks(); }
+bool CCoinsViewBacked::GetNamespace(const valtype &nameSpace, CKevaData &data) const {
+    return base->GetNamespace(nameSpace, data);
+}
+bool CCoinsViewBacked::GetName(const valtype &nameSpace, const valtype &key, CKevaData &data) const {
+    return base->GetName(nameSpace, key, data);
+}
+bool CCoinsViewBacked::GetNamesForHeight(unsigned nHeight, std::set<valtype>& names) const {
+    return base->GetNamesForHeight(nHeight, names);
+}
+CKevaIterator* CCoinsViewBacked::IterateKeys(const valtype& nameSpace) const { return base->IterateKeys(nameSpace); }
+CKevaIterator* CCoinsViewBacked::IterateAssociatedNamespaces(const valtype& nameSpace) const { return base->IterateAssociatedNamespaces(nameSpace); }
 void CCoinsViewBacked::SetBackend(CCoinsView &viewIn) { base = &viewIn; }
-bool CCoinsViewBacked::BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock, bool erase) { return base->BatchWrite(mapCoins, hashBlock, erase); }
+bool CCoinsViewBacked::BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock, const CKevaCache &names, bool erase) { return base->BatchWrite(mapCoins, hashBlock, names, erase); }
 std::unique_ptr<CCoinsViewCursor> CCoinsViewBacked::Cursor() const { return base->Cursor(); }
 size_t CCoinsViewBacked::EstimateSize() const { return base->EstimateSize(); }
 
@@ -178,7 +201,86 @@ void CCoinsViewCache::SetBestBlock(const uint256 &hashBlockIn) {
     hashBlock = hashBlockIn;
 }
 
-bool CCoinsViewCache::BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlockIn, bool erase) {
+bool CCoinsViewCache::GetNamespace(const valtype &nameSpace, CKevaData &data) const {
+    if (cacheNames.GetNamespace(nameSpace, data)) {
+        return true;
+    }
+    return base->GetNamespace(nameSpace, data);
+}
+
+bool CCoinsViewCache::GetName(const valtype &nameSpace, const valtype &key, CKevaData &data) const {
+    if (cacheNames.isDeleted(nameSpace, key))
+        return false;
+    if (cacheNames.get(nameSpace, key, data))
+        return true;
+
+    /* Note: This does not attempt to cache name queries.  The cache
+       only keeps track of changes!  */
+
+    return base->GetName(nameSpace, key, data);
+}
+
+bool CCoinsViewCache::GetNamesForHeight(unsigned nHeight, std::set<valtype>& names) const {
+    /* Query the base view first, and then apply the cached changes (if
+       there are any).  */
+
+    if (!base->GetNamesForHeight(nHeight, names))
+        return false;
+
+    cacheNames.updateNamesForHeight(nHeight, names);
+    return true;
+}
+
+CKevaIterator* CCoinsViewCache::IterateKeys(const valtype& nameSpace) const {
+    return cacheNames.iterateKeys(base->IterateKeys(nameSpace));
+}
+
+CKevaIterator* CCoinsViewCache::IterateAssociatedNamespaces(const valtype& nameSpace) const {
+    return cacheNames.IterateAssociatedNamespaces(base->IterateAssociatedNamespaces(nameSpace));
+}
+
+/* undo is set if the change is due to disconnecting blocks / going back in
+   time.  The ordinary case (!undo) means that we update the name normally,
+   going forward in time.  This is important for keeping track of the
+   name history.  */
+void CCoinsViewCache::SetKeyValue(const valtype &nameSpace, const valtype &key, const CKevaData& data, bool undo)
+{
+    cacheNames.set(nameSpace, key, data);
+
+    // Handle namespace association.
+    valtype associdateNamespace;
+    if (!cacheNames.getAssociateNamespaces(key, associdateNamespace)) {
+        return;
+    }
+
+    CKevaData dummyData;
+    if (!GetNamespace(associdateNamespace, dummyData)) {
+        return;
+    }
+    cacheNames.associateNamespaces(nameSpace, associdateNamespace, data);
+}
+
+void CCoinsViewCache::DeleteKey(const valtype &nameSpace, const valtype &key) {
+    CKevaData oldData;
+    if (!GetName(nameSpace, key, oldData)) {
+        assert(false);
+    }
+    cacheNames.remove(nameSpace, key);
+
+    // Handle namespace association.
+    valtype associdateNamespace;
+    if (!cacheNames.getAssociateNamespaces(key, associdateNamespace)) {
+        return;
+    }
+
+    CKevaData dummyData;
+    if (!GetNamespace(associdateNamespace, dummyData)) {
+        return;
+    }
+    cacheNames.disassociateNamespaces(nameSpace, associdateNamespace);
+}
+
+bool CCoinsViewCache::BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlockIn, const CKevaCache &names, bool erase) {
     for (CCoinsMap::iterator it = mapCoins.begin();
             it != mapCoins.end();
             it = erase ? mapCoins.erase(it) : std::next(it)) {
@@ -251,7 +353,7 @@ bool CCoinsViewCache::BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlockIn
 }
 
 bool CCoinsViewCache::Flush() {
-    bool fOk = base->BatchWrite(cacheCoins, hashBlock, /*erase=*/true);
+    bool fOk = base->BatchWrite(cacheCoins, hashBlock, cacheNames, /*erase=*/true);
     if (fOk) {
         if (!cacheCoins.empty()) {
             /* BatchWrite must erase all cacheCoins elements when erase=true. */
@@ -265,7 +367,7 @@ bool CCoinsViewCache::Flush() {
 
 bool CCoinsViewCache::Sync()
 {
-    bool fOk = base->BatchWrite(cacheCoins, hashBlock, /*erase=*/false);
+    bool fOk = base->BatchWrite(cacheCoins, hashBlock, cacheNames, /*erase=*/false);
     // Instead of clearing `cacheCoins` as we would in Flush(), just clear the
     // FRESH/DIRTY flags of any coin that isn't spent.
     for (auto it = cacheCoins.begin(); it != cacheCoins.end(); ) {

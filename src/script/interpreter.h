@@ -149,6 +149,10 @@ enum : uint32_t {
     // Making sure the Keva namespace is properly derived,
     SCRIPT_VERIFY_KEVA_NAMESPACE = (1U << 21),
 
+    // Perform namespace/key checks in "mempool" mode.  This allows / disallows
+    // certain stuff.
+    SCRIPT_VERIFY_KEVA_MEMPOOL = (1U << 24),
+
     // Constants to point to the highest flag in use. Add new flags above this line.
     //
     SCRIPT_VERIFY_END_MARKER

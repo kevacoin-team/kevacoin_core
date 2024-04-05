@@ -76,8 +76,7 @@ CKevaScript::CKevaScript(const CScript& script)
     address = CScript(pc, script.end());
 }
 
-CScript
-CKevaScript::buildKevaPut(const CScript& addr, const valtype& nameSpace,
+CScript CKevaScript::buildKevaPut(const CScript& addr, const valtype& nameSpace,
                           const valtype& key, const valtype& value)
 {
     CScript prefix;
@@ -86,8 +85,7 @@ CKevaScript::buildKevaPut(const CScript& addr, const valtype& nameSpace,
     return prefix + addr;
 }
 
-CScript
-CKevaScript::buildKevaDelete(const CScript& addr, const valtype& nameSpace, const valtype& key)
+CScript CKevaScript::buildKevaDelete(const CScript& addr, const valtype& nameSpace, const valtype& key)
 {
     CScript prefix;
     prefix << OP_KEVA_DELETE << nameSpace << key << OP_2DROP;

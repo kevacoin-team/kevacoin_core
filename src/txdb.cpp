@@ -5,11 +5,13 @@
 
 #include <txdb.h>
 
+#include <keva/common.h>
 #include <coins.h>
 #include <dbwrapper.h>
 #include <logging.h>
 #include <primitives/transaction.h>
 #include <random.h>
+#include <script/keva.h>
 #include <serialize.h>
 #include <uint256.h>
 #include <util/vector.h>
@@ -24,6 +26,8 @@ static constexpr uint8_t DB_BEST_BLOCK{'B'};
 static constexpr uint8_t DB_HEAD_BLOCKS{'H'};
 // Keys used in previous version that might still be found in the DB:
 static constexpr uint8_t DB_COINS{'c'};
+static constexpr uint8_t DB_NAME{'n'};
+static constexpr uint8_t DB_NS_ASSOC{'a'};
 
 bool CCoinsViewDB::NeedsUpgrade()
 {
@@ -88,7 +92,94 @@ std::vector<uint256> CCoinsViewDB::GetHeadBlocks() const {
     return vhashHeadBlocks;
 }
 
-bool CCoinsViewDB::BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock, bool erase) {
+class CDbKeyIterator : public CKevaIterator
+{
+
+private:
+
+    /* The backing LevelDB iterator.  */
+    CDBIterator* iter;
+
+    /* This iterator is for namespace association search. */
+    bool isAssociation;
+
+public:
+
+    ~CDbKeyIterator();
+
+    /**
+     * Construct a new name iterator for the database.
+     * @param db The database to create the iterator for.
+     */
+    CDbKeyIterator(const CDBWrapper& db, const valtype& nameSpace, bool association=false);
+
+    /* Implement iterator methods.  */
+    void seek(const valtype& start);
+    bool next(valtype& key, CKevaData& data);
+
+};
+
+CDbKeyIterator::~CDbKeyIterator() {
+    delete iter;
+}
+
+CDbKeyIterator::CDbKeyIterator(const CDBWrapper& db, const valtype& ns, bool association)
+    : CKevaIterator(ns), iter(const_cast<CDBWrapper*>(&db)->NewIterator()), isAssociation(association)
+{
+    seek(valtype());
+}
+
+void CDbKeyIterator::seek(const valtype& start) {
+    auto &prefix = isAssociation ? DB_NS_ASSOC : DB_NAME;
+    iter->Seek(std::make_pair(prefix, std::make_pair(nameSpace, start)));
+}
+
+bool CDbKeyIterator::next(valtype& key, CKevaData& data) {
+    if (!iter->Valid())
+        return false;
+
+    auto &prefix = isAssociation ? DB_NS_ASSOC : DB_NAME;
+    std::pair<int8_t, std::pair<valtype, valtype>> curKey;
+    if (!iter->GetKey(curKey) || curKey.first != prefix)
+        return false;
+
+    valtype curNameSpace = std::get<0>(curKey.second);
+    if (curNameSpace != nameSpace) {
+        return false;
+    }
+    key = std::get<1>(curKey.second);
+
+    if (!iter->GetValue(data)) {
+        LogError("%s : failed to read data from iterator", __func__);
+        return false;
+    }
+
+    iter->Next();
+    return true;
+}
+
+CKevaIterator* CCoinsViewDB::IterateKeys(const valtype& nameSpace) const {
+    
+    return new CDbKeyIterator(*m_db, nameSpace);
+}
+
+CKevaIterator* CCoinsViewDB::IterateAssociatedNamespaces(const valtype& nameSpace) const {
+    return new CDbKeyIterator(*m_db, nameSpace, true);
+}
+
+bool CCoinsViewDB::GetNamespace(const valtype &nameSpace, CKevaData &data) const {
+    return m_db->Read(std::make_pair(DB_NAME, std::make_pair(nameSpace, CKevaScript::KEVA_DISPLAY_NAME_KEY)), data);
+}
+
+bool CCoinsViewDB::GetName(const valtype &nameSpace, const valtype &key, CKevaData &data) const {
+    return m_db->Read(std::make_pair(DB_NAME, std::make_pair(nameSpace, key)), data);
+}
+
+bool CCoinsViewDB::GetNamesForHeight(unsigned nHeight, std::set<valtype>& names) const {
+    return false;
+}
+
+bool CCoinsViewDB::BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock, const CKevaCache &names, bool erase) {
     CDBBatch batch(*m_db);
     size_t count = 0;
     size_t changed = 0;
@@ -138,6 +229,8 @@ bool CCoinsViewDB::BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock, boo
             }
         }
     }
+
+    names.writeBatch(batch);
 
     // In the last batch, mark the database as consistent with hashBlock again.
     batch.Erase(DB_HEAD_BLOCKS);
@@ -214,6 +307,29 @@ bool CCoinsViewDBCursor::GetValue(Coin &coin) const
 bool CCoinsViewDBCursor::Valid() const
 {
     return keyTmp.first == DB_COIN;
+}
+
+void CKevaCache::writeBatch (CDBBatch& batch) const
+{
+  for (EntryMap::const_iterator i = entries.begin(); i != entries.end(); ++i) {
+    std::pair<valtype, valtype> name = std::make_pair(std::get<0>(i->first), std::get<1>(i->first));
+    batch.Write(std::make_pair(DB_NAME, name), i->second);
+  }
+
+  for (NamespaceMap::const_iterator i = associations.begin(); i != associations.end(); ++i) {
+    std::pair<valtype, valtype> name = std::make_pair(std::get<0>(i->first), std::get<1>(i->first));
+    batch.Write(std::make_pair(DB_NS_ASSOC, name), i->second);
+  }
+
+  for (std::set<NamespaceKeyType>::const_iterator i = deleted.begin(); i != deleted.end(); ++i) {
+    std::pair<valtype, valtype> name = std::make_pair(std::get<0>(*i), std::get<1>(*i));
+    batch.Erase(std::make_pair(DB_NAME, name));
+  }
+
+  for (std::set<NamespaceKeyType>::const_iterator i = disassociations.begin(); i != disassociations.end(); ++i) {
+    std::pair<valtype, valtype> name = std::make_pair(std::get<0>(*i), std::get<1>(*i));
+    batch.Erase(std::make_pair(DB_NS_ASSOC, name));
+  }
 }
 
 void CCoinsViewDBCursor::Next()

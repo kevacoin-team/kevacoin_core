@@ -9,6 +9,7 @@
 #include <coins.h>
 #include <compressor.h>
 #include <consensus/consensus.h>
+#include <keva/main.h>
 #include <primitives/transaction.h>
 #include <serialize.h>
 
@@ -64,7 +65,17 @@ class CBlockUndo
 public:
     std::vector<CTxUndo> vtxundo; // for all but the coinbase
 
-    SERIALIZE_METHODS(CBlockUndo, obj) { READWRITE(obj.vtxundo); }
+    // SERIALIZE_METHODS(CBlockUndo, obj) { READWRITE(obj.vtxundo); }
+    /** Stack of operations done to the keva database.  */
+    std::vector<CKevaTxUndo> vkevaundo;
+
+    ADD_SERIALIZE_METHODS;
+
+    template <typename Stream, typename Operation>
+    inline void SerializationOp(Stream& s, Operation ser_action) {
+        READWRITE(vtxundo);
+        READWRITE(vkevaundo);
+    }
 };
 
 #endif // KEVACOIN_UNDO_H

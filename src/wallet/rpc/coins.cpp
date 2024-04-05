@@ -672,14 +672,14 @@ RPCHelpMan listunspent()
 
             std::unique_ptr<SigningProvider> provider = pwallet->GetSolvingProvider(scriptPubKey);
             if (provider) {
-                if (scriptPubKey.IsPayToScriptHash()) {
+                if (scriptPubKey.IsPayToScriptHash(true)) {
                     const CScriptID hash = ToScriptID(std::get<ScriptHash>(address));
                     CScript redeemScript;
                     if (provider->GetCScript(hash, redeemScript)) {
                         entry.pushKV("redeemScript", HexStr(redeemScript));
                         // Now check if the redeemScript is actually a P2WSH script
                         CTxDestination witness_destination;
-                        if (redeemScript.IsPayToWitnessScriptHash()) {
+                        if (redeemScript.IsPayToWitnessScriptHash(true)) {
                             bool extracted = ExtractDestination(redeemScript, witness_destination);
                             CHECK_NONFATAL(extracted);
                             // Also return the witness script
@@ -691,7 +691,7 @@ RPCHelpMan listunspent()
                             }
                         }
                     }
-                } else if (scriptPubKey.IsPayToWitnessScriptHash()) {
+                } else if (scriptPubKey.IsPayToWitnessScriptHash(true)) {
                     const WitnessV0ScriptHash& whash = std::get<WitnessV0ScriptHash>(address);
                     CScriptID id{RIPEMD160(whash)};
                     CScript witnessScript;

@@ -250,3 +250,15 @@ void ValidationSignals::NewPoWValidBlock(const CBlockIndex *pindex, const std::s
     LOG_EVENT("%s: block hash=%s", __func__, block->GetHash().ToString());
     m_internals->Iterate([&](CValidationInterface& callbacks) { callbacks.NewPoWValidBlock(pindex, block); });
 }
+
+void ValidationSignals::KevaNamespaceCreated(const CTransactionRef &ptx, const CBlockIndex &pindex, const std::string& nameSpace) {
+    m_internals->Iterate([&](CValidationInterface& callbacks) { callbacks.KevaNamespaceCreated(ptx, pindex, nameSpace); });
+}
+
+void ValidationSignals::KevaUpdated(const CTransactionRef &ptx, const CBlockIndex &pindex, const std::string& nameSpace, const std::string& key, const std::string& value) {
+    m_internals->Iterate([&](CValidationInterface& callbacks) { callbacks.KevaUpdated(ptx, pindex, nameSpace, key, value); });
+}
+
+void ValidationSignals::KevaDeleted(const CTransactionRef &ptx, const CBlockIndex &pindex, const std::string& nameSpace, const std::string& key) {
+    m_internals->Iterate([&](CValidationInterface& callbacks) { callbacks.KevaDeleted(ptx, pindex, nameSpace, key); });
+}

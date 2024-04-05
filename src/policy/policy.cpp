@@ -93,7 +93,7 @@ bool IsStandard(const CScript& scriptPubKey, const std::optional<unsigned>& max_
 
 bool IsStandardTx(const CTransaction& tx, const std::optional<unsigned>& max_datacarrier_bytes, bool permit_bare_multisig, const CFeeRate& dust_relay_fee, std::string& reason)
 {
-    if (tx.nVersion > TX_MAX_STANDARD_VERSION || tx.nVersion < 1) {
+    if (!tx.IsKevacoin() && (tx.nVersion > TX_MAX_STANDARD_VERSION || tx.nVersion < 1)) {
         reason = "version";
         return false;
     }
@@ -226,7 +226,7 @@ bool IsWitnessStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
         CScript prevScript = prev.scriptPubKey;
 
         bool p2sh = false;
-        if (prevScript.IsPayToScriptHash()) {
+        if (prevScript.IsPayToScriptHash(true)) {
             std::vector <std::vector<unsigned char> > stack;
             // If the scriptPubKey is P2SH, we try to extract the redeemScript casually by converting the scriptSig
             // into a stack. We do not check IsPushOnly nor compare the hash as these will be done later anyway.

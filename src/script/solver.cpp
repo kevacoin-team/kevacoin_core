@@ -5,6 +5,7 @@
 
 #include <pubkey.h>
 #include <script/interpreter.h>
+#include <script/keva.h>
 #include <script/script.h>
 #include <script/solver.h>
 #include <span.h>
@@ -141,9 +142,13 @@ TxoutType Solver(const CScript& scriptPubKey, std::vector<std::vector<unsigned c
 {
     vSolutionsRet.clear();
 
+    // If we have a keva script, strip the prefix
+    const CKevaScript kevaOp(scriptPubKey);
+    const CScript& script1 = kevaOp.getAddress();
+
     // Shortcut for pay-to-script-hash, which are more constrained than the other types:
     // it is always OP_HASH160 20 [20 byte hash] OP_EQUAL
-    if (scriptPubKey.IsPayToScriptHash())
+    if (scriptPubKey.IsPayToScriptHash(true))
     {
         std::vector<unsigned char> hashBytes(scriptPubKey.begin()+2, scriptPubKey.begin()+22);
         vSolutionsRet.push_back(hashBytes);

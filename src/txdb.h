@@ -6,6 +6,7 @@
 #ifndef KEVACOIN_TXDB_H
 #define KEVACOIN_TXDB_H
 
+#include <keva/common.h>
 #include <coins.h>
 #include <dbwrapper.h>
 #include <kernel/cs_main.h>
@@ -63,7 +64,12 @@ public:
     bool HaveCoin(const COutPoint &outpoint) const override;
     uint256 GetBestBlock() const override;
     std::vector<uint256> GetHeadBlocks() const override;
-    bool BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock, bool erase = true) override;
+    bool GetNamespace(const valtype &nameSpace, CKevaData &data) const override;
+    bool GetName(const valtype &nameSpace, const valtype &key, CKevaData &data) const override;
+    bool GetNamesForHeight(unsigned nHeight, std::set<valtype>& names) const override;
+    CKevaIterator* IterateKeys(const valtype& nameSpace) const override;
+    CKevaIterator* IterateAssociatedNamespaces(const valtype& nameSpace) const override;
+    bool BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock, const CKevaCache &names,bool erase = true) override;
     std::unique_ptr<CCoinsViewCursor> Cursor() const override;
 
     //! Whether an unsupported database format is used.

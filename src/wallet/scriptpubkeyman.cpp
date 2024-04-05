@@ -1700,7 +1700,7 @@ std::unordered_set<CScript, SaltedSipHasher> LegacyScriptPubKeyMan::GetScriptPub
         const CScript& script = script_pair.second;
         if (IsMine(script) == ISMINE_SPENDABLE) {
             // Add ScriptHash for scripts that are not already P2SH
-            if (!script.IsPayToScriptHash()) {
+            if (!script.IsPayToScriptHash(true)) {
                 spks.insert(GetScriptForDestination(ScriptHash(script)));
             }
             // For segwit scripts, we only consider them spendable if we have the segwit spk

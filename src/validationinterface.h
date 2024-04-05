@@ -148,6 +148,26 @@ protected:
      * callback was generated (not necessarily now).
      */
     virtual void BlockChecked(const CBlock&, const BlockValidationState&) {}
+    
+    
+    /**
+     * Keva related interface.
+     * Notifies listeners of a new namespace.
+     */
+    virtual void KevaNamespaceCreated(const CTransactionRef &ptx, const CBlockIndex &pindex, const std::string& nameSpace) {}
+
+    /**
+     * Keva related interface.
+     * Notifies listeners of a key creation or update.
+     */
+    virtual void KevaUpdated(const CTransactionRef &ptx, const CBlockIndex &pindex, const std::string& nameSpace, const std::string& key, const std::string& value) {}
+
+    /**
+     * Keva related interface.
+     * Notifies listeners of a key creation or update.
+     */
+    virtual void KevaDeleted(const CTransactionRef &ptx, const CBlockIndex &pindex, const std::string& nameSpace, const std::string& key) {}
+
     /**
      * Notifies listeners that a block which builds directly on our current tip
      * has been received and connected to the headers tree, though not validated yet.
@@ -222,6 +242,11 @@ public:
     void ChainStateFlushed(ChainstateRole, const CBlockLocator &);
     void BlockChecked(const CBlock&, const BlockValidationState&);
     void NewPoWValidBlock(const CBlockIndex *, const std::shared_ptr<const CBlock>&);
+
+    /** Keva related */
+    void KevaNamespaceCreated(const CTransactionRef &ptx, const CBlockIndex& pindex, const std::string& nameSpace);
+    void KevaUpdated(const CTransactionRef &ptx, const CBlockIndex& pindex, const std::string& nameSpace, const std::string& key, const std::string& value);
+    void KevaDeleted(const CTransactionRef &ptx, const CBlockIndex& pindex, const std::string& nameSpace, const std::string& key);
 };
 
 #endif // KEVACOIN_VALIDATIONINTERFACE_H

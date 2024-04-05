@@ -239,8 +239,7 @@ public:
    * @param script The script to parse.
    * @return True iff it is a name script.
    */
-  static inline bool
-  isKevaScript (const CScript& script)
+  static inline bool isKevaScript (const CScript& script)
   {
     const CKevaScript op(script);
     return op.isKevaOp();

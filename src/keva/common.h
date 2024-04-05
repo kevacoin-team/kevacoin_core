@@ -31,8 +31,7 @@ extern bool fNameHistory;
  * @param str The string input.
  * @return The corresponding valtype.
  */
-inline valtype
-ValtypeFromString (const std::string& str)
+inline valtype ValtypeFromString (const std::string& str)
 {
   return valtype (str.begin (), str.end ());
 }
@@ -42,8 +41,7 @@ ValtypeFromString (const std::string& str)
  * @param val The valtype value.
  * @return Corresponding string.
  */
-inline std::string
-ValtypeToString (const valtype& val)
+inline std::string ValtypeToString (const valtype& val)
 {
   return std::string (val.begin (), val.end ());
 }
@@ -82,7 +80,7 @@ public:
   ADD_SERIALIZE_METHODS;
 
   template<typename Stream, typename Operation>
-    inline void SerializationOp (Stream& s, Operation ser_action)
+  inline void SerializationOp (Stream& s, Operation ser_action)
   {
     READWRITE (value);
     READWRITE (nHeight);
@@ -91,14 +89,12 @@ public:
   }
 
   /* Compare for equality.  */
-  friend inline bool
-  operator== (const CKevaData& a, const CKevaData& b)
+  friend inline bool operator== (const CKevaData& a, const CKevaData& b)
   {
     return a.value == b.value && a.nHeight == b.nHeight
             && a.prevout == b.prevout && a.addr == b.addr;
   }
-  friend inline bool
-  operator!= (const CKevaData& a, const CKevaData& b)
+  friend inline bool operator!= (const CKevaData& a, const CKevaData& b)
   {
     return !(a == b);
   }
@@ -107,8 +103,7 @@ public:
    * Get the height.
    * @return The name's update height.
    */
-  inline unsigned
-  getHeight () const
+  inline unsigned getHeight () const
   {
     return nHeight;
   }
@@ -117,8 +112,7 @@ public:
    * Get the value.
    * @return The name's value.
    */
-  inline const valtype&
-  getValue () const
+  inline const valtype& getValue () const
   {
     return value;
   }
@@ -127,8 +121,7 @@ public:
    * Get the name's update outpoint.
    * @return The update outpoint.
    */
-  inline const COutPoint&
-  getUpdateOutpoint () const
+  inline const COutPoint& getUpdateOutpoint () const
   {
     return prevout;
   }
@@ -136,8 +129,7 @@ public:
   /**
    * Get the namespace's updated outpoint.
    */
-  inline void
-  setUpdateOutpoint (const COutPoint& out)
+  inline void setUpdateOutpoint (const COutPoint& out)
   {
     prevout = out;
   }
@@ -146,8 +138,7 @@ public:
    * Get the address.
    * @return The name's address.
    */
-  inline const CScript&
-  getAddress () const
+  inline const CScript& getAddress () const
   {
     return addr;
   }
@@ -196,7 +187,7 @@ public:
   ADD_SERIALIZE_METHODS;
 
   template<typename Stream, typename Operation>
-    inline void SerializationOp (Stream& s, Operation ser_action)
+  inline void SerializationOp (Stream& s, Operation ser_action)
   {
     READWRITE (data);
   }
@@ -206,8 +197,7 @@ public:
    * delete an entry in the database.
    * @return True iff the data stack is empty.
    */
-  inline bool
-  empty () const
+  inline bool empty () const
   {
     return data.empty ();
   }
@@ -216,8 +206,7 @@ public:
    * Access the data in a read-only way.
    * @return The data stack.
    */
-  inline const std::vector<CKevaData>&
-  getData () const
+  inline const std::vector<CKevaData>& getData () const
   {
     return data;
   }
@@ -227,8 +216,7 @@ public:
    * be at least as high as the stack top entry's.  If not, fail.
    * @param entry The new entry to push onto the stack.
    */
-  inline void
-  push (const CKevaData& entry)
+  inline void push (const CKevaData& entry)
   {
     assert (data.empty () || data.back ().getHeight () <= entry.getHeight ());
     data.push_back (entry);
@@ -240,8 +228,7 @@ public:
    * match the removed entry.  If not, fail.
    * @param entry The name's value after undoing.
    */
-  inline void
-  pop (const CKevaData& entry)
+  inline void pop (const CKevaData& entry)
   {
     assert (!data.empty () && data.back () == entry);
     data.pop_back ();
@@ -360,8 +347,7 @@ private:
 
 public:
 
-  inline void
-  clear()
+  inline void clear()
   {
     entries.clear();
     deleted.clear();
@@ -375,8 +361,7 @@ public:
    * internal state is inconsistent.
    * @return True iff no changes are cached.
    */
-  inline bool
-  empty() const
+  inline bool empty() const
   {
     if (entries.empty() && deleted.empty() && associations.empty() && disassociations.empty()) {
       return true;
@@ -386,16 +371,14 @@ public:
   }
 
   /* See if the given name is marked as deleted.  */
-  inline bool
-  isDeleted(const valtype& nameSpace, const valtype& key) const
+  inline bool isDeleted(const valtype& nameSpace, const valtype& key) const
   {
     auto name = std::make_tuple(nameSpace, key);
     return (deleted.count(name) > 0);
   }
 
   /* See if the given namespaces are disassociated.  */
-  inline bool
-  isDisassociated(const valtype& nameSpace, const valtype& nameSpaceOther) const
+  inline bool isDisassociated(const valtype& nameSpace, const valtype& nameSpaceOther) const
   {
     auto name = std::make_tuple(nameSpace, nameSpaceOther);
     return (disassociations.count(name) > 0);
@@ -437,13 +420,13 @@ public:
      for a given height and a given set of names that were indexed to
      this update height, apply possible changes to the set that
      are represented by the cached expire index changes.  */
-  void updateNamesForHeight (unsigned nHeight, std::set<valtype>& names) const;
+  void updateNamesForHeight(unsigned nHeight, std::set<valtype>& names) const;
 
   /* Apply all the changes in the passed-in record on top of this one.  */
-  void apply (const CKevaCache& cache);
+  void apply(const CKevaCache& cache);
 
   /* Write all cached changes to a database batch update object.  */
-  void writeBatch (CDBBatch& batch) const;
+  void writeBatch(CDBBatch& batch) const;
 
 };
 

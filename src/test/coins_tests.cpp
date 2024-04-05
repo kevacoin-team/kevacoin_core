@@ -5,6 +5,7 @@
 #include <addresstype.h>
 #include <clientversion.h>
 #include <coins.h>
+// #include <keva/common.h>
 #include <streams.h>
 #include <test/util/poolresourcetester.h>
 #include <test/util/random.h>
@@ -55,7 +56,7 @@ public:
 
     uint256 GetBestBlock() const override { return hashBestBlock_; }
 
-    bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock, bool erase = true) override
+    bool BatchWrite(CCoinsMap& mapCoins, const uint256& hashBlock, const CKevaCache &names, bool erase = true) override
     {
         for (CCoinsMap::iterator it = mapCoins.begin(); it != mapCoins.end(); it = erase ? mapCoins.erase(it) : std::next(it)) {
             if (it->second.flags & CCoinsCacheEntry::DIRTY) {
@@ -616,7 +617,7 @@ void WriteCoinsViewEntry(CCoinsView& view, CAmount value, char flags)
     CCoinsMapMemoryResource resource;
     CCoinsMap map{0, CCoinsMap::hasher{}, CCoinsMap::key_equal{}, &resource};
     InsertCoinsMapEntry(map, value, flags);
-    BOOST_CHECK(view.BatchWrite(map, {}));
+    BOOST_CHECK(view.BatchWrite(map, {}, {}));
 }
 
 class SingleEntryCacheTest
