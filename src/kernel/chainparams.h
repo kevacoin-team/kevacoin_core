@@ -98,6 +98,8 @@ public:
     const CBlock& GenesisBlock() const { return genesis; }
     /** Default value for -checkmempool and -checkblockindex argument */
     bool DefaultConsistencyChecks() const { return fDefaultConsistencyChecks; }
+    // /** Default value for -checkkevadb argument */
+    // virtual int DefaultCheckKevaDB() const = 0;
     /** If this chain is exclusively used for testing */
     bool IsTestChain() const { return m_chain_type != ChainType::MAIN; }
     /** If this chain allows time to be mocked */

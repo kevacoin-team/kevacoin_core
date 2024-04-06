@@ -234,6 +234,7 @@ public:
             .dTxRate  = 0.009864697220034017,
         };
     }
+
     int DefaultCheckKevaDB() const
     {
         return -1;
@@ -343,6 +344,11 @@ public:
             // .nTxCount = 67845391,
             // .dTxRate  = 1.464436832560951,
         };
+    }
+
+    int DefaultCheckKevaDB() const
+    {
+        return -1;
     }
 };
 
@@ -467,8 +473,11 @@ public:
 
         fDefaultConsistencyChecks = false;
         m_is_mockable_chain = false;
+    }
 
-
+    int DefaultCheckKevaDB() const
+    {
+        return -1;
     }
 };
 
@@ -611,8 +620,11 @@ public:
         base58Prefixes[KEVA_NAMESPACE] = std::vector<unsigned char>(1,53); // N
 
         bech32_hrp = "rkva";
+    }
 
-        //
+    int DefaultCheckKevaDB() const
+    {
+        return 0;
     }
 
     /**

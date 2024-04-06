@@ -17,7 +17,7 @@
 
 const std::string CKevaData::ASSOCIATE_PREFIX = "_g:";
 
-void CKevaData::fromScript (unsigned h, const COutPoint& out,
+void CKevaData::fromScript(unsigned h, const COutPoint& out,
                        const CKevaScript& script)
 {
   if (script.isAnyUpdate()) {
@@ -37,7 +37,7 @@ void CKevaData::fromScript (unsigned h, const COutPoint& out,
 /* ************************************************************************** */
 /* CKevaIterator.  */
 
-CKevaIterator::~CKevaIterator ()
+CKevaIterator::~CKevaIterator()
 {
   /* Nothing to be done here.  This may be overwritten by
      subclasses if they need a destructor.  */
@@ -195,7 +195,7 @@ bool CCacheKeyIterator::next(valtype& key, CKevaData& data)
 bool CKevaCache::get(const valtype& nameSpace, const valtype& key, CKevaData& data) const
 {
   const EntryMap::const_iterator i = entries.find(std::make_tuple(nameSpace, key));
-  if (i == entries.end ())
+  if (i == entries.end())
     return false;
 
   data = i->second;

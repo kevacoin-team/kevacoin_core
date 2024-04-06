@@ -174,7 +174,7 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, TxValidationState& state, 
                          strprintf("%s: inputs missing/spent", __func__));
     }
 
-    if (!CheckKevaTransaction (tx, nSpendHeight, inputs, state, SCRIPT_VERIFY_KEVA_MEMPOOL)) {
+    if (!CheckKevaTransaction(tx, nSpendHeight, inputs, state, SCRIPT_VERIFY_KEVA_MEMPOOL)) {
         return state.Invalid(TxValidationResult::TX_UNKNOWN, "Tx invalid for Kevacoin", "Tx invalid for Kevacoin");
     }
 

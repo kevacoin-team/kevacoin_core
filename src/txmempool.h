@@ -32,6 +32,7 @@
 #include <boost/multi_index/sequenced_index.hpp>
 #include <boost/multi_index/tag.hpp>
 #include <boost/multi_index_container.hpp>
+#include <boost/signals2/signal.hpp>
 
 #include <atomic>
 #include <map>
@@ -784,6 +785,9 @@ public:
      * direct conflict may be in a separate cluster.
      */
     std::optional<std::string> CheckConflictTopology(const setEntries& direct_conflicts);
+
+    // boost::signals2::signal<void (CTransactionRef)> NotifyEntryAdded;
+    // boost::signals2::signal<void (CTransactionRef, MemPoolRemovalReason)> NotifyEntryRemoved;
 
 private:
     /** UpdateForDescendants is used by UpdateTransactionsFromBlock to update

@@ -31,9 +31,9 @@ extern bool fNameHistory;
  * @param str The string input.
  * @return The corresponding valtype.
  */
-inline valtype ValtypeFromString (const std::string& str)
+inline valtype ValtypeFromString(const std::string& str)
 {
-  return valtype (str.begin (), str.end ());
+  return valtype (str.begin(), str.end());
 }
 
 /**
@@ -41,9 +41,9 @@ inline valtype ValtypeFromString (const std::string& str)
  * @param val The valtype value.
  * @return Corresponding string.
  */
-inline std::string ValtypeToString (const valtype& val)
+inline std::string ValtypeToString(const valtype& val)
 {
-  return std::string (val.begin (), val.end ());
+  return std::string (val.begin(), val.end());
 }
 
 /* ************************************************************************** */
@@ -80,12 +80,12 @@ public:
   ADD_SERIALIZE_METHODS;
 
   template<typename Stream, typename Operation>
-  inline void SerializationOp (Stream& s, Operation ser_action)
+  inline void SerializationOp(Stream& s, Operation ser_action)
   {
-    READWRITE (value);
-    READWRITE (nHeight);
-    READWRITE (prevout);
-    READWRITE (*(CScriptBase*)(&addr));
+    READWRITE(value);
+    READWRITE(nHeight);
+    READWRITE(prevout);
+    READWRITE(*(CScriptBase*)(&addr));
   }
 
   /* Compare for equality.  */
@@ -103,7 +103,7 @@ public:
    * Get the height.
    * @return The name's update height.
    */
-  inline unsigned getHeight () const
+  inline unsigned getHeight() const
   {
     return nHeight;
   }
@@ -112,7 +112,7 @@ public:
    * Get the value.
    * @return The name's value.
    */
-  inline const valtype& getValue () const
+  inline const valtype& getValue() const
   {
     return value;
   }
@@ -121,7 +121,7 @@ public:
    * Get the name's update outpoint.
    * @return The update outpoint.
    */
-  inline const COutPoint& getUpdateOutpoint () const
+  inline const COutPoint& getUpdateOutpoint() const
   {
     return prevout;
   }
@@ -129,7 +129,7 @@ public:
   /**
    * Get the namespace's updated outpoint.
    */
-  inline void setUpdateOutpoint (const COutPoint& out)
+  inline void setUpdateOutpoint(const COutPoint& out)
   {
     prevout = out;
   }
@@ -138,7 +138,7 @@ public:
    * Get the address.
    * @return The name's address.
    */
-  inline const CScript& getAddress () const
+  inline const CScript& getAddress() const
   {
     return addr;
   }
@@ -147,14 +147,14 @@ public:
    * Check if the name is expired at the current chain height.
    * @return True iff the name is expired.
    */
-  bool isExpired () const;
+  bool isExpired() const;
 
   /**
    * Check if the name is expired at the given height.
    * @param h The height at which to check.
    * @return True iff the name is expired at height h.
    */
-  bool isExpired (unsigned h) const;
+  bool isExpired(unsigned h) const;
 
   /**
    * Set from a name update operation.
@@ -162,7 +162,7 @@ public:
    * @param out The update outpoint.
    * @param script The name script.  Should be a name (first) update.
    */
-  void fromScript (unsigned h, const COutPoint& out, const CKevaScript& script);
+  void fromScript(unsigned h, const COutPoint& out, const CKevaScript& script);
 
 };
 
@@ -187,9 +187,9 @@ public:
   ADD_SERIALIZE_METHODS;
 
   template<typename Stream, typename Operation>
-  inline void SerializationOp (Stream& s, Operation ser_action)
+  inline void SerializationOp(Stream& s, Operation ser_action)
   {
-    READWRITE (data);
+    READWRITE(data);
   }
 
   /**
@@ -197,16 +197,16 @@ public:
    * delete an entry in the database.
    * @return True iff the data stack is empty.
    */
-  inline bool empty () const
+  inline bool empty() const
   {
-    return data.empty ();
+    return data.empty();
   }
 
   /**
    * Access the data in a read-only way.
    * @return The data stack.
    */
-  inline const std::vector<CKevaData>& getData () const
+  inline const std::vector<CKevaData>& getData() const
   {
     return data;
   }
@@ -216,10 +216,10 @@ public:
    * be at least as high as the stack top entry's.  If not, fail.
    * @param entry The new entry to push onto the stack.
    */
-  inline void push (const CKevaData& entry)
+  inline void push(const CKevaData& entry)
   {
-    assert (data.empty () || data.back ().getHeight () <= entry.getHeight ());
-    data.push_back (entry);
+    assert (data.empty() || data.back().getHeight() <= entry.getHeight());
+    data.push_back(entry);
   }
 
   /**
@@ -228,10 +228,10 @@ public:
    * match the removed entry.  If not, fail.
    * @param entry The name's value after undoing.
    */
-  inline void pop (const CKevaData& entry)
+  inline void pop(const CKevaData& entry)
   {
-    assert (!data.empty () && data.back () == entry);
-    data.pop_back ();
+    assert (!data.empty() && data.back() == entry);
+    data.pop_back();
   }
 
 };

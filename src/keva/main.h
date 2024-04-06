@@ -31,7 +31,7 @@ class CCoinsViewCache;
 class CTxMemPool;
 class CTxMemPoolEntry;
 class CValidationState;
-class CMainSignals;
+class ValidationSignals;
 class CKevaNotifier;
 class TxValidationState;
 
@@ -230,10 +230,10 @@ public:
 class CKevaNotifier
 {
 private:
-    CMainSignals* signals;
+    ValidationSignals* signals;
 
 public:
-    CKevaNotifier(CMainSignals*);
+    CKevaNotifier(ValidationSignals*);
     void KevaNamespaceCreated(const CTransaction& tx, const CBlockIndex& pindex, const std::string& nameSpace);
     void KevaUpdated(const CTransaction& tx, const CBlockIndex& pindex, const std::string& nameSpace, const std::string& key, const std::string& value);
     void KevaDeleted(const CTransaction& tx, const CBlockIndex& pindex, const std::string& nameSpace, const std::string& key);

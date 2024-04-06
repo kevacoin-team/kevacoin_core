@@ -9,8 +9,10 @@
 #include <keva/main.h>
 #include "base58.h"
 
+#include <chain.h>
 #include <chainparams.h>
 #include <coins.h>
+#include <common/args.h>
 #include <consensus/validation.h>
 #include <hash.h>
 #include <dbwrapper.h>
@@ -193,64 +195,62 @@ bool CKevaMemPool::checkTx(const CTransaction& tx, const CBlockIndex* activeChai
 /* ************************************************************************** */
 /* CNameConflictTracker.  */
 
-// namespace
-// {
+namespace
+{
 
-// void
-// ConflictTrackerNotifyEntryRemoved (CNameConflictTracker* tracker,
-//                                    CTransactionRef txRemoved,
-//                                    MemPoolRemovalReason reason)
-// {
-//   if (reason == MemPoolRemovalReason::KEVA_CONFLICT)
-//     tracker->AddConflictedEntry (txRemoved);
-// }
+void ConflictTrackerNotifyEntryRemoved(CNameConflictTracker* tracker,
+                                   CTransactionRef txRemoved,
+                                   MemPoolRemovalReason reason)
+{
+  if (reason == MemPoolRemovalReason::KEVA_CONFLICT)
+    tracker->AddConflictedEntry(txRemoved);
+}
 
-// } // anonymous namespace
+} // anonymous namespace
 
 // CNameConflictTracker::CNameConflictTracker (CTxMemPool &p)
 //   : txNameConflicts(std::make_shared<std::vector<CTransactionRef>>()), pool(p)
 // {
 //   // trackPackageRemoved
-//   pool.NotifyEntryRemoved.connect (
-//     boost::bind (&ConflictTrackerNotifyEntryRemoved, this, boost::placeholders::_1, boost::placeholders::_2));
+//   pool.NotifyEntryRemoved.connect(
+//     boost::bind(&ConflictTrackerNotifyEntryRemoved, this, boost::placeholders::_1, boost::placeholders::_2));
 // }
 
 // CNameConflictTracker::~CNameConflictTracker ()
 // {
-//   pool.NotifyEntryRemoved.disconnect (
-//     boost::bind (&ConflictTrackerNotifyEntryRemoved, this, boost::placeholders::_1, boost::placeholders::_2));
+//   pool.NotifyEntryRemoved.disconnect(
+//     boost::bind(&ConflictTrackerNotifyEntryRemoved, this, boost::placeholders::_1, boost::placeholders::_2));
 // }
 
-// void
-// CNameConflictTracker::AddConflictedEntry (CTransactionRef txRemoved)
-// {
-//   txNameConflicts->emplace_back (std::move (txRemoved));
-// }
+void CNameConflictTracker::AddConflictedEntry (CTransactionRef txRemoved)
+{
+  txNameConflicts->emplace_back(std::move(txRemoved));
+}
 
 /* ************************************************************************** */
 
-// CKevaNotifier::CKevaNotifier(CMainSignals* signals) {
-//   this->signals = signals;
-// }
+CKevaNotifier::CKevaNotifier(ValidationSignals* signals) {
+  this->signals = signals;
+}
 
 void CKevaNotifier::KevaNamespaceCreated(const CTransaction& tx, const CBlockIndex &pindex, const std::string& nameSpace) {
   if (signals) {
     CTransactionRef ptx = MakeTransactionRef(tx);
-    // m_chainman.m_options.signals->KevaNamespaceCreated(ptx, pindex, nameSpace);
+    signals->KevaNamespaceCreated(ptx, pindex, nameSpace);
   }
 }
 
 void CKevaNotifier::KevaUpdated(const CTransaction& tx, const CBlockIndex &pindex, const std::string& nameSpace, const std::string& key, const std::string& value) {
   if (signals) {
     CTransactionRef ptx = MakeTransactionRef(tx);
-    // m_chainman.m_options.signals->KevaUpdated(ptx, pindex, nameSpace, key, value);
+    signals->KevaUpdated(ptx, pindex, nameSpace, key, value);
   }
 }
 
 void CKevaNotifier::KevaDeleted(const CTransaction& tx, const CBlockIndex &pindex, const std::string& nameSpace, const std::string& key) {
   if (signals) {
     CTransactionRef ptx = MakeTransactionRef(tx);
-    // m_chainman.m_options.signals->KevaDeleted(ptx, pindex, nameSpace, key);
+    signals->KevaDeleted(ptx, pindex, nameSpace, key);
   }
 }
 
@@ -388,17 +388,6 @@ bool CheckKevaTransaction(const CTransaction& tx, unsigned nHeight, const CCoins
   return true;
 }
 
-//
-// Chainstate::Chainstate(
-//     CTxMemPool* mempool,
-//     BlockManager& blockman,
-//     ChainstateManager& chainman,
-//     std::optional<uint256> from_snapshot_blockhash)
-//     : m_mempool(mempool),
-//       m_blockman(blockman),
-//       m_chainman(chainman),
-//       m_from_snapshot_blockhash(from_snapshot_blockhash) {}
-///
 void ApplyKevaTransaction(const CTransaction& tx, const CBlockIndex& pindex,
                         CCoinsViewCache& view, CBlockUndo& undo, CKevaNotifier& notifier)
 {
@@ -430,8 +419,7 @@ void ApplyKevaTransaction(const CTransaction& tx, const CBlockIndex& pindex,
       CKevaData data;
       data.fromScript(nHeight, COutPoint(tx.GetHash(), i), op);
       view.SetKeyValue(nameSpace, key, data, false);
-      // notifier.KevaNamespaceCreated(tx, pindex, EncodeBase58Check(nameSpace));
-      // m_chainman.m_options.signals->KevaNamespaceCreated(tx, pindex, EncodeBase58Check(nameSpace));
+      notifier.KevaNamespaceCreated(tx, pindex, EncodeBase58Check(nameSpace));
     } else if (op.isAnyUpdate()) {
       const valtype& nameSpace = op.getOpNamespace();
       const valtype& key = op.getOpKey();
@@ -445,48 +433,51 @@ void ApplyKevaTransaction(const CTransaction& tx, const CBlockIndex& pindex,
       CKevaData data;
       if (op.isDelete()) {
         CKevaData oldData;
-        // if (view.GetName(nameSpace, key, oldData)) {
-        //   view.DeleteKey(nameSpace, key);
-        //   // m_chainman.m_options.signals->KevaDeleted(tx, pindex, EncodeBase58Check(nameSpace), ValtypeToString(key));
-        // }
+        if (view.GetName(nameSpace, key, oldData)) {
+          view.DeleteKey(nameSpace, key);
+          notifier.KevaDeleted(tx, pindex, EncodeBase58Check(nameSpace), ValtypeToString(key));
+        }
       } else {
         data.fromScript(nHeight, COutPoint(tx.GetHash(), i), op);
         view.SetKeyValue(nameSpace, key, data, false);
-        // m_chainman.m_options.signals->KevaUpdated(tx, pindex, EncodeBase58Check(nameSpace), ValtypeToString(key), ValtypeToString(data.getValue()));
+        notifier.KevaUpdated(tx, pindex, EncodeBase58Check(nameSpace), ValtypeToString(key), ValtypeToString(data.getValue()));
       }
     }
   }
 }
 
-// void CheckNameDB (bool disconnect)
-// {
-//   const int option = gArgs.GetArg ("-checkkevadb", Params().DefaultCheckKevaDB());
+void CheckNameDB (bool disconnect)
+{
+  // const int option = gArgs.GetArg("-checkkevadb", Params().DefaultCheckKevaDB());
+  const std::string option = gArgs.GetArg("-checkkevadb", "");
+  CChain chain;
 
-//   if (option == -1)
-//     return;
+  if (option == "")
+    return; 
 
-//   assert (option >= 0);
-//   if (option != 0)
-//     {
-//       if (disconnect || chainActive.Height () % option != 0)
-//         return;
-//     }
+  assert (option != "");
+  if (option != "")
+    {
+      if (disconnect || chain.Height() % (option != ""))
+        return;
+    }
 
-//   pcoinsTip->Flush ();
-//   const bool ok = pcoinsTip->ValidateKevaDB();
+  // m_view->Flush();
+  // const bool ok = m_view->ValidateKevaDB();
+  const bool ok = true;
 
-//   /* The DB is inconsistent (mismatch between UTXO set and names DB) between
-//      (roughly) blocks 139,000 and 180,000.  This is caused by libcoin's
-//      "name stealing" bug.  For instance, d/postmortem is removed from
-//      the UTXO set shortly after registration (when it is used to steal
-//      names), but it remains in the name DB until it expires.  */
-//   if (!ok)
-//     {
-//       const unsigned nHeight = chainActive.Height ();
-//       LogPrintf ("ERROR: %s : name database is inconsistent\n", __func__);
-//       if (nHeight >= 139000 && nHeight <= 180000)
-//         LogPrintf ("This is expected due to 'name stealing'.\n");
-//       else
-//         assert (false);
-//     }
-// }
+  /* The DB is inconsistent (mismatch between UTXO set and names DB) between
+     (roughly) blocks 139,000 and 180,000.  This is caused by libcoin's
+     "name stealing" bug.  For instance, d/postmortem is removed from
+     the UTXO set shortly after registration (when it is used to steal
+     names), but it remains in the name DB until it expires.  */
+  if (!ok)
+    {
+      const unsigned nHeight = chain.Height();
+      LogPrintf ("ERROR: %s : name database is inconsistent\n", __func__);
+      if (nHeight >= 139000 && nHeight <= 180000)
+        LogPrintf ("This is expected due to 'name stealing'.\n");
+      else
+        assert (false);
+    }
+}
