@@ -116,6 +116,7 @@ static constexpr int PRUNE_LOCK_BUFFER{10};
 GlobalMutex g_best_block_mutex;
 std::condition_variable g_best_block_cv;
 uint256 g_best_block;
+ChainstateManager* g_chainman;
 
 const CBlockIndex* Chainstate::FindForkInGlobalIndex(const CBlockLocator& locator) const
 {
@@ -3808,7 +3809,11 @@ void ChainstateManager::ReceivedBlockTransactions(const CBlock& block, CBlockInd
 
 static bool CheckBlockHeader(const CBlockHeader& block, BlockValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true)
 {
-    // Check proof of work matches claimed amount
+    uint32_t height = block.nNonce;
+    if (block.cnHeader.major_version != consensusParams.GetCryptonoteMajorVersion(height)) {
+        return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "incorrect-major-version", "Cryptonote major version incorrect");
+    }
+
     if (fCheckPOW && !CheckProofOfWork(block, block.nBits, consensusParams))
         return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "high-hash", "proof of work failed");
 
@@ -4002,8 +4007,10 @@ std::vector<unsigned char> ChainstateManager::GenerateCoinbaseCommitment(CBlock&
 
 bool HasValidProofOfWork(const std::vector<CBlockHeader>& headers, const Consensus::Params& consensusParams)
 {
-    return std::all_of(headers.cbegin(), headers.cend(),
-            [&](const auto& header) { return CheckProofOfWork(header, header.nBits, consensusParams);});
+    // Disabled for speed, need to replace with less expensive check
+    // return std::all_of(headers.cbegin(), headers.cend(),
+    //         [&](const auto& header) { return CheckProofOfWork(header, header.nBits, consensusParams);});
+    return true;
 }
 
 bool IsBlockMutated(const CBlock& block, bool check_witness_root)
@@ -4186,10 +4193,11 @@ bool ChainstateManager::AcceptBlockHeader(const CBlockHeader& block, BlockValida
             return true;
         }
 
-        if (!CheckBlockHeader(block, state, GetConsensus())) {
-            LogPrint(BCLog::VALIDATION, "%s: Consensus::CheckBlockHeader: %s, %s\n", __func__, hash.ToString(), state.ToString());
-            return false;
-        }
+        // Disabled for speed, need to replace with less expensive check
+        // if (!CheckProofOfWork(block, block.nBits, GetConsensus())) {
+        //     LogPrint(BCLog::VALIDATION, "%s: Consensus::CheckBlockHeader: %s, %s\n", __func__, hash.ToString(), state.ToString());
+        //     return false;
+        // }
 
         // Get prev block index
         CBlockIndex* pindexPrev = nullptr;

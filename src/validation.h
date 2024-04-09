@@ -87,6 +87,7 @@ extern GlobalMutex g_best_block_mutex;
 extern std::condition_variable g_best_block_cv;
 /** Used to notify getblocktemplate RPC of new tips. */
 extern uint256 g_best_block;
+extern ChainstateManager* g_chainman;
 
 /** Documentation for argument 'checklevel'. */
 extern const std::vector<std::string> CHECKLEVEL_DOC;
@@ -100,9 +101,6 @@ double GuessVerificationProgress(const ChainTxData& data, const CBlockIndex* pin
 
 /** Prune block files up to a given height */
 void PruneBlockFilesManual(Chainstate& active_chainstate, int nManualPruneHeight);
-
-/** Check whether Keva namespace creation fix is enabled. */
-bool IsNsFixEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params);
 
 /**
 * Validation result for a transaction evaluated by MemPoolAccept (single or package).

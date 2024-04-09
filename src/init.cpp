@@ -1540,6 +1540,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
 
         node.chainman = std::make_unique<ChainstateManager>(*Assert(node.shutdown), chainman_opts, blockman_opts);
         ChainstateManager& chainman = *node.chainman;
+        g_chainman = node.chainman.get();
 
         // This is defined and set here instead of inline in validation.h to avoid a hard
         // dependency between validation and index/base, since the latter is not in
