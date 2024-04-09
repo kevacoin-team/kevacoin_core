@@ -99,7 +99,7 @@ struct Params {
      * This prevents us from warning about the CSV and segwit activations. */
     int MinBIP9WarningHeight;
     /** Block height at which RandomX becomes active */
-    int RandomXHeight;
+    uint32_t RandomXHeight;
     /**
      * Minimum blocks including miner confirmation of the total of 2016 blocks in a retargeting period,
      * (nPowTargetTimespan / nPowTargetSpacing) which is also used for BIP9 deployments.
@@ -146,6 +146,13 @@ struct Params {
             return SegwitHeight;
         } // no default case, so the compiler can warn about missing cases
         return std::numeric_limits<int>::max();
+    }
+
+    uint8_t GetCryptonoteMajorVersion(uint32_t height) const {
+        if (height >= RandomXHeight) {
+            return 12;
+        }
+        return 10;
     }
 };
 
