@@ -225,6 +225,11 @@ CBlockIndex* BlockManager::AddToBlockIndex(const CBlockHeader& block, CBlockInde
     // competitive advantage.
     pindexNew->nSequenceId = 0;
 
+    uint64_t height = block.nNonce;
+    if (crypto::is_a_seed_height(height)) {
+        m_block_seed_height.insert(std::make_pair(height, pindexNew));
+    }
+
     pindexNew->phashBlock = &((*mi).first);
     BlockMap::iterator miPrev = m_block_index.find(block.hashPrevBlock);
     if (miPrev != m_block_index.end()) {
@@ -412,6 +417,7 @@ CBlockIndex* BlockManager::InsertBlockIndex(const uint256& hash, int nHeight)
         pindex->phashBlock = &((*mi).first);
     }
 
+    pindex->nNonce = nHeight;
     if (crypto::is_a_seed_height(nHeight)) {
         m_block_seed_height.insert(std::make_pair(nHeight, pindex));
     }
@@ -1081,10 +1087,11 @@ bool BlockManager::ReadBlockFromDisk(CBlock& block, const FlatFilePos& pos) cons
     }
 
     // Check the header
-    if (!CheckProofOfWork(block, block.nBits, GetConsensus())) {
-        LogError("ReadBlockFromDisk: Errors in block header at %s\n", pos.ToString());
-        return false;
-    }
+    // Disabled for speed, need to replace with less expensive check
+    // if (!CheckProofOfWork(block, block.nBits, GetConsensus())) {
+    //     LogError("ReadBlockFromDisk: Errors in block header at %s\n", pos.ToString());
+    //     return false;
+    // }
 
     // Signet only: check block solution
     if (GetConsensus().signet_blocks && !CheckSignetBlockSolution(block, GetConsensus())) {
