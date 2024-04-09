@@ -10,8 +10,6 @@
 #include <primitives/block.h>
 #include <uint256.h>
 
-extern bool GetRandomXSeedParams(uint64_t& seedHeight, uint256& blockHash);
-
 // Copy and modified from CalculateDogecoinNextWorkRequired (dogecoin.cpp)
 unsigned int CalculateDigishieldNextWorkRequired(const CBlockIndex* pindexLast, int64_t nFirstBlockTime, const Consensus::Params& params)
 {
@@ -188,21 +186,5 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits, const Consensus::Params&
     if (UintToArith256(hash) > bnTarget)
         return false;
 
-    return true;
-}
-
-bool CheckProofOfWork(const CBlock& block, unsigned int nBits, const Consensus::Params& params) {
-    uint64_t seedHeight = 0;
-    uint256 blockHash(0);
-    // return GetRandomXSeedParams(seedHeight, blockHash);
-    // return CheckProofOfWork(block.GetPoWHash(seedHeight, blockHash), nBits, params);
-    return true;
-}
-
-bool CheckProofOfWork(const CBlockHeader& block, unsigned int nBits, const Consensus::Params& params) {
-    uint64_t seedHeight = 0;
-    uint256 blockHash(0);
-    // return GetRandomXSeedParams(seedHeight, blockHash);
-    // return CheckProofOfWork(block.GetPoWHash(seedHeight, blockHash), nBits, params);
     return true;
 }
