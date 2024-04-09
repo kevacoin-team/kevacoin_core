@@ -9,6 +9,14 @@
 #include <chain.h>
 #include <primitives/block.h>
 #include <uint256.h>
+#include <validation.h>
+
+#include <crypto/common.h>
+#include <crypto/hash-ops.h>
+
+#define BEGIN(a)            ((char*)&(a))
+
+extern "C" void cn_slow_hash(const void *data, size_t length, char *hash, int variant, int prehashed, uint64_t height);
 
 // Copy and modified from CalculateDogecoinNextWorkRequired (dogecoin.cpp)
 unsigned int CalculateDigishieldNextWorkRequired(const CBlockIndex* pindexLast, int64_t nFirstBlockTime, const Consensus::Params& params)
@@ -168,6 +176,61 @@ bool PermittedDifficultyTransition(const Consensus::Params& params, int64_t heig
         return false;
     }
     return true;
+}
+
+static void cn_get_block_hash_by_height(uint64_t seed_height, char cnHash[32])
+{
+    LOCK(cs_main);
+    CBlockIndex* pblockindex = g_chainman->ActiveChain()[seed_height];
+    
+    if (pblockindex == nullptr) {
+        // This will happen during initial block downloading, or when we
+        // are out of sync by more than at least SEEDHASH_EPOCH_BLOCKS blocks.
+        pblockindex = g_chainman->m_blockman.GetBlockSeedHeight(seed_height);
+        if (pblockindex == nullptr) {
+            int pp = 0;
+            return;
+        }
+    }
+    uint256 blockHash = pblockindex->GetBlockHash();
+    const unsigned char* pHash = blockHash.begin();
+    for (int j = 31; j >= 0; j--) {
+        cnHash[31 - j] = pHash[j];
+    }
+}
+
+const uint256 GetPoWHash(const CBlockHeader& header)
+{
+    if (!(header.isCNConsistent())) {
+        return (HashWriter{} << header).GetHash();
+        // memset(thash.begin(), 0xff, thash.size());
+        // return thash;
+    }
+
+    uint256 thash;
+    cryptonote::blobdata blob = cryptonote::t_serializable_object_to_blob(header.cnHeader);
+    uint32_t height = header.nNonce;
+    if (header.cnHeader.major_version >= RX_BLOCK_VERSION) {
+        uint64_t seed_height = crypto::rx_seedheight(height);
+        char cnHash[32];
+        cn_get_block_hash_by_height(seed_height, cnHash);
+        crypto::rx_slow_hash(height, seed_height, cnHash, blob.data(), blob.size(), BEGIN(thash), 0, 0);
+    } else {
+        cn_slow_hash(blob.data(), blob.size(), BEGIN(thash), header.cnHeader.major_version - 6, 0, height);
+    }
+
+    return thash;
+}
+
+bool CheckProofOfWork(CBlock block, unsigned int nBits, const Consensus::Params& params)
+{
+    return CheckProofOfWork(block.GetBlockHeader(), nBits, params);
+}
+
+bool CheckProofOfWork(CBlockHeader header, unsigned int nBits, const Consensus::Params& params)
+{
+    uint256 hash = GetPoWHash(header);
+    return CheckProofOfWork(hash, nBits, params);
 }
 
 bool CheckProofOfWork(uint256 hash, unsigned int nBits, const Consensus::Params& params)

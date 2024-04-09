@@ -18,7 +18,11 @@ class uint256;
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params&);
 unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nFirstBlockTime, const Consensus::Params&);
 
+static void cn_get_block_hash_by_height(uint64_t seed_height, char cnHash[32]);
+const uint256 GetPoWHash(const CBlockHeader& header);
 /** Check whether a block hash satisfies the proof-of-work requirement specified by nBits */
+bool CheckProofOfWork(CBlock block, unsigned int nBits, const Consensus::Params&);
+bool CheckProofOfWork(CBlockHeader header, unsigned int nBits, const Consensus::Params&);
 bool CheckProofOfWork(uint256 hash, unsigned int nBits, const Consensus::Params&);
 
 /**
