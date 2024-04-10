@@ -323,7 +323,7 @@ Kutia sahihi kunawezekana tu kwa anwani za aina ya 'urithi'.</translation>
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUII</name>
     <message>
         <source>&amp;Overview</source>
         <translation type="unfinished">&amp;Muhtasari</translation>

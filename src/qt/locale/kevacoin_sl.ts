@@ -402,7 +402,7 @@ Podpisovanje je možno le s podedovanimi ("legacy") naslovi.</translation>
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUI</name>
     <message>
         <source>&amp;Overview</source>
         <translation type="unfinished">Pre&amp;gled</translation>

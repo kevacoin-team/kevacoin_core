@@ -392,7 +392,7 @@ Només és possible firmar amb adreces del tipus "legacy".</translation>
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUI</name>
     <message>
         <source>&amp;Overview</source>
         <translation type="unfinished">&amp;Visió general</translation>

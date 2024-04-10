@@ -384,7 +384,7 @@ Só é possível assinar com endereços do tipo 'legado'.</translation>
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUII</name>
     <message>
         <source>&amp;Overview</source>
         <translation type="unfinished">&amp;Visão geral</translation>

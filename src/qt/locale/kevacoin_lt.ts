@@ -337,7 +337,7 @@ Pasirašymas galimas tik su 'legacy' tipo adresais.</translation>
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUII</name>
     <message>
         <source>&amp;Overview</source>
         <translation type="unfinished">&amp;Apžvalga</translation>

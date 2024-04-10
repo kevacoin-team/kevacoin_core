@@ -114,7 +114,7 @@
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUI</name>
     <message>
         <source>E&amp;xit</source>
         <translation type="unfinished">Buda</translation>

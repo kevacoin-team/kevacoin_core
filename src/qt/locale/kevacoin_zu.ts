@@ -76,7 +76,7 @@
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUI</name>
     <message>
         <source>&amp;Options…</source>
         <translation type="unfinished">&amp;Ongakukhetha...</translation>

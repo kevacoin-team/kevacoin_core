@@ -365,7 +365,7 @@ Podpisywanie jest możliwe tylko z adresami typu 'legacy'.</translation>
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUI</name>
     <message>
         <source>&amp;Overview</source>
         <translation type="unfinished">P&amp;odsumowanie</translation>

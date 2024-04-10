@@ -71,7 +71,7 @@
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUI</name>
     <message>
         <source>&amp;Send</source>
         <translation type="unfinished">موڪليو</translation>

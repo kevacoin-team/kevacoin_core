@@ -437,7 +437,7 @@ La signature n'est possible qu'avec les adresses de type "patrimoine".</translat
     </message>
 </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUI</name>
     <message>
         <source>&amp;Overview</source>
         <translation type="unfinished">&amp;Vue d’ensemble</translation>

@@ -403,7 +403,7 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUIII</name>
     <message>
         <source>&amp;Overview</source>
         <translation type="unfinished">&amp;Општи преглед</translation>

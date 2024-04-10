@@ -443,7 +443,7 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     </message>
 </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUI</name>
     <message>
         <source>&amp;About %1</source>
         <translation type="unfinished">關於%1(&amp;A)</translation>

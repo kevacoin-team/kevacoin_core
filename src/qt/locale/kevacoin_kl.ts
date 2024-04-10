@@ -126,7 +126,7 @@
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUIII</name>
     <message>
         <source>Wallet:</source>
         <translation type="unfinished">Aningaasivik:</translation>

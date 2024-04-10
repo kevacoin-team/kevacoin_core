@@ -367,7 +367,7 @@ Semnarea este posibilă numai cu adrese de tip "legacy".</translation>
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUII</name>
     <message>
         <source>&amp;Overview</source>
         <translation type="unfinished">&amp;Imagine de ansamblu</translation>

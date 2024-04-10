@@ -236,7 +236,7 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUI</name>
     <message>
         <source>Create a new wallet</source>
         <translation type="unfinished">નવું વૉલેટ બનાવો</translation>

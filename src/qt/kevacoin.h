@@ -18,7 +18,7 @@
 
 #include <QApplication>
 
-class BitcoinGUI;
+class KevacoinGUI;
 class ClientModel;
 class NetworkStyle;
 class OptionsModel;
@@ -62,7 +62,7 @@ public:
     /// Request core initialization
     void requestInitialize();
 
-    /// Get window identifier of QMainWindow (BitcoinGUI)
+    /// Get window identifier of QMainWindow (KevacoinGUI)
     WId getMainWinId() const;
 
     /// Setup platform style
@@ -86,7 +86,7 @@ public Q_SLOTS:
 Q_SIGNALS:
     void requestedInitialize();
     void requestedShutdown();
-    void windowShown(BitcoinGUI* window);
+    void windowShown(KevacoinGUI* window);
 
 protected:
     bool event(QEvent* e) override;
@@ -95,7 +95,7 @@ private:
     std::optional<InitExecutor> m_executor;
     OptionsModel* optionsModel{nullptr};
     ClientModel* clientModel{nullptr};
-    BitcoinGUI* window{nullptr};
+    KevacoinGUI* window{nullptr};
     QTimer* pollShutdownTimer{nullptr};
 #ifdef ENABLE_WALLET
     PaymentServer* paymentServer{nullptr};

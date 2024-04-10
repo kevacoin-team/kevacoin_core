@@ -67,7 +67,7 @@
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUI</name>
     <message>
         <source>&amp;Transactions</source>
         <translation type="unfinished">&amp;Транзакциялар</translation>

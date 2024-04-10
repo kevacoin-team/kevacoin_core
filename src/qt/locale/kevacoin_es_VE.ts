@@ -391,7 +391,7 @@ Registrarse solo es posible utilizando  una direccion tipo "Legal"</translation>
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUI</name>
     <message>
         <source>&amp;Overview</source>
         <translation type="unfinished">&amp;Vista general</translation>

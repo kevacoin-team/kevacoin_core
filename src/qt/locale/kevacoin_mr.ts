@@ -212,7 +212,7 @@
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUI</name>
     <message>
         <source>&amp;Minimize</source>
         <translation type="unfinished">&amp;मिनीमाइज़</translation>

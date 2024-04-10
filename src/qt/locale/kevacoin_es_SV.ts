@@ -368,7 +368,7 @@ Usa el boton "Crear nueva direccion de recibimiento" en la pestaña de recibir p
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUI</name>
     <message>
         <source>Create a new wallet</source>
         <translation type="unfinished">Crear monedero nuevo</translation>

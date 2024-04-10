@@ -118,7 +118,7 @@
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUI</name>
     <message>
         <source>Create a new wallet</source>
         <translation type="unfinished">Hamorona kitapom-bola vaovao</translation>

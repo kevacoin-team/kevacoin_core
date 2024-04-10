@@ -297,7 +297,7 @@ Tanda tangan hanya bisa digunakan dengan tipe alamat 'warisan'</translation>
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUI</name>
     <message>
         <source>Connecting to peers…</source>
         <translation type="unfinished">Menghubungkan ke peers...</translation>

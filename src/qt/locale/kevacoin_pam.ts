@@ -212,7 +212,7 @@
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUII</name>
     <message>
         <source>Show general overview of wallet</source>
         <translation type="unfinished">Ipakit ing kabuuang lawe ning wallet</translation>

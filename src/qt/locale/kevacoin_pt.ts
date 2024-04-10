@@ -412,7 +412,7 @@ Assinar só é possível com endereços do tipo "legado".</translation>
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUII</name>
     <message>
         <source>&amp;Overview</source>
         <translation type="unfinished">&amp;Resumo</translation>

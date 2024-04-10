@@ -355,7 +355,7 @@ Signing is only possible with addresses of the type &apos;legacy&apos;.</source>
     </message>
 </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>KevacoinGUI</name>
     <message>
         <location filename="../kevacoingui.cpp" line="+250"/>
         <source>&amp;Overview</source>
