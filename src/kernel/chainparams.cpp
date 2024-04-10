@@ -260,7 +260,7 @@ public:
         consensus.CSVHeight = 1; // 00000000025e930139bac5c6c31a403776da130831ab85be56578f3fa75369bb
         consensus.SegwitHeight = 1; // 00000000002b980fcd729daaa248fd9316a5200e9b367f4ff2c42453e84201ca
         consensus.MinBIP9WarningHeight = 1; // segwit activation height + miner confirmation window
-        consensus.RandomXHeight = 3;
+        consensus.RandomXHeight = 1;
         consensus.powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 2.0 * 60; // two minutes
         consensus.nPowTargetSpacing = 2.0 * 60; // two minutes
@@ -275,8 +275,8 @@ public:
 
         // Deployment of NsFix
         consensus.vDeployments[Consensus::DEPLOYMENT_NSFIX].bit = 3;
-        consensus.vDeployments[Consensus::DEPLOYMENT_NSFIX].nStartTime = 1594771200; // 07/15/2020 @ 12:00am
-        consensus.vDeployments[Consensus::DEPLOYMENT_NSFIX].nTimeout = 1598745600; // 08/30/2020 @ 12:00am
+        consensus.vDeployments[Consensus::DEPLOYMENT_NSFIX].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_NSFIX].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
 
         #if 0
         // Deployment of Taproot (BIPs 340-342)
@@ -415,6 +415,7 @@ public:
         consensus.nRuleChangeActivationThreshold = 1815; // 90% of 2016
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
         consensus.MinBIP9WarningHeight = 0;
+        consensus.RandomXHeight = 1; // RandomX acticated on regtest.
         consensus.powLimit = uint256S("00000377ae000000000000000000000000000000000000000000000000000000");
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
@@ -423,8 +424,8 @@ public:
 
         // Deployment of NsFix
         consensus.vDeployments[Consensus::DEPLOYMENT_NSFIX].bit = 3;
-        consensus.vDeployments[Consensus::DEPLOYMENT_NSFIX].nStartTime = 1594771200; // 07/15/2020 @ 12:00am
-        consensus.vDeployments[Consensus::DEPLOYMENT_NSFIX].nTimeout = 1598745600; // 08/30/2020 @ 12:00am
+        consensus.vDeployments[Consensus::DEPLOYMENT_NSFIX].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_NSFIX].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
 
         #if 0
         // Activation of Taproot (BIPs 340-342)
@@ -490,8 +491,6 @@ class CRegTestParams : public CChainParams
 public:
     explicit CRegTestParams(const RegTestOptions& opts)
     {
-        
-
         m_chain_type = ChainType::REGTEST;
         consensus.signet_blocks = false;
         consensus.signet_challenge.clear();
@@ -503,7 +502,7 @@ public:
         consensus.CSVHeight = 1;    // Always active unless overridden
         consensus.SegwitHeight = 0; // Always active unless overridden
         consensus.MinBIP9WarningHeight = 0;
-        consensus.RandomXHeight = 2000000; // RandomX acticated on regtest.
+        consensus.RandomXHeight = 1; // RandomX acticated on regtest.
         consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 2.0 * 60; // two minutes
         consensus.nPowTargetSpacing = 2.0 * 60; // two minutes
@@ -519,7 +518,7 @@ public:
 
         // Deployment of NsFix
         consensus.vDeployments[Consensus::DEPLOYMENT_NSFIX].bit = 3;
-        consensus.vDeployments[Consensus::DEPLOYMENT_NSFIX].nStartTime = 1517356801; // January 31st, 2018
+        consensus.vDeployments[Consensus::DEPLOYMENT_NSFIX].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
         consensus.vDeployments[Consensus::DEPLOYMENT_NSFIX].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
 
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].bit = 2;
