@@ -19,4 +19,4 @@ public:
 static clang::tidy::ClangTidyModuleRegistry::Add<BitcoinModule>
     X("kevacoin-module", "Adds kevacoin checks.");
 
-volatile int BitcoinModuleAnchorSource = 0;
+volatile int KevacoinModuleAnchorSource = 0;

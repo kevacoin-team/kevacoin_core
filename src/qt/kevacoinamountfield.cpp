@@ -217,7 +217,7 @@ Q_SIGNALS:
 
 #include <qt/kevacoinamountfield.moc>
 
-BitcoinAmountField::BitcoinAmountField(QWidget* parent)
+KevacoinAmountField::KevacoinAmountField(QWidget* parent)
     : QWidget(parent)
 {
     amount = new AmountSpinBox(this);
@@ -239,26 +239,26 @@ BitcoinAmountField::BitcoinAmountField(QWidget* parent)
     setFocusProxy(amount);
 
     // If one if the widgets changes, the combined content changes as well
-    connect(amount, &AmountSpinBox::valueChanged, this, &BitcoinAmountField::valueChanged);
-    connect(unit, qOverload<int>(&QComboBox::currentIndexChanged), this, &BitcoinAmountField::unitChanged);
+    connect(amount, &AmountSpinBox::valueChanged, this, &KevacoinAmountField::valueChanged);
+    connect(unit, qOverload<int>(&QComboBox::currentIndexChanged), this, &KevacoinAmountField::unitChanged);
 
     // Set default based on configuration
     unitChanged(unit->currentIndex());
 }
 
-void BitcoinAmountField::clear()
+void KevacoinAmountField::clear()
 {
     amount->clear();
     unit->setCurrentIndex(0);
 }
 
-void BitcoinAmountField::setEnabled(bool fEnabled)
+void KevacoinAmountField::setEnabled(bool fEnabled)
 {
     amount->setEnabled(fEnabled);
     unit->setEnabled(fEnabled);
 }
 
-bool BitcoinAmountField::validate()
+bool KevacoinAmountField::validate()
 {
     bool valid = false;
     value(&valid);
@@ -266,7 +266,7 @@ bool BitcoinAmountField::validate()
     return valid;
 }
 
-void BitcoinAmountField::setValid(bool valid)
+void KevacoinAmountField::setValid(bool valid)
 {
     if (valid)
         amount->setStyleSheet("");
@@ -274,7 +274,7 @@ void BitcoinAmountField::setValid(bool valid)
         amount->setStyleSheet(STYLE_INVALID);
 }
 
-bool BitcoinAmountField::eventFilter(QObject *object, QEvent *event)
+bool KevacoinAmountField::eventFilter(QObject *object, QEvent *event)
 {
     if (event->type() == QEvent::FocusIn)
     {
@@ -284,44 +284,44 @@ bool BitcoinAmountField::eventFilter(QObject *object, QEvent *event)
     return QWidget::eventFilter(object, event);
 }
 
-QWidget *BitcoinAmountField::setupTabChain(QWidget *prev)
+QWidget *KevacoinAmountField::setupTabChain(QWidget *prev)
 {
     QWidget::setTabOrder(prev, amount);
     QWidget::setTabOrder(amount, unit);
     return unit;
 }
 
-CAmount BitcoinAmountField::value(bool *valid_out) const
+CAmount KevacoinAmountField::value(bool *valid_out) const
 {
     return amount->value(valid_out);
 }
 
-void BitcoinAmountField::setValue(const CAmount& value)
+void KevacoinAmountField::setValue(const CAmount& value)
 {
     amount->setValue(value);
 }
 
-void BitcoinAmountField::SetAllowEmpty(bool allow)
+void KevacoinAmountField::SetAllowEmpty(bool allow)
 {
     amount->SetAllowEmpty(allow);
 }
 
-void BitcoinAmountField::SetMinValue(const CAmount& value)
+void KevacoinAmountField::SetMinValue(const CAmount& value)
 {
     amount->SetMinValue(value);
 }
 
-void BitcoinAmountField::SetMaxValue(const CAmount& value)
+void KevacoinAmountField::SetMaxValue(const CAmount& value)
 {
     amount->SetMaxValue(value);
 }
 
-void BitcoinAmountField::setReadOnly(bool fReadOnly)
+void KevacoinAmountField::setReadOnly(bool fReadOnly)
 {
     amount->setReadOnly(fReadOnly);
 }
 
-void BitcoinAmountField::unitChanged(int idx)
+void KevacoinAmountField::unitChanged(int idx)
 {
     // Use description tooltip for current unit for the combobox
     unit->setToolTip(unit->itemData(idx, Qt::ToolTipRole).toString());
@@ -332,12 +332,12 @@ void BitcoinAmountField::unitChanged(int idx)
     amount->setDisplayUnit(new_unit.value<KevacoinUnit>());
 }
 
-void BitcoinAmountField::setDisplayUnit(KevacoinUnit new_unit)
+void KevacoinAmountField::setDisplayUnit(KevacoinUnit new_unit)
 {
     unit->setValue(QVariant::fromValue(new_unit));
 }
 
-void BitcoinAmountField::setSingleStep(const CAmount& step)
+void KevacoinAmountField::setSingleStep(const CAmount& step)
 {
     amount->setSingleStep(step);
 }

@@ -344,7 +344,7 @@
   </widget>
   <customwidgets>
     <customwidget>
-      <class>BitcoinAmountField</class>
+      <class>KevacoinAmountField</class>
       <extends>QLineEdit</extends>
       <header>qt/kevacoinamountfield.h</header>
       <container>1</container>

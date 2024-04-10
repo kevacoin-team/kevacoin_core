@@ -46,7 +46,7 @@ void ReceiveRequestDialog::setInfo(const SendCoinsRecipient &_info)
 {
     this->info = _info;
     setWindowTitle(tr("Request payment to %1").arg(info.label.isEmpty() ? info.address : info.label));
-    QString uri = GUIUtil::formatBitcoinURI(info);
+    QString uri = GUIUtil::formatKevacoinURI(info);
 
 #ifdef USE_QRCODE
     if (ui->qr_code->setQR(uri, info.address)) {
@@ -104,7 +104,7 @@ void ReceiveRequestDialog::updateDisplayUnit()
 
 void ReceiveRequestDialog::on_btnCopyURI_clicked()
 {
-    GUIUtil::setClipboard(GUIUtil::formatBitcoinURI(info));
+    GUIUtil::setClipboard(GUIUtil::formatKevacoinURI(info));
 }
 
 void ReceiveRequestDialog::on_btnCopyAddress_clicked()

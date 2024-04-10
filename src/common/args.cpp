@@ -696,8 +696,8 @@ bool HasTestOption(const ArgsManager& args, const std::string& test_option)
 
 fs::path GetDefaultDataDir()
 {
-    // Windows: C:\Users\Username\AppData\Roaming\Bitcoin
-    // macOS: ~/Library/Application Support/Bitcoin
+    // Windows: C:\Users\Username\AppData\Roaming\Kevacoin
+    // macOS: ~/Library/Application Support/Kevacoin
     // Unix-like: ~/.kevacoin
 #ifdef WIN32
     // Windows

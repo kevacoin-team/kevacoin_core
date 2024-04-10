@@ -425,7 +425,7 @@ void KevaDialog::copyURI()
     }
 
     const KevaTableModel * const submodel = model->getKevaTableModel();
-    const QString uri = GUIUtil::formatBitcoinURI(submodel->entry(sel.row()).recipient);
+    const QString uri = GUIUtil::formatKevacoinURI(submodel->entry(sel.row()).recipient);
     GUIUtil::setClipboard(uri);
 #endif
 }

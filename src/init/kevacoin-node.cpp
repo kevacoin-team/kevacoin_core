@@ -18,10 +18,10 @@ namespace init {
 namespace {
 const char* EXE_NAME = "kevacoin-node";
 
-class BitcoinNodeInit : public interfaces::Init
+class KevacoinNodeInit : public interfaces::Init
 {
 public:
-    BitcoinNodeInit(node::NodeContext& node, const char* arg0)
+    KevacoinNodeInit(node::NodeContext& node, const char* arg0)
         : m_node(node),
           m_ipc(interfaces::MakeIpc(EXE_NAME, arg0, *this))
     {
@@ -45,7 +45,7 @@ public:
 namespace interfaces {
 std::unique_ptr<Init> MakeNodeInit(node::NodeContext& node, int argc, char* argv[], int& exit_status)
 {
-    auto init = std::make_unique<init::BitcoinNodeInit>(node, argc > 0 ? argv[0] : "");
+    auto init = std::make_unique<init::KevacoinNodeInit>(node, argc > 0 ? argv[0] : "");
     // Check if kevacoin-node is being invoked as an IPC server. If so, then
     // bypass normal execution and just respond to requests over the IPC
     // channel and return null.

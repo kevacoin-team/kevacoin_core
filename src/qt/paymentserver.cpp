@@ -42,7 +42,7 @@ const QString KEVACOIN_IPC_PREFIX("kevacoin:");
 //
 static QString ipcServerName()
 {
-    QString name("BitcoinQt");
+    QString name("KevacoinQt");
 
     // Append a simple hash of the datadir
     // Note that gArgs.GetDataDirNet() returns a different path
@@ -200,7 +200,7 @@ void PaymentServer::handleURIOrFile(const QString& s)
         // normal URI
         {
             SendCoinsRecipient recipient;
-            if (GUIUtil::parseBitcoinURI(s, &recipient))
+            if (GUIUtil::parseKevacoinURI(s, &recipient))
             {
                 std::string error_msg;
                 const CTxDestination dest = DecodeDestination(recipient.address.toStdString(), error_msg);
@@ -221,7 +221,7 @@ void PaymentServer::handleURIOrFile(const QString& s)
             }
             else
                 Q_EMIT message(tr("URI handling"),
-                    tr("URI cannot be parsed! This can be caused by an invalid Bitcoin address or malformed URI parameters."),
+                    tr("URI cannot be parsed! This can be caused by an invalid Kevacoin address or malformed URI parameters."),
                     CClientUIInterface::ICON_WARNING);
 
             return;

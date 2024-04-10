@@ -161,7 +161,7 @@
    <item row="2" column="1">
     <layout class="QHBoxLayout" name="horizontalLayoutAmount" stretch="0,1,0">
      <item>
-      <widget class="BitcoinAmountField" name="payAmount" native="true">
+      <widget class="KevacoinAmountField" name="payAmount" native="true">
        <property name="toolTip">
         <string>The amount to send in the selected unit</string>
        </property>
@@ -222,7 +222,7 @@
    <header>qt/qvalidatedlineedit.h</header>
   </customwidget>
   <customwidget>
-   <class>BitcoinAmountField</class>
+   <class>KevacoinAmountField</class>
    <extends>QWidget</extends>
    <header>qt/kevacoinamountfield.h</header>
    <container>1</container>

@@ -32,7 +32,7 @@ class Init;
 } // namespace interfaces
 
 
-/** Main Bitcoin application object */
+/** Main Kevacoin application object */
 class KevacoinApplication: public QApplication
 {
     Q_OBJECT

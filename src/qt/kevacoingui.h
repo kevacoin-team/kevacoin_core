@@ -63,7 +63,7 @@ class ClickableProgressBar;
 }
 
 /**
-  Bitcoin GUI main class. This class represents the main window of the Bitcoin UI. It communicates with both the client and
+  Kevacoin GUI main class. This class represents the main window of the Kevacoin UI. It communicates with both the client and
   wallet models to give the user an up-to-date view of the current core state.
 */
 class KevacoinGUI : public QMainWindow
@@ -293,7 +293,7 @@ public Q_SLOTS:
     void gotoSignMessageTab(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to verify message tab */
     void gotoVerifyMessageTab(QString addr = "");
-    /** Load Partially Signed Bitcoin Transaction from file or clipboard */
+    /** Load Partially Signed Kevacoin Transaction from file or clipboard */
     void gotoLoadPSBT(bool from_clipboard = false);
     /** Enable history action when privacy is changed */
     void enableHistoryAction(bool privacy);

@@ -15,10 +15,10 @@
 
 namespace init {
 namespace {
-class BitcoinQtInit : public interfaces::Init
+class KevacoinNodeInit : public interfaces::Init
 {
 public:
-    BitcoinQtInit()
+    KevacoinNodeInit()
     {
         InitContext(m_node);
         m_node.init = this;
@@ -38,6 +38,6 @@ public:
 namespace interfaces {
 std::unique_ptr<Init> MakeGuiInit(int argc, char* argv[])
 {
-    return std::make_unique<init::BitcoinQtInit>();
+    return std::make_unique<init::KevacoinNodeInit>();
 }
 } // namespace interfaces

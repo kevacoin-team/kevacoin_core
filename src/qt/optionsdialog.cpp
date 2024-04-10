@@ -158,7 +158,7 @@ OptionsDialog::OptionsDialog(QWidget* parent, bool enableWallet)
     ui->kevacoinAtStartup->setToolTip(ui->kevacoinAtStartup->toolTip().arg(PACKAGE_NAME));
     ui->kevacoinAtStartup->setText(ui->kevacoinAtStartup->text().arg(PACKAGE_NAME));
 
-    ui->openBitcoinConfButton->setToolTip(ui->openBitcoinConfButton->toolTip().arg(PACKAGE_NAME));
+    ui->openKevacoinConfButton->setToolTip(ui->openKevacoinConfButton->toolTip().arg(PACKAGE_NAME));
 
     ui->lang->setToolTip(ui->lang->toolTip().arg(PACKAGE_NAME));
     ui->lang->addItem(QString("(") + tr("default") + QString(")"), QVariant(""));
@@ -357,7 +357,7 @@ void OptionsDialog::on_resetButton_clicked()
     }
 }
 
-void OptionsDialog::on_openBitcoinConfButton_clicked()
+void OptionsDialog::on_openKevacoinConfButton_clicked()
 {
     QMessageBox config_msgbox(this);
     config_msgbox.setIcon(QMessageBox::Information);
@@ -377,7 +377,7 @@ void OptionsDialog::on_openBitcoinConfButton_clicked()
     if (config_msgbox.clickedButton() != open_button) return;
 
     /* show an error if there was some problem opening the file */
-    if (!GUIUtil::openBitcoinConf())
+    if (!GUIUtil::openKevacoinConf())
         QMessageBox::critical(this, tr("Error"), tr("The configuration file could not be opened."));
 }
 

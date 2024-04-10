@@ -37,7 +37,7 @@ private:
         ~HandleCallback();
     };
 
-    //! Bitcoin application.
+    //! Kevacoin application.
     KevacoinApplication& m_app;
 
     //! Set of pending callback names. Used to track expected callbacks and shut
