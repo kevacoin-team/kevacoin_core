@@ -16,7 +16,7 @@ except ImportError:
     pass
 
 from test_framework.address import ADDRESS_BCRT1_UNSPENDABLE
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import KevacoinTestFramework
 from test_framework.util import assert_equal
 
 
@@ -50,7 +50,7 @@ int trace_block_connected(struct pt_regs *ctx) {
 """
 
 
-class ValidationTracepointTest(BitcoinTestFramework):
+class ValidationTracepointTest(KevacoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
 

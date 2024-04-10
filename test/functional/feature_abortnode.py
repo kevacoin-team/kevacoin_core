@@ -9,10 +9,10 @@
 - Mine a fork that requires disconnecting the tip.
 - Verify that kevacoind AbortNode's.
 """
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import KevacoinTestFramework
 
 
-class AbortNodeTest(BitcoinTestFramework):
+class AbortNodeTest(KevacoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 2

@@ -9,10 +9,10 @@
 import os
 import stat
 import subprocess
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import KevacoinTestFrameworkkk
 
 
-class BlockstoreReindexTest(BitcoinTestFramework):
+class BlockstoreReindexTest(KevacoinTestFrameworkkk):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 1

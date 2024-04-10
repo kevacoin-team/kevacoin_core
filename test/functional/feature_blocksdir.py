@@ -8,10 +8,10 @@
 import shutil
 from pathlib import Path
 
-from test_framework.test_framework import BitcoinTestFramework, initialize_datadir
+from test_framework.test_framework import KevacoinTestFramework, initialize_datadir
 
 
-class BlocksdirTest(BitcoinTestFramework):
+class BlocksdirTest(KevacoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 1

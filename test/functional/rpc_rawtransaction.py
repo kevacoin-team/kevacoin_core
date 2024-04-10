@@ -29,7 +29,7 @@ from test_framework.script import (
     OP_INVALIDOPCODE,
     OP_RETURN,
 )
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import KevacoinTestFrameworkk
 from test_framework.util import (
     assert_equal,
     assert_greater_than,
@@ -62,7 +62,7 @@ class multidict(dict):
         return self.x
 
 
-class RawTransactionsTest(BitcoinTestFramework):
+class RawTransactionsTest(KevacoinTestFrameworkk):
     def add_options(self, parser):
         self.add_wallet_options(parser, descriptors=False)
 

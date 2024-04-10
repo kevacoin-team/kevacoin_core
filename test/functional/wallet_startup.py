@@ -6,13 +6,13 @@
 
 Verify that a kevacoind node can maintain list of wallets loading on startup
 """
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import KevacoinTestFramework
 from test_framework.util import (
     assert_equal,
 )
 
 
-class WalletStartupTest(BitcoinTestFramework):
+class WalletStartupTest(KevacoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser)
 

@@ -7,13 +7,13 @@
 import re
 
 from test_framework.blocktools import COINBASE_MATURITY
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import KevacoinTestFramework
 from test_framework.util import (
     assert_equal,
 )
 
 
-class WalletChangeAddressTest(BitcoinTestFramework):
+class WalletChangeAddressTest(KevacoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser)
 

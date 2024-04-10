@@ -12,7 +12,7 @@ from test_framework.messages import (
     COIN,
     DEFAULT_ANCESTOR_LIMIT,
 )
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import KevacoinTestFramework
 from test_framework.util import (
     assert_array_result,
     assert_equal,
@@ -26,7 +26,7 @@ NOT_A_NUMBER_OR_STRING = "Amount is not a number or string"
 OUT_OF_RANGE = "Amount out of range"
 
 
-class WalletTest(BitcoinTestFramework):
+class WalletTest(KevacoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser)
 

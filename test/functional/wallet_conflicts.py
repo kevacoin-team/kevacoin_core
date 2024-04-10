@@ -10,12 +10,12 @@ Test that wallet correctly tracks transactions that have been conflicted by bloc
 from decimal import Decimal
 
 from test_framework.blocktools import COINBASE_MATURITY
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import KevacoinTestFrameworkk
 from test_framework.util import (
         assert_equal,
 )
 
-class TxConflicts(BitcoinTestFramework):
+class TxConflicts(KevacoinTestFrameworkk):
     def add_options(self, parser):
         self.add_wallet_options(parser)
 

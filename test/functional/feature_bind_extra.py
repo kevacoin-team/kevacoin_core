@@ -12,7 +12,7 @@ from test_framework.netutil import (
     get_bind_addrs,
 )
 from test_framework.test_framework import (
-    BitcoinTestFramework,
+    KevacoinTestFramework,
 )
 from test_framework.util import (
     assert_equal,
@@ -21,7 +21,7 @@ from test_framework.util import (
 )
 
 
-class BindExtraTest(BitcoinTestFramework):
+class BindExtraTest(KevacoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         # Avoid any -bind= on the command line. Force the framework to avoid

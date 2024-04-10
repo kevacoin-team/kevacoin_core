@@ -32,7 +32,7 @@ from test_framework.psbt import (
     PSBT_OUT_TAP_TREE,
 )
 from test_framework.script import CScript, OP_TRUE
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import KevacoinTestFrameworkk
 from test_framework.util import (
     assert_approx,
     assert_equal,
@@ -50,7 +50,7 @@ import json
 import os
 
 
-class PSBTTest(BitcoinTestFramework):
+class PSBTTest(KevacoinTestFrameworkk):
     def add_options(self, parser):
         self.add_wallet_options(parser)
 

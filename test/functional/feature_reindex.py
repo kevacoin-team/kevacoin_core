@@ -10,12 +10,12 @@
 - Verify that out-of-order blocks are correctly processed, see LoadExternalBlockFile()
 """
 
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import KevacoinTestFramework
 from test_framework.messages import MAGIC_BYTES
 from test_framework.util import assert_equal
 
 
-class ReindexTest(BitcoinTestFramework):
+class ReindexTest(KevacoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 1

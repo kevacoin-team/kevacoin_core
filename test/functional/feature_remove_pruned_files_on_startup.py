@@ -6,9 +6,9 @@
 
 import platform
 import os
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import KevacoinTestFramework
 
-class FeatureRemovePrunedFilesOnStartupTest(BitcoinTestFramework):
+class FeatureRemovePrunedFilesOnStartupTest(KevacoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
         self.extra_args = [["-fastprune", "-prune=1"]]

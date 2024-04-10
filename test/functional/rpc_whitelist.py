@@ -5,7 +5,7 @@
 """
 A test for RPC users with restricted permissions
 """
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import KevacoinTestFramework
 from test_framework.util import (
     assert_equal,
     str_to_b64str,
@@ -24,7 +24,7 @@ def rpccall(node, user, method):
     return resp
 
 
-class RPCWhitelistTest(BitcoinTestFramework):
+class RPCWhitelistTest(KevacoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
 

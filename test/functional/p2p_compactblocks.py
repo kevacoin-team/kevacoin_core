@@ -55,7 +55,7 @@ from test_framework.script import (
     OP_DROP,
     OP_TRUE,
 )
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import KevacoinTestFramework
 from test_framework.util import (
     assert_equal,
     softfork_active,
@@ -141,7 +141,7 @@ class TestP2PConn(P2PInterface):
         self.send_message(message)
         self.wait_for_disconnect(timeout)
 
-class CompactBlocksTest(BitcoinTestFramework):
+class CompactBlocksTest(KevacoinTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 1

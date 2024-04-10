@@ -11,12 +11,12 @@ import re
 import tempfile
 import time
 
-from test_framework.test_framework import BitcoinTestFramework
+from test_framework.test_framework import KevacoinTestFramework
 from test_framework.test_node import ErrorMatch
 from test_framework import util
 
 
-class ConfArgsTest(BitcoinTestFramework):
+class ConfArgsTest(KevacoinTestFramework):
     def add_options(self, parser):
         self.add_wallet_options(parser)
 
