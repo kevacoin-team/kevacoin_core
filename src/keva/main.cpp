@@ -342,19 +342,22 @@ bool CheckKevaTransaction(const CTransaction& tx, unsigned nHeight, const CCoins
       return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("CheckKevaTransaction: display name value too long"));
     }
 
-    // NOTE Hardcoding height as quick and dirty fix for mainnet.
-    // TODO Fix to derive fix activation status from chain
-    bool nsFixEnabled = nHeight > 130112;
-    // if (!nsFixEnabled) {
-    //   // This is a historic bug.
-    //   return true;
-    // }
+    // TODO: Fix to derive fix activation status from chain
+    bool nsFixEnabled = false;
+    if (g_chainman->GetParams().GetChainType() == ChainType::MAIN) {
+      // NOTE: Hardcoded block closest to mainnet activation time
+      nsFixEnabled = nHeight > 130112;
+    }
+    else {
+      // NOTE: Testnet, Signet and RegTest all assume ns fix always activated
+      nsFixEnabled = true;
+    }
 
-    // Make sure the namespace Id is correctly derived from vin[0].
     valtype expectedNamespace;
     bool checkResult = false;
   
     if (nsFixEnabled) {
+        // Make sure the namespace Id is correctly derived from vin[0].
         CKevaScript::generateNamespace(tx.vin[0].prevout.hash, tx.vin[0].prevout.n, expectedNamespace, Params(), true);
         checkResult = expectedNamespace == nameOpOut.getOpNamespace();
         if (!checkResult) {
