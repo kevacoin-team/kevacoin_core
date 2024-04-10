@@ -237,7 +237,7 @@ Ko te whakakī i ēnei whakaaronga e taea ana anake ki ngā whakararuraru o te m
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplicationn</name>
     <message>
         <source>Settings file %1 might be corrupt or invalid.</source>
         <translation type="unfinished">Settings file %1 me whakapōrearea, me whakararuraru rānei.</translation>

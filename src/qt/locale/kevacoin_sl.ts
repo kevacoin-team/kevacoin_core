@@ -244,7 +244,7 @@ Podpisovanje je možno le s podedovanimi ("legacy") naslovi.</translation>
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>Settings file %1 might be corrupt or invalid.</source>
         <translation type="unfinished">Datoteka z nastavitvami %1 je morda ovkarjena ali neveljavna.</translation>

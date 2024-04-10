@@ -256,7 +256,7 @@ Só é possível assinar com endereços do tipo 'legado'.</translation>
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>Settings file %1 might be corrupt or invalid.</source>
         <translation type="unfinished">Arquivos de configurações %1 podem estar corrompidos ou inválidos</translation>

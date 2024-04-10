@@ -236,7 +236,7 @@ Potpisivanje je moguće samo sa 'legacy' adresama. </translation>
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>Runaway exception</source>
         <translation type="unfinished">Runaway iznimka</translation>

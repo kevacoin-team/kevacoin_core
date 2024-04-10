@@ -40,7 +40,7 @@ Hierdie is die adresse waar u Bitcoins sal ontvang. Ons beveel aan dat u 'n nuwe
     </message>
     </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>Settings file %1 might be corrupt or invalid.</source>
         <translation type="unfinished">Instellingslêer %1 kan korrup of ongeldig wees.</translation>

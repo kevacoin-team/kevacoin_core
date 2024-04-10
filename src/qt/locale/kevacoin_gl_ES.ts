@@ -227,7 +227,7 @@ Firmar é posible unicamente con enderezos de tipo 'legacy'.</translation>
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>Internal error</source>
         <translation type="unfinished">Erro interno</translation>

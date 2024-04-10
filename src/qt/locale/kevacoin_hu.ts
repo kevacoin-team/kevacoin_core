@@ -256,7 +256,7 @@ Aláírni csak régi típusú, egyessel kezdődő címekkel lehet.</translation>
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>Settings file %1 might be corrupt or invalid.</source>
         <translation type="unfinished">A beállítások fájl %1 sérült vagy érvénytelen.</translation>

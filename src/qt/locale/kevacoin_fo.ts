@@ -51,7 +51,7 @@
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>Settings file %1 might be corrupt or invalid.</source>
         <translation type="unfinished">Uppsetanarfílan %1 kann vera avskeplað ella ógildig.</translation>

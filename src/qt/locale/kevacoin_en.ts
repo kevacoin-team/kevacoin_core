@@ -327,7 +327,7 @@ Signing is only possible with addresses of the type &apos;legacy&apos;.</source>
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <location filename="../kevacoin.cpp" line="+275"/>
         <source>Settings file %1 might be corrupt or invalid.</source>

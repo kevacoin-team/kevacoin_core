@@ -241,7 +241,7 @@ Kutia sahihi kunawezekana tu kwa anwani za aina ya 'urithi'.</translation>
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>Runaway exception</source>
         <translation type="unfinished">Ubaguzi wa kukimbia</translation>

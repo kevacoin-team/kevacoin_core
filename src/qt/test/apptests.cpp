@@ -51,7 +51,7 @@ void TestRpcCommand(RPCConsole* console)
 }
 } // namespace
 
-//! Entry point for BitcoinApplication tests.
+//! Entry point for KevacoinApplication tests.
 void AppTests::appTests()
 {
 #ifdef Q_OS_MACOS
@@ -72,7 +72,7 @@ void AppTests::appTests()
     QScopedPointer<const NetworkStyle> style(NetworkStyle::instantiate(Params().GetChainType()));
     m_app.setupPlatformStyle();
     m_app.createWindow(style.data());
-    connect(&m_app, &BitcoinApplication::windowShown, this, &AppTests::guiTests);
+    connect(&m_app, &KevacoinApplication::windowShown, this, &AppTests::guiTests);
     expectCallback("guiTests");
     m_app.baseInitialize();
     m_app.requestInitialize();

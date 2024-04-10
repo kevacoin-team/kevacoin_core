@@ -152,7 +152,7 @@
     </message>
     </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>A fatal error occurred. %1 can no longer continue safely and will quit.</source>
         <translation type="unfinished">एक गंभीर त्रुटी आली. %1यापुढे सुरक्षितपणे सुरू ठेवू शकत नाही आणि संपेल.</translation>

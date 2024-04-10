@@ -232,7 +232,7 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>Internal error</source>
         <translation type="unfinished">ውስጣዊ ስህተት</translation>

@@ -256,7 +256,7 @@ Il n’est possible de signer qu’avec les adresses de type « legacy ».</tr
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>Settings file %1 might be corrupt or invalid.</source>
         <translation type="unfinished">Le fichier de paramètres %1 est peut-être corrompu ou invalide.</translation>

@@ -196,7 +196,7 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>A fatal error occurred. %1 can no longer continue safely and will quit.</source>
         <translation type="unfinished">ਇੱਕ ਘਾਤਕ ਗਲਤੀ ਆਈ ਹੈ। %1ਹੁਣ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਜਾਰੀ ਨਹੀਂ ਰਹਿ ਸਕਦਾ ਹੈ ਅਤੇ ਛੱਡ ਦੇਵੇਗਾ।</translation>

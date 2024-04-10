@@ -215,7 +215,7 @@
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>Settings file %1 might be corrupt or invalid.</source>
         <translation type="unfinished">සැකසීම් ගොනුව %1 දූෂිත හෝ අවලංගු විය හැක.</translation>

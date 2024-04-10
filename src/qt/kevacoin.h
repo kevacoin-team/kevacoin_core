@@ -33,12 +33,12 @@ class Init;
 
 
 /** Main Bitcoin application object */
-class BitcoinApplication: public QApplication
+class KevacoinApplication: public QApplication
 {
     Q_OBJECT
 public:
-    explicit BitcoinApplication();
-    ~BitcoinApplication();
+    explicit KevacoinApplication();
+    ~KevacoinApplication();
 
 #ifdef ENABLE_WALLET
     /// Create payment server

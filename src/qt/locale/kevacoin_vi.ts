@@ -220,7 +220,7 @@
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>Settings file %1 might be corrupt or invalid.</source>
         <translation type="unfinished">Tệp cài đặt %1 có thể bị hư hại hoặc không hợp lệ.</translation>

@@ -71,7 +71,7 @@
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>Settings file %1 might be corrupt or invalid.</source>
         <translation type="unfinished">فایل تنظیمات %1 ممکن است خراب یا نامعتبر باشد.</translation>

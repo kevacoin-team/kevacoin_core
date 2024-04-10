@@ -157,7 +157,7 @@
     </message>
     </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>Internal error</source>
         <translation type="unfinished">Дотоод алдаа</translation>

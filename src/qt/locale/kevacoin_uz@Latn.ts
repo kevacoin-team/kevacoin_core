@@ -232,7 +232,7 @@ Kirish faqat 'legacy' turidagi manzillar uchun.</translation>
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplicationnn</name>
     <message>
         <source>Runaway exception</source>
         <translation type="unfinished">qo'shimcha istisno</translation>

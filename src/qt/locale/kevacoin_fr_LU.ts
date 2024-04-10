@@ -252,7 +252,7 @@ La signature n'est possible qu'avec les adresses de type "patrimoine".</translat
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>Settings file %1 might be corrupt or invalid.</source>
         <translation type="unfinished">Le fichier de paramètres %1 est peut-être corrompu ou non valide.</translation>

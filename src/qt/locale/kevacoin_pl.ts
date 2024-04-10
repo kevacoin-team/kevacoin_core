@@ -210,7 +210,7 @@ Podpisywanie jest możliwe tylko z adresami typu 'legacy'.</translation>
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplicationnnn</name>
     <message>
         <source>Settings file %1 might be corrupt or invalid.</source>
         <translation type="unfinished">Plik ustawień 1%1 może być uszkodzony lub nieprawidłowy</translation>

@@ -252,7 +252,7 @@ E' possibile firmare solo con indirizzi di tipo "legacy".</translation>
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>Settings file %1 might be corrupt or invalid.</source>
         <translation type="unfinished">Il file di impostazioni %1 potrebbe essere corrotto o invalido.</translation>

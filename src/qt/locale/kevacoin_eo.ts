@@ -227,7 +227,7 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>A fatal error occurred. %1 can no longer continue safely and will quit.</source>
         <translation type="unfinished">Neriparebla eraro okazis. %1 ne plu sekure povas daŭri kaj ĝi ĉesiĝos.</translation>

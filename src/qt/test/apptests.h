@@ -10,7 +10,7 @@
 #include <string>
 #include <utility>
 
-class BitcoinApplication;
+class KevacoinApplication;
 class KevacoinGUI;
 class RPCConsole;
 
@@ -18,7 +18,7 @@ class AppTests : public QObject
 {
     Q_OBJECT
 public:
-    explicit AppTests(BitcoinApplication& app) : m_app(app) {}
+    explicit AppTests(KevacoinApplication& app) : m_app(app) {}
 
 private Q_SLOTS:
     void appTests();
@@ -38,7 +38,7 @@ private:
     };
 
     //! Bitcoin application.
-    BitcoinApplication& m_app;
+    KevacoinApplication& m_app;
 
     //! Set of pending callback names. Used to track expected callbacks and shut
     //! down the app after the last callback has been handled and all tests have

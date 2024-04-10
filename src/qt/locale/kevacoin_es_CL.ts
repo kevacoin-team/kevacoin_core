@@ -249,7 +249,7 @@ Usa el boton "Crear nueva direccion de recibimiento" en la pestaña de recibir p
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>Settings file %1 might be corrupt or invalid.</source>
         <translation type="unfinished">El archivo de configuración %1 puede estar corrupto o no ser válido.</translation>

@@ -244,7 +244,7 @@ L-iffirmar huwa possibbli biss b'indirizzi tat-tip 'legacy'.</translation>
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>Settings file %1 might be corrupt or invalid.</source>
         <translation type="unfinished">Il-fajl tas-settings %1jista' jkun korrott jew invalidu.</translation>

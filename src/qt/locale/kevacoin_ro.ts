@@ -237,7 +237,7 @@ Semnarea este posibilă numai cu adrese de tip "legacy".</translation>
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>Settings file %1 might be corrupt or invalid.</source>
         <translation type="unfinished">Fișierul de configurări %1 poate fi corupt sau invalid.</translation>

@@ -221,7 +221,7 @@ void DebugMessageHandler(QtMsgType type, const QMessageLogContext& context, cons
 static int qt_argc = 1;
 static const char* qt_argv = "kevacoin-qt";
 
-BitcoinApplication::BitcoinApplication()
+KevacoinApplication::KevacoinApplication()
     : QApplication(qt_argc, const_cast<char**>(&qt_argv))
 {
     // Qt runs setlocale(LC_ALL, "") on initialization.
@@ -229,10 +229,10 @@ BitcoinApplication::BitcoinApplication()
     setQuitOnLastWindowClosed(false);
 }
 
-void BitcoinApplication::setupPlatformStyle()
+void KevacoinApplication::setupPlatformStyle()
 {
     // UI per-platform customization
-    // This must be done inside the BitcoinApplication constructor, or after it, because
+    // This must be done inside the KevacoinApplication constructor, or after it, because
     // PlatformStyle::instantiate requires a QApplication
     std::string platformName;
     platformName = gArgs.GetArg("-uiplatform", KevacoinGUI::DEFAULT_UIPLATFORM);
@@ -242,7 +242,7 @@ void BitcoinApplication::setupPlatformStyle()
     assert(platformStyle);
 }
 
-BitcoinApplication::~BitcoinApplication()
+KevacoinApplication::~KevacoinApplication()
 {
     m_executor.reset();
 
@@ -253,13 +253,13 @@ BitcoinApplication::~BitcoinApplication()
 }
 
 #ifdef ENABLE_WALLET
-void BitcoinApplication::createPaymentServer()
+void KevacoinApplication::createPaymentServer()
 {
     paymentServer = new PaymentServer(this);
 }
 #endif
 
-bool BitcoinApplication::createOptionsModel(bool resetSettings)
+bool KevacoinApplication::createOptionsModel(bool resetSettings)
 {
     optionsModel = new OptionsModel(node(), this);
     if (resetSettings) {
@@ -281,10 +281,10 @@ bool BitcoinApplication::createOptionsModel(bool resetSettings)
     return true;
 }
 
-void BitcoinApplication::createWindow(const NetworkStyle *networkStyle)
+void KevacoinApplication::createWindow(const NetworkStyle *networkStyle)
 {
     window = new KevacoinGUI(node(), platformStyle, networkStyle, nullptr);
-    connect(window, &KevacoinGUI::quitRequested, this, &BitcoinApplication::requestShutdown);
+    connect(window, &KevacoinGUI::quitRequested, this, &KevacoinApplication::requestShutdown);
 
     pollShutdownTimer = new QTimer(window);
     connect(pollShutdownTimer, &QTimer::timeout, [this]{
@@ -294,41 +294,41 @@ void BitcoinApplication::createWindow(const NetworkStyle *networkStyle)
     });
 }
 
-void BitcoinApplication::createSplashScreen(const NetworkStyle *networkStyle)
+void KevacoinApplication::createSplashScreen(const NetworkStyle *networkStyle)
 {
     assert(!m_splash);
     m_splash = new SplashScreen(networkStyle);
     m_splash->show();
 }
 
-void BitcoinApplication::createNode(interfaces::Init& init)
+void KevacoinApplication::createNode(interfaces::Init& init)
 {
     assert(!m_node);
     m_node = init.makeNode();
     if (m_splash) m_splash->setNode(*m_node);
 }
 
-bool BitcoinApplication::baseInitialize()
+bool KevacoinApplication::baseInitialize()
 {
     return node().baseInitialize();
 }
 
-void BitcoinApplication::startThread()
+void KevacoinApplication::startThread()
 {
     assert(!m_executor);
     m_executor.emplace(node());
 
     /*  communication to and from thread */
-    connect(&m_executor.value(), &InitExecutor::initializeResult, this, &BitcoinApplication::initializeResult);
+    connect(&m_executor.value(), &InitExecutor::initializeResult, this, &KevacoinApplication::initializeResult);
     connect(&m_executor.value(), &InitExecutor::shutdownResult, this, [] {
         QCoreApplication::exit(0);
     });
-    connect(&m_executor.value(), &InitExecutor::runawayException, this, &BitcoinApplication::handleRunawayException);
-    connect(this, &BitcoinApplication::requestedInitialize, &m_executor.value(), &InitExecutor::initialize);
-    connect(this, &BitcoinApplication::requestedShutdown, &m_executor.value(), &InitExecutor::shutdown);
+    connect(&m_executor.value(), &InitExecutor::runawayException, this, &KevacoinApplication::handleRunawayException);
+    connect(this, &KevacoinApplication::requestedInitialize, &m_executor.value(), &InitExecutor::initialize);
+    connect(this, &KevacoinApplication::requestedShutdown, &m_executor.value(), &InitExecutor::shutdown);
 }
 
-void BitcoinApplication::parameterSetup()
+void KevacoinApplication::parameterSetup()
 {
     // Default printtoconsole to false for the GUI. GUI programs should not
     // print to the console unnecessarily.
@@ -338,19 +338,19 @@ void BitcoinApplication::parameterSetup()
     InitParameterInteraction(gArgs);
 }
 
-void BitcoinApplication::InitPruneSetting(int64_t prune_MiB)
+void KevacoinApplication::InitPruneSetting(int64_t prune_MiB)
 {
     optionsModel->SetPruneTargetGB(PruneMiBtoGB(prune_MiB));
 }
 
-void BitcoinApplication::requestInitialize()
+void KevacoinApplication::requestInitialize()
 {
     qDebug() << __func__ << ": Requesting initialize";
     startThread();
     Q_EMIT requestedInitialize();
 }
 
-void BitcoinApplication::requestShutdown()
+void KevacoinApplication::requestShutdown()
 {
     for (const auto w : QGuiApplication::topLevelWindows()) {
         w->hide();
@@ -400,7 +400,7 @@ void BitcoinApplication::requestShutdown()
     Q_EMIT requestedShutdown();
 }
 
-void BitcoinApplication::initializeResult(bool success, interfaces::BlockAndHeaderTipInfo tip_info)
+void KevacoinApplication::initializeResult(bool success, interfaces::BlockAndHeaderTipInfo tip_info)
 {
     qDebug() << __func__ << ": Initialization result: " << success;
 
@@ -453,7 +453,7 @@ void BitcoinApplication::initializeResult(bool success, interfaces::BlockAndHead
     }
 }
 
-void BitcoinApplication::handleRunawayException(const QString &message)
+void KevacoinApplication::handleRunawayException(const QString &message)
 {
     QMessageBox::critical(
         nullptr, tr("Runaway exception"),
@@ -462,7 +462,7 @@ void BitcoinApplication::handleRunawayException(const QString &message)
     ::exit(EXIT_FAILURE);
 }
 
-void BitcoinApplication::handleNonFatalException(const QString& message)
+void KevacoinApplication::handleNonFatalException(const QString& message)
 {
     assert(QThread::currentThread() == thread());
     QMessageBox::warning(
@@ -472,7 +472,7 @@ void BitcoinApplication::handleNonFatalException(const QString& message)
         QLatin1String("<br><br>") + GUIUtil::MakeHtmlLink(message, PACKAGE_BUGREPORT));
 }
 
-WId BitcoinApplication::getMainWinId() const
+WId KevacoinApplication::getMainWinId() const
 {
     if (!window)
         return 0;
@@ -480,7 +480,7 @@ WId BitcoinApplication::getMainWinId() const
     return window->winId();
 }
 
-bool BitcoinApplication::event(QEvent* e)
+bool KevacoinApplication::event(QEvent* e)
 {
     if (e->type() == QEvent::Quit) {
         requestShutdown();
@@ -535,7 +535,7 @@ int GuiMain(int argc, char* argv[])
     QApplication::setAttribute(Qt::AA_DontUseNativeDialogs);
 #endif
 
-    BitcoinApplication app;
+    KevacoinApplication app;
     GUIUtil::LoadFont(QStringLiteral(":/fonts/monospace"));
 
     /// 2. Parse command-line options. We do this after qt in order to show an error if there are problems parsing these

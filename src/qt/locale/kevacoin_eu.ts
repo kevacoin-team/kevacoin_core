@@ -236,7 +236,7 @@ Sinatzea 'legacy' motako helbideekin soilik da posible</translation>
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>Runaway exception</source>
         <translation type="unfinished">Ranaway exception</translation>

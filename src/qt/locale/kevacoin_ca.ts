@@ -256,7 +256,7 @@ Només és possible firmar amb adreces del tipus "legacy".</translation>
     </message>
 </context>
 <context>
-    <name>BitcoinApplication</name>
+    <name>KevacoinApplication</name>
     <message>
         <source>Settings file %1 might be corrupt or invalid.</source>
         <translation type="unfinished">El fitxer de configuració %1 pot estar corrupte o invàlid.</translation>
