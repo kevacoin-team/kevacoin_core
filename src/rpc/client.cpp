@@ -311,6 +311,16 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "stop", 0, "wait" },
     { "addnode", 2, "v2transport" },
     { "addconnection", 2, "v2transport" },
+    // Keva related APIs
+    { "keva_filter", 2, "maxage"},
+    { "keva_filter", 3, "from"},
+    { "keva_filter", 4, "nb"},
+    { "keva_group_show", 1, "maxage"},
+    { "keva_group_show", 2, "from"},
+    { "keva_group_show", 3, "nb"},
+    { "keva_group_filter", 3, "maxage"},
+    { "keva_group_filter", 4, "from"},
+    { "keva_group_filter", 5, "nb"},
 };
 // clang-format on
 

@@ -267,6 +267,7 @@ KEVACOIN_CORE_H = \
   rpc/rawtransaction_util.h \
   rpc/register.h \
   rpc/request.h \
+  rpc/rpckeva_nonwallet.h \
   rpc/server.h \
   rpc/server_util.h \
   rpc/util.h \
@@ -465,6 +466,7 @@ libkevacoin_node_a_SOURCES = \
   rpc/node.cpp \
   rpc/output_script.cpp \
   rpc/rawtransaction.cpp \
+  rpc/rpckeva_nonwallet.cpp \
   rpc/server.cpp \
   rpc/server_util.cpp \
   rpc/signmessage.cpp \
