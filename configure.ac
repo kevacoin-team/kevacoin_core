@@ -1445,8 +1445,8 @@ if test "$use_boost" = "yes"; then
 
 
   AX_BOOST_PROGRAM_OPTIONS
-  # AX_BOOST_THREAD
-  # AX_BOOST_CHRONO
+  AX_BOOST_THREAD
+  AX_BOOST_CHRONO
 
   if test "$suppress_external_warnings" != "no"; then
     BOOST_CPPFLAGS=SUPPRESS_WARNINGS($BOOST_CPPFLAGS)

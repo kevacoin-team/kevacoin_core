@@ -63,27 +63,11 @@ AC_DEFUN([AX_BOOST_PROGRAM_OPTIONS],
 		AC_CACHE_CHECK([whether the Boost::Program_Options library is available],
 					   ax_cv_boost_program_options,
 					   [AC_LANG_PUSH(C++)
-				# AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[@%:@include <boost/program_options/errors.hpp>
-                #                                           ]],
-                #                   [[boost::program_options::error err("Error message");
-                #                    return 0;]])],
-                #            ax_cv_boost_program_options=yes, ax_cv_boost_program_options=no)
-                AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[@%:@include <boost/program_options.hpp>]],
-                  [[
-                  namespace po = boost::program_options;
-                  po::options_description desc("Allowed options");
-                  desc.add_options()
-                      ("help", "produce help message")
-                      ;
-                  po::variables_map vm;
-                  po::store(po::parse_command_line(0, nullptr, desc), vm);
-                  po::notify(vm);    
-                  if (vm.count("help")) {
-                      std::cout << desc << "\n";
-                  }
-                  return 0;
-                  ]])],
-                 ax_cv_boost_program_options=yes, ax_cv_boost_program_options=no)
+				AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[@%:@include <boost/program_options/errors.hpp>
+                                                          ]],
+                                  [[boost::program_options::error err("Error message");
+                                   return 0;]])],
+                           ax_cv_boost_program_options=yes, ax_cv_boost_program_options=no)
 					AC_LANG_POP([C++])
 		])
 		if test "$ax_cv_boost_program_options" = yes; then

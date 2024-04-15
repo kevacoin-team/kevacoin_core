@@ -51,7 +51,6 @@ AC_DEFUN([AX_BOOST_THREAD],
         [want_boost="yes"]
     )
 
-    
     if test "x$want_boost" = "xyes"; then
         AC_REQUIRE([AC_PROG_CC])
         AC_REQUIRE([AC_CANONICAL_BUILD])
@@ -63,31 +62,125 @@ AC_DEFUN([AX_BOOST_THREAD],
         LDFLAGS="$LDFLAGS $BOOST_LDFLAGS"
         export LDFLAGS
 
-        # Adjust CXXFLAGS for C++14 or later
-        CXXFLAGS_SAVE=$CXXFLAGS
-        CXXFLAGS="$CXXFLAGS -std=c++14"
-
-        AC_CACHE_CHECK([whether the Boost::Thread library is available],
+        AC_CACHE_CHECK(whether the Boost::Thread library is available,
                        ax_cv_boost_thread,
-        [
-            AC_LANG_PUSH([C++])
+        [AC_LANG_PUSH([C++])
+             CXXFLAGS_SAVE=$CXXFLAGS
 
-            # Simplified check assuming potential dependency on Boost System
-            AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
-                [[@%:@include <boost/thread.hpp>]
-                 [@%:@include <boost/system/system_error.hpp>]],
-                [[boost::thread t; boost::system::error_code ec;]])],
-                ax_cv_boost_thread=yes,
-                ax_cv_boost_thread=no)
+             case "x$host_os" in
+                 xsolaris )
+                     CXXFLAGS="-pthreads $CXXFLAGS"
+                     break;
+                     ;;
+                 xmingw32 )
+                     CXXFLAGS="-mthreads $CXXFLAGS"
+                     break;
+                     ;;
+                 *android* )
+                     break;
+                     ;;
+                 * )
+                     CXXFLAGS="-pthread $CXXFLAGS"
+                     break;
+                     ;;
+             esac
 
-            CXXFLAGS=$CXXFLAGS_SAVE
-            AC_LANG_POP([C++])
+             AC_COMPILE_IFELSE([
+                 AC_LANG_PROGRAM(
+                     [[@%:@include <boost/thread/thread.hpp>]],
+                     [[boost::thread_group thrds;
+                       return 0;]])],
+                 ax_cv_boost_thread=yes, ax_cv_boost_thread=no)
+             CXXFLAGS=$CXXFLAGS_SAVE
+             AC_LANG_POP([C++])
         ])
         if test "x$ax_cv_boost_thread" = "xyes"; then
-            # Linking code and other settings...
+            case "x$host_os" in
+                xsolaris )
+                    BOOST_CPPFLAGS="-pthreads $BOOST_CPPFLAGS"
+                    break;
+                    ;;
+                xmingw32 )
+                    BOOST_CPPFLAGS="-mthreads $BOOST_CPPFLAGS"
+                    break;
+                    ;;
+                *android* )
+                    break;
+                    ;;
+                * )
+                    BOOST_CPPFLAGS="-pthread $BOOST_CPPFLAGS"
+                    break;
+                    ;;
+            esac
+
+            AC_SUBST(BOOST_CPPFLAGS)
+
+            AC_DEFINE(HAVE_BOOST_THREAD,,
+                      [define if the Boost::Thread library is available])
+            BOOSTLIBDIR=`echo $BOOST_LDFLAGS | sed -e 's/@<:@^\/@:>@*//'`
+
+            LDFLAGS_SAVE=$LDFLAGS
+                        case "x$host_os" in
+                          *bsd* )
+                               LDFLAGS="-pthread $LDFLAGS"
+                          break;
+                          ;;
+                        esac
+            if test "x$ax_boost_user_thread_lib" = "x"; then
+                for libextension in `ls -r $BOOSTLIBDIR/libboost_thread* 2>/dev/null | sed 's,.*/lib,,' | sed 's,\..*,,'`; do
+                     ax_lib=${libextension}
+                    AC_CHECK_LIB($ax_lib, exit,
+                                 [link_thread="yes"; break],
+                                 [link_thread="no"])
+                done
+                if test "x$link_thread" != "xyes"; then
+                for libextension in `ls -r $BOOSTLIBDIR/boost_thread* 2>/dev/null | sed 's,.*/,,' | sed 's,\..*,,'`; do
+                     ax_lib=${libextension}
+                    AC_CHECK_LIB($ax_lib, exit,
+                                 [link_thread="yes"; break],
+                                 [link_thread="no"])
+                done
+                fi
+
+            else
+               for ax_lib in $ax_boost_user_thread_lib boost_thread-$ax_boost_user_thread_lib; do
+                      AC_CHECK_LIB($ax_lib, exit,
+                                   [link_thread="yes"; break],
+                                   [link_thread="no"])
+                  done
+
+            fi
+            if test "x$ax_lib" = "x"; then
+                AC_MSG_ERROR(Could not find a version of the Boost::Thread library!)
+            fi
+            if test "x$link_thread" = "xno"; then
+                AC_MSG_ERROR(Could not link against $ax_lib !)
+            else
+                BOOST_THREAD_LIB="-l$ax_lib"
+                case "x$host_os" in
+                    *bsd* )
+                        BOOST_LDFLAGS="-pthread $BOOST_LDFLAGS"
+                        break;
+                        ;;
+                    xsolaris )
+                        BOOST_THREAD_LIB="$BOOST_THREAD_LIB -lpthread"
+                        break;
+                        ;;
+                    xmingw32 )
+                        break;
+                        ;;
+                    *android* )
+                        break;
+                        ;;
+                    * )
+                        BOOST_THREAD_LIB="$BOOST_THREAD_LIB -lpthread"
+                        break;
+                        ;;
+                esac
+                AC_SUBST(BOOST_THREAD_LIB)
+            fi
         fi
 
-        # Restore original flags
         CPPFLAGS="$CPPFLAGS_SAVED"
         LDFLAGS="$LDFLAGS_SAVED"
     fi
