@@ -33,7 +33,7 @@ extern bool fNameHistory;
  */
 inline valtype ValtypeFromString(const std::string& str)
 {
-  return valtype (str.begin(), str.end());
+  return valtype(str.begin(), str.end());
 }
 
 /**
@@ -43,7 +43,7 @@ inline valtype ValtypeFromString(const std::string& str)
  */
 inline std::string ValtypeToString(const valtype& val)
 {
-  return std::string (val.begin(), val.end());
+  return std::string(val.begin(), val.end());
 }
 
 /* ************************************************************************** */

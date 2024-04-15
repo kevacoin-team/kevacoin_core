@@ -53,7 +53,7 @@ QVariant KevaTableModel::data(const QModelIndex &index, int role) const
     {
         const KevaEntry *rec = &list[index.row()];
         if (rec->block < 0) {
-            return QVariant(QBrush (QColor(Qt::gray)));
+            return QVariant(QBrush(QColor(Qt::gray)));
         }
         return QVariant();
     }

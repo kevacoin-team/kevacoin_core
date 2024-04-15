@@ -76,13 +76,13 @@ public:
   ADD_SERIALIZE_METHODS;
 
   template<typename Stream, typename Operation>
-    inline void SerializationOp (Stream& s, Operation ser_action)
+    inline void SerializationOp(Stream& s, Operation ser_action)
   {
-    READWRITE (nameSpace);
-    READWRITE (key);
-    READWRITE (isNew);
+    READWRITE(nameSpace);
+    READWRITE(key);
+    READWRITE(isNew);
     if (!isNew) {
-      READWRITE (oldData);
+      READWRITE(oldData);
     }
   }
 
@@ -92,13 +92,13 @@ public:
    * @param nm The name that is being updated.
    * @param view The (old!) chain state.
    */
-  void fromOldState (const valtype& nameSpace, const valtype& key, const CCoinsView& view);
+  void fromOldState(const valtype& nameSpace, const valtype& key, const CCoinsView& view);
 
   /**
    * Apply the undo to the chain state given.
    * @param view The chain state to update ("undo").
    */
-  void apply (CCoinsViewCache& view) const;
+  void apply(CCoinsViewCache& view) const;
 
 };
 
@@ -142,12 +142,12 @@ public:
   //  * Construct with reference to parent mempool.
   //  * @param p The parent pool.
   //  */
-  explicit inline CKevaMemPool (CTxMemPool& p) : pool(p) {}
+  explicit inline CKevaMemPool(CTxMemPool& p) : pool(p) {}
 
   /**
    * Clear all data.
    */
-  inline void clear ()
+  inline void clear()
   {
     listUnconfirmedNamespaces.clear();
     listUnconfirmedKeyValues.clear();
@@ -211,16 +211,16 @@ private:
 
 public:
 
-  explicit CNameConflictTracker (CTxMemPool &p);
-  ~CNameConflictTracker ();
+  explicit CNameConflictTracker(CTxMemPool &p);
+  ~CNameConflictTracker();
 
   inline const std::shared_ptr<const std::vector<CTransactionRef>>
-  GetNameConflicts () const
+  GetNameConflicts() const
   {
     return txNameConflicts;
   }
 
-  void AddConflictedEntry (CTransactionRef txRemoved);
+  void AddConflictedEntry(CTransactionRef txRemoved);
 
 };
 

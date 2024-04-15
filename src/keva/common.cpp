@@ -161,7 +161,7 @@ bool CCacheKeyIterator::next(valtype& key, CKevaData& data)
       /* A special case is when both iterators are equal.  In this case,
         we want to use the cached version.  We also have to advance
         the base iterator.  */
-      advanceBaseIterator ();
+      advanceBaseIterator();
     }
 
     /* Due to advancing the base iterator above, it may happen that

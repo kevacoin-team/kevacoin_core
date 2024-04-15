@@ -208,7 +208,7 @@ void ConflictTrackerNotifyEntryRemoved(CNameConflictTracker* tracker,
 
 } // anonymous namespace
 
-// CNameConflictTracker::CNameConflictTracker (CTxMemPool &p)
+// CNameConflictTracker::CNameConflictTracker(CTxMemPool &p)
 //   : txNameConflicts(std::make_shared<std::vector<CTransactionRef>>()), pool(p)
 // {
 //   // trackPackageRemoved
@@ -216,13 +216,13 @@ void ConflictTrackerNotifyEntryRemoved(CNameConflictTracker* tracker,
 //     boost::bind(&ConflictTrackerNotifyEntryRemoved, this, boost::placeholders::_1, boost::placeholders::_2));
 // }
 
-// CNameConflictTracker::~CNameConflictTracker ()
+// CNameConflictTracker::~CNameConflictTracker()
 // {
 //   pool.NotifyEntryRemoved.disconnect(
 //     boost::bind(&ConflictTrackerNotifyEntryRemoved, this, boost::placeholders::_1, boost::placeholders::_2));
 // }
 
-void CNameConflictTracker::AddConflictedEntry (CTransactionRef txRemoved)
+void CNameConflictTracker::AddConflictedEntry(CTransactionRef txRemoved)
 {
   txNameConflicts->emplace_back(std::move(txRemoved));
 }
@@ -337,7 +337,7 @@ bool CheckKevaTransaction(const CTransaction& tx, unsigned nHeight, const CCoins
   }
 
   if (nameOpOut.isNamespaceRegistration()) {
-    if (nameOpOut.getOpNamespaceDisplayName().size () > MAX_VALUE_LENGTH) {
+    if (nameOpOut.getOpNamespaceDisplayName().size() > MAX_VALUE_LENGTH) {
       LogError("%s: failed to fetch input coin for %s", __func__, txid);
       return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("CheckKevaTransaction: display name value too long"));
     }
@@ -395,7 +395,7 @@ bool CheckKevaTransaction(const CTransaction& tx, unsigned nHeight, const CCoins
   }
 
   if (nameOpOut.getKevaOp() == OP_KEVA_PUT) {
-    if (nameOpOut.getOpValue().size () > MAX_VALUE_LENGTH) {
+    if (nameOpOut.getOpValue().size() > MAX_VALUE_LENGTH) {
       LogError("%s: failed to fetch input coin for %s", __func__, txid);
       return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("CheckKevaTransaction: value too long"));
     }
@@ -473,7 +473,7 @@ void ApplyKevaTransaction(const CTransaction& tx, const CBlockIndex& pindex,
   }
 }
 
-void CheckNameDB (bool disconnect)
+void CheckNameDB(bool disconnect)
 {
   // const int option = gArgs.GetArg("-checkkevadb", Params().DefaultCheckKevaDB());
   const std::string option = gArgs.GetArg("-checkkevadb", "");

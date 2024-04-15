@@ -49,7 +49,7 @@ QVariant KevaNamespaceModel::data(const QModelIndex &index, int role) const
     {
         const NamespaceEntry *rec = &list[index.row()];
         if (!rec->confirmed) {
-            return QVariant(QBrush (QColor(Qt::gray)));
+            return QVariant(QBrush(QColor(Qt::gray)));
         }
         return QVariant();
     }
