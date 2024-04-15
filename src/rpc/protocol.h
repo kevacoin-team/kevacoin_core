@@ -89,4 +89,21 @@ enum RPCErrorCode
     RPC_FORBIDDEN_BY_SAFE_MODE      = -2,  //!< Server is in safe mode, and command is not allowed in safe mode
 };
 
+// Cryptonote error codes
+enum CNErrorCode
+{
+    CORE_RPC_WRONG_PARAM           = -1,
+    CORE_RPC_TOO_BIG_HEIGHT        = -2,
+    CORE_RPC_TOO_BIG_RESERVE_SIZE  = -3,
+    CORE_RPC_WRONG_WALLET_ADDRESS  = -4,
+    CORE_RPC_INTERNAL_ERROR        = -5,
+    CORE_RPC_WRONG_BLOCKBLOB       = -6,
+    CORE_RPC_BLOCK_NOT_ACCEPTED    = -7,
+    CORE_RPC_CORE_BUSY             = -9,
+    CORE_RPC_WRONG_BLOCKBLOB_SIZE  = -10,
+    CORE_RPC_UNSUPPORTED_RPC       = -11,
+    CORE_RPC_MINING_TO_SUBADDRESS  = -12,
+    CORE_RPC_REGTEST_REQUIRED      = -13,
+};
+
 #endif // KEVACOIN_RPC_PROTOCOL_H

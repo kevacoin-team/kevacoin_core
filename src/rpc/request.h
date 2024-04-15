@@ -15,6 +15,7 @@ UniValue JSONRPCRequestObj(const std::string& strMethod, const UniValue& params,
 UniValue JSONRPCReplyObj(const UniValue& result, const UniValue& error, const UniValue& id);
 std::string JSONRPCReply(const UniValue& result, const UniValue& error, const UniValue& id);
 UniValue JSONRPCError(int code, const std::string& message);
+UniValue CN_JSONRPCError(int code, const std::string& message);
 
 /** Generate a new RPC authentication cookie and write it to disk */
 bool GenerateAuthCookie(std::string *cookie_out);

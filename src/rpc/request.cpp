@@ -63,6 +63,17 @@ UniValue JSONRPCError(int code, const std::string& message)
     return error;
 }
 
+// Cryptonote error response
+UniValue CN_JSONRPCError(int code, const std::string& message)
+{
+    UniValue error(UniValue::VOBJ);
+    // Indicate that this is cryptonote error.
+    error.pushKV("cn_code", code);
+    error.pushKV("code", code);
+    error.pushKV("message", message);
+    return error;
+}
+
 /** Username used when cookie authentication is in use (arbitrary, only for
  * recognizability in debugging/logging purposes)
  */
