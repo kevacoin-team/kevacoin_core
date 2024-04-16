@@ -76,7 +76,7 @@ static RPCHelpMan keva_get()
             {"key", RPCArg::Type::STR, RPCArg::Optional::NO, "Value for the key"},
         },
         {
-            RPCResult{"Otherwise", RPCResult::Type::OBJ, "", "",
+            RPCResult{RPCResult::Type::OBJ, "", "",
             {
                 {RPCResult::Type::STR, "value", "The value associated with the key."},
             }},
@@ -87,30 +87,26 @@ static RPCHelpMan keva_get()
             },
     [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
 {
-
-    // RPCTypeCheckObj(request.params, {UniValue::VSTR, UniValue::VSTR});
-    // RPCTypeCheckObj(request.params[0], UniValue::VSTR);
-    // RPCTypeCheckObj(request.params[1], UniValue::VSTR);
-    
-    RPCTypeCheckObj(request.params.get_obj(),
-    {
-        {"namespace", UniValueType(UniValue::VSTR)},
-        {"key", UniValueType(UniValue::VSTR)},
-    });
-
     NodeContext& node = EnsureAnyNodeContext(request.context);
     ChainstateManager& chainman = EnsureChainman(node);
     CCoinsViewCache& view = chainman.ActiveChainstate().CoinsTip();
     CTxMemPool& mempool = EnsureMemPool(node);
+
+    if (!request.params[0].isStr()) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid namespace id");
+    }
+    if (!request.params[1].isStr()) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid key");
+    }
     // ObserveSafeMode();
 
-    const std::string namespaceStr = request.params[0].get_str ();
+    const std::string namespaceStr = request.params[0].get_str();
     valtype nameSpace;
     if (!DecodeKevaNamespace(namespaceStr, Params(), nameSpace)) {
-        throw JSONRPCError (RPC_INVALID_PARAMETER, "invalid namespace id");
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid namespace id");
     }
     if (nameSpace.size() > MAX_NAMESPACE_LENGTH)
-        throw JSONRPCError (RPC_INVALID_PARAMETER, "the namespace is too long");
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "the namespace is too long");
 
     const std::string keyStr = request.params[1].get_str();
     const valtype key = ValtypeFromString(keyStr);
@@ -251,7 +247,7 @@ static RPCHelpMan keva_group_get()
             {"initiator", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "Options are \"all\", \"self\" and \"other\", default is \"all\". \"all\": all the namespaces, whose participation in the group is initiated by this namespace or other namespaces. \"self\": only the namespace whose participation is initiated by this namespace. \"other\": only the namespace whose participation is initiated by other namespaces."},
         },
         {
-            RPCResult{"Otherwise", RPCResult::Type::OBJ, "", "",
+            RPCResult{RPCResult::Type::OBJ, "", "",
             {
                 {RPCResult::Type::STR, "value", "The value associated with the key."},
             }},
@@ -262,22 +258,22 @@ static RPCHelpMan keva_group_get()
             },
     [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
 {
-
-    // RPCTypeCheckObj(request.params, {UniValue::VSTR, UniValue::VSTR, UniValue::VSTR});
-    RPCTypeCheckObj(request.params.get_obj(),
-    {
-        {"namespace", UniValueType(UniValue::VSTR)},
-        {"key", UniValueType(UniValue::VSTR)},
-        {"initiator", UniValueType(UniValue::VSTR)},
-    });
-
     NodeContext& node = EnsureAnyNodeContext(request.context);
     ChainstateManager& chainman = EnsureChainman(node);
     CCoinsViewCache& view = chainman.ActiveChainstate().CoinsTip();
     CTxMemPool& mempool = EnsureMemPool(node);
 
+    if (!request.params[0].isStr()) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid namespace id");
+    }
+    if (!request.params[1].isStr()) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid key");
+    }
     InitiatorType initiatorType = INITIATOR_TYPE_ALL;
     if (request.params.size() == 3) {
+        if (!request.params[2].isStr()) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid initiator");
+        }
         const std::string initiator = request.params[2].get_str();
         if (initiator == "all") {
             initiatorType = INITIATOR_TYPE_ALL;
@@ -286,19 +282,19 @@ static RPCHelpMan keva_group_get()
         } else if (initiator == "other") {
             initiatorType = INITIATOR_TYPE_SELF;
         } else {
-            throw JSONRPCError (RPC_INVALID_PARAMETER, "invalid initiator type");
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid initiator type");
         }
     }
 
     // ObserveSafeMode();
 
-    const std::string namespaceStr = request.params[0].get_str ();
+    const std::string namespaceStr = request.params[0].get_str();
     valtype nameSpace;
     if (!DecodeKevaNamespace(namespaceStr, Params(), nameSpace)) {
-        throw JSONRPCError (RPC_INVALID_PARAMETER, "invalid namespace id");
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid namespace id");
     }
     if (nameSpace.size() > MAX_NAMESPACE_LENGTH)
-        throw JSONRPCError (RPC_INVALID_PARAMETER, "the namespace is too long");
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "the namespace is too long");
 
     const std::string keyStr = request.params[1].get_str();
     const valtype key = ValtypeFromString(keyStr);
@@ -373,7 +369,7 @@ static RPCHelpMan keva_group_filter()
             {"stat", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "If set to the string \"stat\", print statistics instead of returning the names"},
         },
         {
-            RPCResult{"Otherwise", RPCResult::Type::OBJ, "", "",
+            RPCResult{RPCResult::Type::OBJ, "", "",
             {
                 {RPCResult::Type::STR, "key", "The requested key."},
                 {RPCResult::Type::STR, "value", "The key's current value."},
@@ -388,22 +384,6 @@ static RPCHelpMan keva_group_filter()
             },
     [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
 {
-
-    // RPCTypeCheckObj(request.params, {
-    //                 UniValue::VSTR, UniValue::VSTR, UniValue::VSTR, UniValue::VNUM,
-    //                 UniValue::VNUM, UniValue::VNUM, UniValue::VSTR
-    //             });
-    RPCTypeCheckObj(request.params.get_obj(),
-    {
-        {"namespace", UniValueType(UniValue::VSTR)},
-        {"initiator", UniValueType(UniValue::VSTR)},
-        {"regex", UniValueType(UniValue::VSTR)},
-        {"maxage", UniValueType(UniValue::VNUM)},
-        {"from", UniValueType(UniValue::VNUM)},
-        {"nb", UniValueType(UniValue::VNUM)},
-        {"stat", UniValueType(UniValue::VSTR)},
-    });
-
     NodeContext& node = EnsureAnyNodeContext(request.context);
     ChainstateManager& chainman = EnsureChainman(node);
     CCoinsViewCache& view = chainman.ActiveChainstate().CoinsTip();
@@ -425,13 +405,19 @@ static RPCHelpMan keva_group_filter()
     InitiatorType initiatorType = INITIATOR_TYPE_ALL;
 
     if (request.params.size() >= 1) {
+        if (!request.params[0].isStr()) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid namespace id");
+        }
         const std::string namespaceStr = request.params[0].get_str();
         if (!DecodeKevaNamespace(namespaceStr, Params(), nameSpace)) {
-            throw JSONRPCError (RPC_INVALID_PARAMETER, "invalid namespace id");
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid namespace id");
         }
     }
 
     if (request.params.size() >= 2) {
+        if (!request.params[1].isStr()) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid initiator");
+        }
         const std::string initiator = request.params[1].get_str();
         if (initiator == "all") {
             initiatorType = INITIATOR_TYPE_ALL;
@@ -440,36 +426,52 @@ static RPCHelpMan keva_group_filter()
         } else if (initiator == "other") {
             initiatorType = INITIATOR_TYPE_OTHER;
         } else {
-            throw JSONRPCError (RPC_INVALID_PARAMETER, "invalid initiator");
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid initiator");
         }
     }
 
     if (request.params.size() >= 3) {
+        if (!request.params[2].isStr()) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid regex");
+        }
         haveRegexp = true;
-        regexp = boost::xpressive::sregex::compile (request.params[2].get_str());
+        regexp = boost::xpressive::sregex::compile(request.params[2].get_str());
     }
 
-    if (request.params.size() >= 4)
+    if (request.params.size() >= 4) {
+        if (!request.params[3].isNum()) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid maxage");
+        }
         maxage = request.params[3].getInt<int>();
+    }
     if (maxage < 0)
         throw JSONRPCError(RPC_INVALID_PARAMETER,
                         "'maxage' should be non-negative");
 
-    if (request.params.size() >= 5)
+    if (request.params.size() >= 5) {
+        if (!request.params[4].isNum()) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid from");
+        }
         from = request.params[4].getInt<int>();
-
+    }
     if (from < 0)
-        throw JSONRPCError (RPC_INVALID_PARAMETER, "'from' should be non-negative");
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "'from' should be non-negative");
 
-    if (request.params.size() >= 6)
+    if (request.params.size() >= 6) {
+        if (!request.params[5].isNum()) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid nb");
+        }
         nb = request.params[5].getInt<int>();
-
+    }
     if (nb < 0)
-        throw JSONRPCError (RPC_INVALID_PARAMETER, "'nb' should be non-negative");
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "'nb' should be non-negative");
 
     if (request.params.size() >= 7) {
+        if (!request.params[6].isStr()) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid stat");
+        }
         if (request.params[6].get_str() != "stat")
-            throw JSONRPCError (RPC_INVALID_PARAMETER,
+            throw JSONRPCError(RPC_INVALID_PARAMETER,
                             "fifth argument must be the literal string 'stat'");
         stats = true;
     }
@@ -560,7 +562,7 @@ static RPCHelpMan keva_filter()
             {"stat", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "If set to the string \"stat\", print statistics instead of returning the names"},
         },
         {
-            RPCResult{"Otherwise", RPCResult::Type::OBJ, "", "",
+            RPCResult{RPCResult::Type::OBJ, "", "",
             {
                 {RPCResult::Type::STR, "key", "The requested key."},
                 {RPCResult::Type::STR, "value", "The key's current value."},
@@ -569,28 +571,17 @@ static RPCHelpMan keva_filter()
             }},
         },
         RPCExamples{
-                HelpExampleCli ("keva_filter", "\"^id/\"")
-            + HelpExampleCli ("keva_filter", "\"^id/\" 96000 0 0 \"stat\"")
-            + HelpExampleRpc ("keva_filter", "\"^d/\"")
+                HelpExampleCli("keva_filter", "\"^id/\"")
+            + HelpExampleCli("keva_filter", "\"^id/\" 96000 0 0 \"stat\"")
+            + HelpExampleRpc("keva_filter", "\"^d/\"")
             },
     [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
 {
-    // RPCTypeCheckObj(request.params, {
-    //                 UniValue::VSTR, UniValue::VSTR, UniValue::VNUM,
-    //                 UniValue::VNUM, UniValue::VNUM, UniValue::VSTR
-    //             });
-    RPCTypeCheckObj(request.params.get_obj(),
-    {
-        {"namespace", UniValueType(UniValue::VSTR)},
-        {"regex", UniValueType(UniValue::VSTR)},
-        {"maxage", UniValueType(UniValue::VNUM)},
-        {"from", UniValueType(UniValue::VNUM)},
-        {"nb", UniValueType(UniValue::VNUM)},
-        {"stat", UniValueType(UniValue::VSTR)},
-    });
-
     NodeContext& node = EnsureAnyNodeContext(request.context);
     ChainstateManager& chainman = EnsureChainman(node);
+    // std::unique_ptr<CCoinsViewCache> pcoinsTip;
+    // CCoinsViewCache view(pcoinsTip->)
+    LOCK (cs_main);
     CCoinsViewCache& view = chainman.ActiveChainstate().CoinsTip();
 
     if (chainman.IsInitialBlockDownload()) {
@@ -611,38 +602,57 @@ static RPCHelpMan keva_filter()
     bool stats(false);
 
     if (request.params.size() >= 1) {
+        if (!request.params[0].isStr()) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid namespace id");
+        }
         const std::string namespaceStr = request.params[0].get_str();
         if (!DecodeKevaNamespace(namespaceStr, Params(), nameSpace)) {
-            throw JSONRPCError (RPC_INVALID_PARAMETER, "invalid namespace id");
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid namespace id");
         }
     }
 
     if (request.params.size() >= 2) {
+        if (!request.params[1].isStr()) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid regex");
+        }
         haveRegexp = true;
-        regexp = boost::xpressive::sregex::compile (request.params[1].get_str());
+        regexp = boost::xpressive::sregex::compile(request.params[1].get_str());
     }
 
-    if (request.params.size() >= 3)
+    if (request.params.size() >= 3) {
+        if (!request.params[2].isNum()) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid maxage");
+        }
         maxage = request.params[2].getInt<int>();
+    }
     if (maxage < 0)
         throw JSONRPCError(RPC_INVALID_PARAMETER,
                         "'maxage' should be non-negative");
 
-    if (request.params.size() >= 4)
+    if (request.params.size() >= 4) {
+        if (!request.params[3].isNum()) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid from");
+        }
         from = request.params[3].getInt<int>();
-
+    }
     if (from < 0)
-        throw JSONRPCError (RPC_INVALID_PARAMETER, "'from' should be non-negative");
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "'from' should be non-negative");
 
-    if (request.params.size() >= 5)
+    if (request.params.size() >= 5) {
+        if (!request.params[4].isNum()) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid nb");
+        }
         nb = request.params[4].getInt<int>();
-
+    }
     if (nb < 0)
-        throw JSONRPCError (RPC_INVALID_PARAMETER, "'nb' should be non-negative");
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "'nb' should be non-negative");
 
     if (request.params.size() >= 6) {
+        if (!request.params[5].isStr()) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid stat");
+        }
         if (request.params[5].get_str() != "stat")
-            throw JSONRPCError (RPC_INVALID_PARAMETER,
+            throw JSONRPCError(RPC_INVALID_PARAMETER,
                             "fifth argument must be the literal string 'stat'");
         stats = true;
     }
@@ -739,7 +749,7 @@ static RPCHelpMan keva_group_show()
             {"stat", RPCArg::Type::STR, RPCArg::Optional::OMITTED, "If set to the string \"stat\", print statistics instead of returning the names"},
         },
         {
-            RPCResult{"Otherwise", RPCResult::Type::OBJ, "", "",
+            RPCResult{RPCResult::Type::OBJ, "", "",
             {
                 {RPCResult::Type::STR, "key", "The requested key."},
                 {RPCResult::Type::STR, "value", "The key's current value."},
@@ -748,26 +758,12 @@ static RPCHelpMan keva_group_show()
             }},
         },
         RPCExamples{
-                HelpExampleCli ("keva_group_show", "NamespaceId")
-            + HelpExampleCli ("keva_group_show", "NamespaceId 96000 0 0 \"stat\"")
+                HelpExampleCli("keva_group_show", "NamespaceId")
+            + HelpExampleCli("keva_group_show", "NamespaceId 96000 0 0 \"stat\"")
         + HelpExampleRpc("keva_group_show", "\"namespace_id\"")
             },
     [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
 {
-
-    // RPCTypeCheckObj(request.params, {
-    //                 UniValue::VSTR, UniValue::VNUM,
-    //                 UniValue::VNUM, UniValue::VNUM, UniValue::VSTR
-    //             });
-    RPCTypeCheckObj(request.params.get_obj(),
-    {
-        {"namespace", UniValueType(UniValue::VSTR)},
-        {"maxage", UniValueType(UniValue::VNUM)},
-        {"from", UniValueType(UniValue::VNUM)},
-        {"nb", UniValueType(UniValue::VNUM)},
-        {"stat", UniValueType(UniValue::VSTR)},
-    });
-
     NodeContext& node = EnsureAnyNodeContext(request.context);
     ChainstateManager& chainman = EnsureChainman(node);
     CCoinsViewCache& view = chainman.ActiveChainstate().CoinsTip();
@@ -786,33 +782,48 @@ static RPCHelpMan keva_group_show()
     bool stats(false);
 
     if (request.params.size() >= 1) {
+        if (!request.params[0].isStr()) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid namespace id");
+        }
         const std::string namespaceStr = request.params[0].get_str();
         if (!DecodeKevaNamespace(namespaceStr, Params(), nameSpace)) {
-            throw JSONRPCError (RPC_INVALID_PARAMETER, "invalid namespace id");
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid namespace id");
         }
     }
 
     if (request.params.size() >= 2)
+        if (!request.params[1].isNum()) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid maxage");
+        }
         maxage = request.params[1].getInt<int>();
     if (maxage < 0)
         throw JSONRPCError(RPC_INVALID_PARAMETER,
                         "'maxage' should be non-negative");
 
     if (request.params.size() >= 3)
-        from = request.params[3].getInt<int>();
+        if (!request.params[2].isNum()) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid from");
+        }
+        from = request.params[2].getInt<int>();
 
     if (from < 0)
-        throw JSONRPCError (RPC_INVALID_PARAMETER, "'from' should be non-negative");
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "'from' should be non-negative");
 
     if (request.params.size() >= 4)
+        if (!request.params[3].isNum()) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid nb");
+        }
         nb = request.params[3].getInt<int>();
 
     if (nb < 0)
-        throw JSONRPCError (RPC_INVALID_PARAMETER, "'nb' should be non-negative");
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "'nb' should be non-negative");
 
     if (request.params.size() >= 5) {
+        if (!request.params[4].isStr()) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "invalid stat");
+        }
         if (request.params[4].get_str() != "stat")
-            throw JSONRPCError (RPC_INVALID_PARAMETER,
+            throw JSONRPCError(RPC_INVALID_PARAMETER,
                             "fifth argument must be the literal string 'stat'");
         stats = true;
     }
