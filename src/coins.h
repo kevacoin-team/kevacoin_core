@@ -174,7 +174,7 @@ class CCoinsView
 {
 protected:
     /** Name changes cache.  */
-    CKevaCache cacheNames;
+    // CKevaCache cacheNames;
 
 public:
     /** Retrieve the Coin (unspent transaction output) for a given outpoint.
@@ -244,7 +244,7 @@ public:
     bool GetName(const valtype& nameSpace, const valtype& key, CKevaData& data) const override;
     bool GetNamesForHeight(unsigned nHeight, std::set<valtype>& names) const override;
     CKevaIterator* IterateKeys(const valtype& nameSpace) const override;
-    virtual CKevaIterator* IterateAssociatedNamespaces(const valtype& nameSpace) const override;
+    CKevaIterator* IterateAssociatedNamespaces(const valtype& nameSpace) const override;
     void SetBackend(CCoinsView &viewIn);
     bool BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock, const CKevaCache &names, bool erase = true) override;
     std::unique_ptr<CCoinsViewCursor> Cursor() const override;
@@ -266,6 +266,7 @@ protected:
     mutable uint256 hashBlock;
     mutable CCoinsMapMemoryResource m_cache_coins_memory_resource{};
     mutable CCoinsMap cacheCoins;
+    mutable CKevaCache cacheNames;
 
     /* Cached dynamic memory usage for the inner Coin objects. */
     mutable size_t cachedCoinsUsage{0};
@@ -287,7 +288,7 @@ public:
     bool GetName(const valtype &nameSpace, const valtype &key, CKevaData& data) const override;
     bool GetNamesForHeight(unsigned nHeight, std::set<valtype>& names) const override;
     CKevaIterator* IterateKeys(const valtype& nameSpace) const override;
-    virtual CKevaIterator* IterateAssociatedNamespaces(const valtype& nameSpace) const override;
+    CKevaIterator* IterateAssociatedNamespaces(const valtype& nameSpace) const override;
     bool BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock, const CKevaCache &names, bool erase = true) override;
     std::unique_ptr<CCoinsViewCursor> Cursor() const override {
         throw std::logic_error("CCoinsViewCache cursor iteration not supported.");

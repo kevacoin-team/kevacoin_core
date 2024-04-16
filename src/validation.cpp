@@ -2574,9 +2574,8 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
         }
         UpdateCoins(tx, view, i == 0 ? undoDummy : blockundo.vtxundo.back(), pindex->nHeight);
 
-        // TODO: Fix This
-        // CKevaNotifier kevaNotifier(&GetMainSignals());
-        // ApplyKevaTransaction(tx, *pindex, view, blockundo, kevaNotifier);
+        CKevaNotifier kevaNotifier(m_chainman.m_options.signals);
+        ApplyKevaTransaction(tx, pindex->nHeight, view, blockundo, kevaNotifier);
     }
     const auto time_3{SteadyClock::now()};
     time_connect += time_3 - time_2;
@@ -2593,7 +2592,6 @@ bool Chainstate::ConnectBlock(const CBlock& block, BlockValidationState& state, 
     }
 
     if (!control.Wait()) {
-        // TODO FIX
         LogPrintf("ERROR: %s: CheckQueue failed\n", __func__);
         return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "block-validation-failed");
     }

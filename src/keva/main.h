@@ -234,9 +234,9 @@ private:
 
 public:
     CKevaNotifier(ValidationSignals*);
-    void KevaNamespaceCreated(const CTransaction& tx, const CBlockIndex& pindex, const std::string& nameSpace);
-    void KevaUpdated(const CTransaction& tx, const CBlockIndex& pindex, const std::string& nameSpace, const std::string& key, const std::string& value);
-    void KevaDeleted(const CTransaction& tx, const CBlockIndex& pindex, const std::string& nameSpace, const std::string& key);
+    void KevaNamespaceCreated(const CTransaction& tx, int nHeight, const std::string& nameSpace);
+    void KevaUpdated(const CTransaction& tx, int nHeight, const std::string& nameSpace, const std::string& key, const std::string& value);
+    void KevaDeleted(const CTransaction& tx, int nHeight, const std::string& nameSpace, const std::string& key);
 };
 
 /* ************************************************************************** */
@@ -262,7 +262,7 @@ bool CheckKevaTransaction(const CTransaction& tx, unsigned nHeight, const CCoins
  * @param view The chain state to update.
  * @param undo Record undo information here.
  */
-void ApplyKevaTransaction(const CTransaction& tx, const CBlockIndex& pindex,
+void ApplyKevaTransaction(const CTransaction& tx, int nHeight,
                           CCoinsViewCache& view, CBlockUndo& undo, CKevaNotifier& notifier);
 
 /**

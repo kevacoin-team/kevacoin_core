@@ -154,19 +154,19 @@ protected:
      * Keva related interface.
      * Notifies listeners of a new namespace.
      */
-    virtual void KevaNamespaceCreated(const CTransactionRef &ptx, const CBlockIndex &pindex, const std::string& nameSpace) {}
+    virtual void KevaNamespaceCreated(const CTransactionRef &ptx, int nHeight, const std::string& nameSpace) {}
 
     /**
      * Keva related interface.
      * Notifies listeners of a key creation or update.
      */
-    virtual void KevaUpdated(const CTransactionRef &ptx, const CBlockIndex &pindex, const std::string& nameSpace, const std::string& key, const std::string& value) {}
+    virtual void KevaUpdated(const CTransactionRef &ptx, int nHeight, const std::string& nameSpace, const std::string& key, const std::string& value) {}
 
     /**
      * Keva related interface.
      * Notifies listeners of a key creation or update.
      */
-    virtual void KevaDeleted(const CTransactionRef &ptx, const CBlockIndex &pindex, const std::string& nameSpace, const std::string& key) {}
+    virtual void KevaDeleted(const CTransactionRef &ptx, int nHeight, const std::string& nameSpace, const std::string& key) {}
 
     /**
      * Notifies listeners that a block which builds directly on our current tip
@@ -244,9 +244,9 @@ public:
     void NewPoWValidBlock(const CBlockIndex *, const std::shared_ptr<const CBlock>&);
 
     /** Keva related */
-    void KevaNamespaceCreated(const CTransactionRef &ptx, const CBlockIndex& pindex, const std::string& nameSpace);
-    void KevaUpdated(const CTransactionRef &ptx, const CBlockIndex& pindex, const std::string& nameSpace, const std::string& key, const std::string& value);
-    void KevaDeleted(const CTransactionRef &ptx, const CBlockIndex& pindex, const std::string& nameSpace, const std::string& key);
+    void KevaNamespaceCreated(const CTransactionRef &ptx, int nHeight, const std::string& nameSpace);
+    void KevaUpdated(const CTransactionRef &ptx, int nHeight, const std::string& nameSpace, const std::string& key, const std::string& value);
+    void KevaDeleted(const CTransactionRef &ptx, int nHeight, const std::string& nameSpace, const std::string& key);
 };
 
 #endif // KEVACOIN_VALIDATIONINTERFACE_H
