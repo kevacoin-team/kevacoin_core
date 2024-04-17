@@ -3807,6 +3807,10 @@ void ChainstateManager::ReceivedBlockTransactions(const CBlock& block, CBlockInd
 
 static bool CheckBlockHeader(const CBlockHeader& block, BlockValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true)
 {
+    // NOTE: Always return true for REGTEST
+    if (g_chainman->ActiveChainstate().m_chainman.GetParams().GetChainType() == ChainType::REGTEST) {
+        return true;
+    }
     uint32_t height = block.nNonce;
     if (block.cnHeader.major_version != consensusParams.GetCryptonoteMajorVersion(height)) {
         return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "incorrect-major-version", "Cryptonote major version incorrect");
@@ -4068,8 +4072,11 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidatio
     const int nHeight = pindexPrev->nHeight + 1;
 
     // Kevacoin: the nNonce should be the current height.
-    if ((int32_t)block.nNonce != nHeight)
-        return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "nonce-not-height", "nNonce not equal height");
+    // NOTE: Always skip check for REGTEST
+    if (g_chainman->ActiveChainstate().m_chainman.GetParams().GetChainType() != ChainType::REGTEST) {
+        if (block.nNonce != nHeight)
+            return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "nonce-not-height", "nNonce not equal height");
+    }
 
     // Check proof of work
     const Consensus::Params& consensusParams = chainman.GetConsensus();
