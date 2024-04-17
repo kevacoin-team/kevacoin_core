@@ -297,6 +297,8 @@ void KevacoinGUI::createActions()
     connect(receiveCoinsAction, &QAction::triggered, this, &KevacoinGUI::gotoReceiveCoinsPage);
     connect(historyAction, &QAction::triggered, [this]{ showNormalIfMinimized(); });
     connect(historyAction, &QAction::triggered, this, &KevacoinGUI::gotoHistoryPage);
+    connect(kevaAction, &QAction::triggered, [this]{ showNormalIfMinimized(); });
+    connect(kevaAction, &QAction::triggered, this, &KevacoinGUI::gotoKevaPage);
 #endif // ENABLE_WALLET
 
     quitAction = new QAction(tr("E&xit"), this);

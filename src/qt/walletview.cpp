@@ -59,6 +59,7 @@ WalletView::WalletView(WalletModel* wallet_model, const PlatformStyle* _platform
     transactionsPage->setLayout(vbox);
 
     kevaPage = new KevaDialog(platformStyle);
+    kevaPage->setModel(walletModel);
 
     receiveCoinsPage = new ReceiveCoinsDialog(platformStyle);
     receiveCoinsPage->setModel(walletModel);
@@ -122,7 +123,6 @@ void WalletView::setClientModel(ClientModel *_clientModel)
     this->clientModel = _clientModel;
 
     overviewPage->setClientModel(_clientModel);
-    kevaPage->setModel(walletModel);
     sendCoinsPage->setClientModel(_clientModel);
     walletModel->setClientModel(_clientModel);
 }
