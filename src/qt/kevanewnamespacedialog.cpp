@@ -25,7 +25,7 @@ KevaNewNamespaceDialog::KevaNewNamespaceDialog(QWidget *parent) :
 void KevaNewNamespaceDialog::onNamespaceChanged(const QString & ns)
 {
     int length = ns.length();
-    bool enabled = length > 0;
+    bool enabled = (length > 0 && length < 255);
     ui->buttonBox->button(QDialogButtonBox::Save)->setEnabled(enabled);
 }
 
