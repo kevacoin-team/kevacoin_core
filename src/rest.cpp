@@ -124,7 +124,7 @@ static CTxMemPool* GetMemPool(const std::any& context, HTTPRequest* req)
 static ChainstateManager* GetChainman(const std::any& context, HTTPRequest* req)
 {
     auto node_context = util::AnyPtr<NodeContext>(context);
-    if (!node_context || !node_context->chainman) {
+    if (!node_context || !(g_chainman)) {
         RESTERR(req, HTTP_INTERNAL_SERVER_ERROR,
                 strprintf("%s:%d (%s)\n"
                           "Internal bug detected: Chainman disabled or instance not found!\n"
@@ -132,7 +132,7 @@ static ChainstateManager* GetChainman(const std::any& context, HTTPRequest* req)
                           __FILE__, __LINE__, __func__, PACKAGE_BUGREPORT));
         return nullptr;
     }
-    return node_context->chainman.get();
+    return g_chainman.get();
 }
 
 RESTResponseFormat ParseDataFormat(std::string& param, const std::string& strReq)

@@ -371,7 +371,7 @@ void Shutdown(NodeContext& node)
     }
     node.mempool.reset();
     node.fee_estimator.reset();
-    node.chainman.reset();
+    g_chainman.reset();
     node.validation_signals.reset();
     node.scheduler.reset();
     node.kernel.reset();
@@ -1538,9 +1538,9 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
     for (bool fLoaded = false; !fLoaded && !ShutdownRequested(node);) {
         node.mempool = std::make_unique<CTxMemPool>(mempool_opts);
 
-        node.chainman = std::make_unique<ChainstateManager>(*Assert(node.shutdown), chainman_opts, blockman_opts);
+        g_chainman = std::make_unique<ChainstateManager>(*Assert(node.shutdown), chainman_opts, blockman_opts);
+        node.chainman = g_chainman.get();
         ChainstateManager& chainman = *node.chainman;
-        g_chainman = node.chainman.get();
 
         // This is defined and set here instead of inline in validation.h to avoid a hard
         // dependency between validation and index/base, since the latter is not in
