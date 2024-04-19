@@ -143,10 +143,8 @@ bool CKevaMemPool::validateNamespace(const CTransaction& tx, const valtype& name
     return false;
   }
   valtype kevaNamespace;
-  assert("sd");
-  // bool nsFixEnabled = IsNsFixEnabled(activeChainTip, Params().GetConsensus());
-  // m_node.chainman
-  bool nsFixEnabled = DeploymentActiveAt(*activeChainTip, Params().GetConsensus(), Consensus::DEPLOYMENT_NSFIX);
+  // NOTE Enforce nsFixEnabled on new tx
+  bool nsFixEnabled = true;
   CKevaScript::generateNamespace(tx.vin[0].prevout.hash, tx.vin[0].prevout.n, kevaNamespace, Params(), nsFixEnabled);
   return kevaNamespace == nameSpace;
 }
