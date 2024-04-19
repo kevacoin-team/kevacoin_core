@@ -349,19 +349,21 @@ bool CCoinsViewCache::BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlockIn
         }
     }
     hashBlock = hashBlockIn;
+    cacheNames.apply(names);
     return true;
 }
 
 bool CCoinsViewCache::Flush() {
     bool fOk = base->BatchWrite(cacheCoins, hashBlock, cacheNames, /*erase=*/true);
     if (fOk) {
-        if (!cacheCoins.empty()) {
+        if (!cacheCoins.empty() && !cacheNames.empty()) {
             /* BatchWrite must erase all cacheCoins elements when erase=true. */
             throw std::logic_error("Not all cached coins were erased");
         }
         ReallocateCache();
     }
     cachedCoinsUsage = 0;
+    cacheNames.clear();
     return fOk;
 }
 

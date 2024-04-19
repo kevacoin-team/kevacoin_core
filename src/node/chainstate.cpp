@@ -118,11 +118,11 @@ static ChainstateLoadResult CompleteChainstateInitialization(
 
         // Refuse to load unsupported database format.
         // This is a no-op if we cleared the coinsviewdb with -reindex or -reindex-chainstate
-        if (chainstate->CoinsDB().NeedsUpgrade()) {
-            return {ChainstateLoadStatus::FAILURE_INCOMPATIBLE_DB, _("Unsupported chainstate database format found. "
-                                                                     "Please restart with -reindex-chainstate. This will "
-                                                                     "rebuild the chainstate database.")};
-        }
+        // if (chainstate->CoinsDB().NeedsUpgrade()) {
+        //     return {ChainstateLoadStatus::FAILURE_INCOMPATIBLE_DB, _("Unsupported chainstate database format found. "
+        //                                                              "Please restart with -reindex-chainstate. This will "
+        //                                                              "rebuild the chainstate database.")};
+        // }
 
         // ReplayBlocks is a no-op if we cleared the coinsviewdb with -reindex or -reindex-chainstate
         if (!chainstate->ReplayBlocks()) {
