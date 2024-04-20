@@ -11,6 +11,7 @@
 #include <numeric>
 #include <policy/policy.h>
 #include <primitives/transaction.h>
+#include <script/keva.h>
 #include <script/script.h>
 #include <script/signingprovider.h>
 #include <script/solver.h>
@@ -27,6 +28,7 @@
 #include <wallet/transaction.h>
 #include <wallet/wallet.h>
 
+#include <base58.h>
 #include <cmath>
 
 using interfaces::FoundBlock;
@@ -305,7 +307,8 @@ util::Result<PreSelectedInputs> FetchSelectedInputs(const CWallet& wallet, const
 CoinsResult AvailableCoins(const CWallet& wallet,
                            const CCoinControl* coinControl,
                            std::optional<CFeeRate> feerate,
-                           const CoinFilterParams& params)
+                           const CoinFilterParams& params,
+                           const std::string* kevaNamespace)
 {
     AssertLockHeld(wallet.cs_wallet);
 
@@ -434,10 +437,28 @@ CoinsResult AvailableCoins(const CWallet& wallet,
                 is_from_p2sh = true;
             }
 
-            result.Add(GetOutputType(type, is_from_p2sh),
-                       COutput(outpoint, output, nDepth, input_bytes, spendable, solvable, safeTx, wtx.GetTxTime(), tx_from_me, feerate));
+            const CKevaScript kevaOp(output.scriptPubKey);
+            if (kevaOp.isKevaOp()) {
+                if (kevaNamespace) {
+                    if (*kevaNamespace == EncodeBase58Check(kevaOp.getOpNamespace())) {
+                        result.Add(GetOutputType(type, is_from_p2sh),
+                                    COutput(outpoint, output, nDepth, input_bytes, spendable, solvable, safeTx, wtx.GetTxTime(), tx_from_me, feerate));
 
-            outpoints.push_back(outpoint);
+                        outpoints.push_back(outpoint);
+
+                        return result;
+                    }
+                } else {
+                    spendable = false;
+                }
+            }
+
+            if (!kevaNamespace) {
+                result.Add(GetOutputType(type, is_from_p2sh),
+                            COutput(outpoint, output, nDepth, input_bytes, spendable, solvable, safeTx, wtx.GetTxTime(), tx_from_me, feerate));
+
+                outpoints.push_back(outpoint);
+            }
 
             // Checks the sum amount of all UTXO's.
             if (params.min_sum_amount != MAX_MONEY) {
