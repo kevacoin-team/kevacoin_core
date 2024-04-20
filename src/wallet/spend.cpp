@@ -1000,12 +1000,22 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
         const std::vector<CRecipient>& vecSend,
         std::optional<unsigned int> change_pos,
         const CCoinControl& coin_control,
-        bool sign) EXCLUSIVE_LOCKS_REQUIRED(wallet.cs_wallet)
+        bool sign,
+        std::optional<std::vector<unsigned char>> kevaNamespace = std::nullopt) EXCLUSIVE_LOCKS_REQUIRED(wallet.cs_wallet)
 {
     AssertLockHeld(wallet.cs_wallet);
 
     FastRandomContext rng_fast;
     CMutableTransaction txNew; // The resulting transaction that we make
+
+    bool isKevacoin = false;
+    for (const auto& recipient : vecSend)
+    {
+        if (CKevaScript::isKevaScript(GetScriptForDestination(recipient.dest))) {
+            isKevacoin = true;
+            txNew.SetKevacoin();
+        }
+    }
 
     if (coin_control.m_version) {
         txNew.nVersion = coin_control.m_version.value();
@@ -1200,6 +1210,22 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
             });
     }
 
+    bool kevaDummyReplaced = false;
+    for (const auto& coin : selected_coins) {
+        if (isKevacoin && !kevaDummyReplaced) {
+            for (std::vector<CTxOut>::iterator iter = txNew.vout.begin(); iter != txNew.vout.end(); ++iter) {
+                CScript dummyScript = iter->scriptPubKey;
+                CKevaScript kevaOp(dummyScript);
+                if (kevaOp.isKevaOp() && kevaOp.isNamespaceRegistration()) {
+                    bool nsFixEnabled = true;
+                    iter->scriptPubKey = CKevaScript::replaceKevaNamespace(dummyScript, coin->outpoint.hash, coin->outpoint.n, kevaNamespace.value(), Params(), nsFixEnabled);
+                    kevaDummyReplaced = true;
+                    break;
+                }
+            }
+        }
+    }
+
     // The sequence number is set to non-maxint so that DiscourageFeeSniping
     // works.
     //
@@ -1358,7 +1384,8 @@ util::Result<CreatedTransactionResult> CreateTransaction(
         const std::vector<CRecipient>& vecSend,
         std::optional<unsigned int> change_pos,
         const CCoinControl& coin_control,
-        bool sign)
+        bool sign,
+        std::optional<std::vector<unsigned char>> kevaNamespace)
 {
     if (vecSend.empty()) {
         return util::Error{_("Transaction must have at least one recipient")};
@@ -1370,7 +1397,7 @@ util::Result<CreatedTransactionResult> CreateTransaction(
 
     LOCK(wallet.cs_wallet);
 
-    auto res = CreateTransactionInternal(wallet, vecSend, change_pos, coin_control, sign);
+    auto res = CreateTransactionInternal(wallet, vecSend, change_pos, coin_control, sign, kevaNamespace);
     TRACE4(coin_selection, normal_create_tx_internal,
            wallet.GetName().c_str(),
            bool(res),
@@ -1389,7 +1416,7 @@ util::Result<CreatedTransactionResult> CreateTransaction(
             ExtractDestination(txr_ungrouped.tx->vout[*txr_ungrouped.change_pos].scriptPubKey, tmp_cc.destChange);
         }
 
-        auto txr_grouped = CreateTransactionInternal(wallet, vecSend, change_pos, tmp_cc, sign);
+        auto txr_grouped = CreateTransactionInternal(wallet, vecSend, change_pos, tmp_cc, sign, kevaNamespace);
         // if fee of this alternative one is within the range of the max fee, we use this one
         const bool use_aps{txr_grouped.has_value() ? (txr_grouped->fee <= txr_ungrouped.fee + wallet.m_max_aps_fee) : false};
         TRACE5(coin_selection, aps_create_tx_internal,
@@ -1447,7 +1474,7 @@ util::Result<CreatedTransactionResult> FundTransaction(CWallet& wallet, const CM
         preset_txin.SetScriptWitness(txin.scriptWitness);
     }
 
-    auto res = CreateTransaction(wallet, vecSend, change_pos, coinControl, false);
+    auto res = CreateTransaction(wallet, vecSend, change_pos, coinControl, false, /*kevaNamespace*/std::nullopt);
     if (!res) {
         return res;
     }
