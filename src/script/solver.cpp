@@ -148,16 +148,16 @@ TxoutType Solver(const CScript& scriptPubKey, std::vector<std::vector<unsigned c
 
     // Shortcut for pay-to-script-hash, which are more constrained than the other types:
     // it is always OP_HASH160 20 [20 byte hash] OP_EQUAL
-    if (scriptPubKey.IsPayToScriptHash(true))
+    if (script1.IsPayToScriptHash(true))
     {
-        std::vector<unsigned char> hashBytes(scriptPubKey.begin()+2, scriptPubKey.begin()+22);
+        std::vector<unsigned char> hashBytes(script1.begin()+2, script1.begin()+22);
         vSolutionsRet.push_back(hashBytes);
         return TxoutType::SCRIPTHASH;
     }
 
     int witnessversion;
     std::vector<unsigned char> witnessprogram;
-    if (scriptPubKey.IsWitnessProgram(witnessversion, witnessprogram)) {
+    if (script1.IsWitnessProgram(witnessversion, witnessprogram)) {
         if (witnessversion == 0 && witnessprogram.size() == WITNESS_V0_KEYHASH_SIZE) {
             vSolutionsRet.push_back(std::move(witnessprogram));
             return TxoutType::WITNESS_V0_KEYHASH;
@@ -188,19 +188,19 @@ TxoutType Solver(const CScript& scriptPubKey, std::vector<std::vector<unsigned c
     }
 
     std::vector<unsigned char> data;
-    if (MatchPayToPubkey(scriptPubKey, data)) {
+    if (MatchPayToPubkey(script1, data)) {
         vSolutionsRet.push_back(std::move(data));
         return TxoutType::PUBKEY;
     }
 
-    if (MatchPayToPubkeyHash(scriptPubKey, data)) {
+    if (MatchPayToPubkeyHash(script1, data)) {
         vSolutionsRet.push_back(std::move(data));
         return TxoutType::PUBKEYHASH;
     }
 
     int required;
     std::vector<std::vector<unsigned char>> keys;
-    if (MatchMultisig(scriptPubKey, required, keys)) {
+    if (MatchMultisig(script1, required, keys)) {
         vSolutionsRet.push_back({static_cast<unsigned char>(required)}); // safe as required is in range 1..20
         vSolutionsRet.insert(vSolutionsRet.end(), keys.begin(), keys.end());
         vSolutionsRet.push_back({static_cast<unsigned char>(keys.size())}); // safe as size is in range 1..20
