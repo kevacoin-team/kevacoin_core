@@ -13,6 +13,7 @@
 #include <wallet/wallet.h>
 
 #include <optional>
+#include <univalue.h>
 
 namespace wallet {
 /** Get the marginal bytes if spending the specified output from this transaction.
@@ -219,13 +220,17 @@ struct CreatedTransactionResult
  * selected by SelectCoins(); Also create the change output, when needed
  * @note passing change_pos as std::nullopt will result in setting a random position
  */
-util::Result<CreatedTransactionResult> CreateTransaction(CWallet& wallet, const std::vector<CRecipient>& vecSend, std::optional<unsigned int> change_pos, const CCoinControl& coin_control, bool sign = true, std::optional<std::vector<unsigned char>> kaveNamespace = std::nullopt);
+util::Result<CreatedTransactionResult> CreateTransaction(CWallet& wallet, const std::vector<CRecipient>& vecSend, std::optional<unsigned int> change_pos, const CCoinControl& coin_control, valtype& kaveNamespace, bool sign = true);
 
 /**
  * Insert additional inputs into the transaction by
  * calling CreateTransaction();
  */
 util::Result<CreatedTransactionResult> FundTransaction(CWallet& wallet, const CMutableTransaction& tx, const std::vector<CRecipient>& recipients, std::optional<unsigned int> change_pos, bool lockUnspents, CCoinControl);
+UniValue SendMoneyToKevaScript(CWallet& wallet, const opcodetype kevaOp, const valtype& nsKey,
+                                             const valtype& nsValue, const CTxIn* withInput,
+                                             valtype& kevaNamespace, CAmount nValue, bool fSubtractFeeFromAmount,
+                                             const CCoinControl& coin_control, bool verbose);
 } // namespace wallet
 
 #endif // KEVACOIN_WALLET_SPEND_H

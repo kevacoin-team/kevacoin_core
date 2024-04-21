@@ -148,6 +148,16 @@ public:
         int& change_pos,
         CAmount& fee) = 0;
 
+    virtual UniValue sendMoneyToKevaScript(const opcodetype kevaOp,
+                       const valtype& nsKey,
+                       const valtype& nsValue,
+                       const CTxIn* withInput,
+                       valtype& kevaNamespace,
+                       CAmount nValue,
+                       bool fSubtractFeeFromAmount,
+                       const wallet::CCoinControl& coin_control,
+                       bool verbose) = 0;
+
     //! Commit transaction.
     virtual void commitTransaction(CTransactionRef tx,
         WalletValueMap value_map,

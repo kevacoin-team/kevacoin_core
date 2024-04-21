@@ -558,8 +558,9 @@ public:
     {
         CTransactionRef tx;
         CCoinControl dummy;
+        valtype kevaNamespace;
         {
-            auto res = CreateTransaction(*wallet, {recipient}, /*change_pos=*/std::nullopt, dummy);
+            auto res = CreateTransaction(*wallet, {recipient}, /*change_pos=*/std::nullopt, dummy, kevaNamespace);
             BOOST_CHECK(res);
             tx = res->tx;
         }

@@ -36,6 +36,7 @@
 #include <random.h>
 #include <script/descriptor.h>
 #include <script/interpreter.h>
+#include <script/keva.h>
 #include <script/script.h>
 #include <script/sign.h>
 #include <script/signingprovider.h>
@@ -1998,6 +1999,31 @@ CWallet::ScanResult CWallet::ScanForWalletTransactions(const uint256& start_bloc
         WalletLogPrintf("Rescan completed in %15dms\n", Ticks<std::chrono::milliseconds>(reserver.now() - start_time));
     }
     return result;
+}
+
+bool CWallet::FindValueInNameInput(const CTxIn& nameInput,
+                               CAmount& value, const CWalletTx*& walletTx,
+                               std::string& strFailReason) const
+{
+    walletTx = GetWalletTx(nameInput.prevout.hash);
+    if (!walletTx) {
+        strFailReason = "Input transaction " + nameInput.prevout.hash.GetHex() +  " not found in this wallet";
+        return false;
+    }
+
+    const CTxOut& output = walletTx->tx->vout[nameInput.prevout.n];
+    if (IsMine (output) != ISMINE_SPENDABLE) {
+        strFailReason = "Input transaction " + nameInput.prevout.hash.GetHex() +  " is not mine";
+        return false;
+    }
+
+    if (!CKevaScript::isKevaScript(output.scriptPubKey)) {
+        strFailReason = "Input transaction " + nameInput.prevout.hash.GetHex() +  " is not a keva operation";
+        return false;
+    }
+
+    value = output.nValue;
+    return true;
 }
 
 bool CWallet::SubmitTxMemoryPoolAndRelay(CWalletTx& wtx, std::string& err_string, bool relay) const

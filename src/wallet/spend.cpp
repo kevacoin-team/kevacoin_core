@@ -11,6 +11,8 @@
 #include <numeric>
 #include <policy/policy.h>
 #include <primitives/transaction.h>
+#include <rpc/protocol.h>
+#include <rpc/request.h>
 #include <script/keva.h>
 #include <script/script.h>
 #include <script/signingprovider.h>
@@ -30,11 +32,15 @@
 
 #include <base58.h>
 #include <cmath>
+#include <univalue.h>
 
 using interfaces::FoundBlock;
 
 namespace wallet {
 static constexpr size_t OUTPUT_GROUP_MAX_ENTRIES{100};
+
+const int NAMESPACE_LENGTH           =  21;
+const std::string DUMMY_NAMESPACE    =  "___DUMMY_NAMESPACE___";
 
 /** Whether the descriptor represents, directly or not, a witness program. */
 static bool IsSegwit(const Descriptor& desc) {
@@ -1000,8 +1006,8 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
         const std::vector<CRecipient>& vecSend,
         std::optional<unsigned int> change_pos,
         const CCoinControl& coin_control,
-        bool sign,
-        std::optional<std::vector<unsigned char>> kevaNamespace = std::nullopt) EXCLUSIVE_LOCKS_REQUIRED(wallet.cs_wallet)
+        valtype& kevaNamespace,
+        bool sign) EXCLUSIVE_LOCKS_REQUIRED(wallet.cs_wallet)
 {
     AssertLockHeld(wallet.cs_wallet);
 
@@ -1014,6 +1020,7 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
         if (CKevaScript::isKevaScript(GetScriptForDestination(recipient.dest))) {
             isKevacoin = true;
             txNew.SetKevacoin();
+            break;
         }
     }
 
@@ -1218,7 +1225,7 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
                 CKevaScript kevaOp(dummyScript);
                 if (kevaOp.isKevaOp() && kevaOp.isNamespaceRegistration()) {
                     bool nsFixEnabled = true;
-                    iter->scriptPubKey = CKevaScript::replaceKevaNamespace(dummyScript, coin->outpoint.hash, coin->outpoint.n, kevaNamespace.value(), Params(), nsFixEnabled);
+                    iter->scriptPubKey = CKevaScript::replaceKevaNamespace(dummyScript, coin->outpoint.hash, coin->outpoint.n, kevaNamespace, Params(), nsFixEnabled);
                     kevaDummyReplaced = true;
                     break;
                 }
@@ -1384,8 +1391,8 @@ util::Result<CreatedTransactionResult> CreateTransaction(
         const std::vector<CRecipient>& vecSend,
         std::optional<unsigned int> change_pos,
         const CCoinControl& coin_control,
-        bool sign,
-        std::optional<std::vector<unsigned char>> kevaNamespace)
+        valtype& kevaNamespace,
+        bool sign)
 {
     if (vecSend.empty()) {
         return util::Error{_("Transaction must have at least one recipient")};
@@ -1397,7 +1404,7 @@ util::Result<CreatedTransactionResult> CreateTransaction(
 
     LOCK(wallet.cs_wallet);
 
-    auto res = CreateTransactionInternal(wallet, vecSend, change_pos, coin_control, sign, kevaNamespace);
+    auto res = CreateTransactionInternal(wallet, vecSend, change_pos, coin_control, kevaNamespace, sign);
     TRACE4(coin_selection, normal_create_tx_internal,
            wallet.GetName().c_str(),
            bool(res),
@@ -1416,7 +1423,7 @@ util::Result<CreatedTransactionResult> CreateTransaction(
             ExtractDestination(txr_ungrouped.tx->vout[*txr_ungrouped.change_pos].scriptPubKey, tmp_cc.destChange);
         }
 
-        auto txr_grouped = CreateTransactionInternal(wallet, vecSend, change_pos, tmp_cc, sign, kevaNamespace);
+        auto txr_grouped = CreateTransactionInternal(wallet, vecSend, change_pos, tmp_cc, kevaNamespace, sign);
         // if fee of this alternative one is within the range of the max fee, we use this one
         const bool use_aps{txr_grouped.has_value() ? (txr_grouped->fee <= txr_ungrouped.fee + wallet.m_max_aps_fee) : false};
         TRACE5(coin_selection, aps_create_tx_internal,
@@ -1474,7 +1481,8 @@ util::Result<CreatedTransactionResult> FundTransaction(CWallet& wallet, const CM
         preset_txin.SetScriptWitness(txin.scriptWitness);
     }
 
-    auto res = CreateTransaction(wallet, vecSend, change_pos, coinControl, false, /*kevaNamespace*/std::nullopt);
+    valtype kevaNamespace;
+    auto res = CreateTransaction(wallet, vecSend, change_pos, coinControl, kevaNamespace, false);
     if (!res) {
         return res;
     }
@@ -1486,5 +1494,99 @@ util::Result<CreatedTransactionResult> FundTransaction(CWallet& wallet, const CM
     }
 
     return res;
+}
+
+UniValue SendMoneyToKevaScript(CWallet& wallet,
+                       const opcodetype kevaOp,
+                       const valtype& nsKey,
+                       const valtype& nsValue,
+                       const CTxIn* withInput,
+                       valtype& kevaNamespace,
+                       CAmount nValue,
+                       bool fSubtractFeeFromAmount,
+                       const CCoinControl& coin_control,
+                       bool verbose)
+{
+    if (wallet.IsLocked()) {
+        throw JSONRPCError(RPC_WALLET_ERROR, "Error: Wallet is locked");
+    }
+    // This should always try to sign, if we don't have private keys, don't try to do anything here.
+    if (wallet.IsWalletFlagSet(WALLET_FLAG_DISABLE_PRIVATE_KEYS)) {
+        throw JSONRPCError(RPC_WALLET_ERROR, "Error: Private keys are disabled for this wallet");
+    }
+
+    // Make sure the wallet is able to broadcast
+    if (!wallet.GetBroadcastTransactions()) {
+        throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
+    }
+
+    // Check amount
+    if (nValue <= 0)
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid amount");
+
+    /* If we have an additional input that is a name, we have to take this
+       name's value into account as well for the balance check.  Otherwise one
+       sees spurious "Insufficient funds" errors when updating names when the
+       wallet's balance it smaller than the amount locked in the name.  */
+    // NOTE: Disabling check until tested if new codebase exhibits same behaviour requiring.
+    // CAmount curBalance = wallet.GetBalance();
+    // CAmount lockedValue = 0;
+    // std::string strError;
+    // if (withInput) {
+    //     const CWalletTx* dummyWalletTx;
+    //     if (!wallet.FindValueInNameInput(*withInput, lockedValue, dummyWalletTx, strError)) {
+    //         throw JSONRPCError(RPC_WALLET_ERROR, strError);
+    //     }
+    // }
+
+    // if (nValue > curBalance + lockedValue)
+    //     throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Insufficient funds");
+
+    // Create and send the transaction
+    CScript newScript;
+    if (kevaOp == OP_KEVA_NAMESPACE) {
+        valtype namespaceDummy = ToByteVector(std::string(DUMMY_NAMESPACE));
+        assert(namespaceDummy.size() == NAMESPACE_LENGTH);
+        CScript nsAddr;
+        // NOTE: Refine below to not allocate address in event of error
+        auto op_dest = wallet.GetNewDestination(OutputType::P2SH_SEGWIT, "Namespace");
+        nsAddr = GetScriptForDestination(*op_dest);
+        newScript = CKevaScript::buildKevaNamespace(nsAddr, namespaceDummy, nsValue);
+    } else if (kevaOp == OP_KEVA_DELETE) {
+        // newScript = CKevaScript::buildKevaDelete(addrName, nameSpace, nsKey);
+    } else if (kevaOp == OP_KEVA_PUT) {
+        // newScript = CKevaScript::buildKevaPut(addrName, nameSpace, nsKey, nsValue);
+    } else {
+        throw JSONRPCError(RPC_WALLET_ERROR, "Invalid kevaOp");
+    }
+
+    CAmount nFeeRequired;
+    std::vector<CRecipient> vecSend;
+    CRecipient recipient = {CNoDestination(newScript), nValue, fSubtractFeeFromAmount};
+    vecSend.push_back(recipient);
+    // coin_control.m_change_type = OutputType::P2SH_SEGWIT;
+
+    auto res = CreateTransaction(wallet, vecSend, /*change pos*/std::nullopt, coin_control, kevaNamespace, true);
+    if (!res) {
+        throw JSONRPCError(RPC_WALLET_ERROR, util::ErrorString(res).original);
+    }
+
+    // Wallet comments
+    mapValue_t mapValue;
+    // if (!request.params[2].isNull() && !request.params[2].get_str().empty())
+    //     mapValue["comment"] = request.params[2].get_str();
+    // if (!request.params[3].isNull() && !request.params[3].get_str().empty())
+    //     mapValue["to"] = request.params[3].get_str();
+    const CTransactionRef& tx = res->tx;
+    wallet.CommitTransaction(tx, std::move(mapValue), /*orderForm=*/{});
+    UniValue entry(UniValue::VOBJ);
+    if (verbose) {
+        entry.pushKV("txid", tx->GetHash().GetHex());
+        entry.pushKV("fee_reason", StringForFeeReason(res->fee_calc.reason));
+        return entry;
+    } else {
+        entry.pushKV("txid", "tx->GetHash().GetHex()");
+    }
+    return entry;
 }
 } // namespace wallet

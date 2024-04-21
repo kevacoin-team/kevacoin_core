@@ -281,14 +281,37 @@ public:
         CAmount& fee) override
     {
         LOCK(m_wallet->cs_wallet);
+        valtype kevaNamespace;
         auto res = CreateTransaction(*m_wallet, recipients, change_pos == -1 ? std::nullopt : std::make_optional(change_pos),
-                                     coin_control, sign);
+                                     coin_control, kevaNamespace, sign);
         if (!res) return util::Error{util::ErrorString(res)};
         const auto& txr = *res;
         fee = txr.fee;
         change_pos = txr.change_pos ? *txr.change_pos : -1;
 
         return txr.tx;
+    }
+    UniValue sendMoneyToKevaScript(const opcodetype kevaOp,
+                       const valtype& nsKey,
+                       const valtype& nsValue,
+                       const CTxIn* withInput,
+                       valtype& kevaNamespace,
+                       CAmount nValue,
+                       bool fSubtractFeeFromAmount,
+                       const CCoinControl& coin_control,
+                       bool verbose)
+    {
+        LOCK(m_wallet->cs_wallet);
+        return SendMoneyToKevaScript(*m_wallet,
+                       kevaOp,
+                       nsKey,
+                       nsValue,
+                       withInput,
+                       kevaNamespace,
+                       nValue,
+                       fSubtractFeeFromAmount,
+                       coin_control,
+                       verbose);
     }
     void commitTransaction(CTransactionRef tx,
         WalletValueMap value_map,
