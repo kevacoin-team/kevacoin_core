@@ -247,7 +247,8 @@ public:
     //! (put change in one group with wallet address)
     using CoinsList = std::map<CTxDestination, std::vector<std::tuple<COutPoint, WalletTxOut>>>;
     virtual CoinsList listCoins() = 0;
-
+    virtual bool findKevaCoin(COutPoint& vCoin, const std::string* kevaNamespace) = 0;
+    virtual std::map<std::string, std::string> getNamespaceList() = 0;
     //! Return wallet transaction output information.
     virtual std::vector<WalletTxOut> getCoins(const std::vector<COutPoint>& outputs) = 0;
 

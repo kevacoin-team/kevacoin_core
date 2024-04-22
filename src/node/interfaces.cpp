@@ -695,6 +695,11 @@ public:
         }
         return MiniMiner(*m_node.mempool, outpoints).CalculateTotalBumpFees(target_feerate);
     }
+    bool getNamespace(const valtype &nameSpace, CKevaData &data) override
+    {
+        LOCK(::cs_main);
+        return chainman().ActiveChainstate().CoinsDB().GetNamespace(nameSpace, data);
+    }
     void getPackageLimits(unsigned int& limit_ancestor_count, unsigned int& limit_descendant_count) override
     {
         const CTxMemPool::Limits default_limits{};

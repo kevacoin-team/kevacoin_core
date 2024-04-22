@@ -7,6 +7,7 @@
 
 #include <blockfilter.h>
 #include <common/settings.h>
+#include <keva/common.h>
 #include <primitives/transaction.h> // For CTransactionRef
 #include <util/result.h>
 
@@ -254,6 +255,7 @@ public:
     //  The combined bump fee may be used to correct overestimation due to
     //  shared ancestry by multiple UTXOs after coin selection.
     virtual std::optional<CAmount> calculateCombinedBumpFee(const std::vector<COutPoint>& outpoints, const CFeeRate& target_feerate) = 0;
+    virtual bool getNamespace(const valtype &nameSpace, CKevaData &data) = 0;
 
     //! Get the node's package limits.
     //! Currently only returns the ancestor and descendant count limits, but could be enhanced to

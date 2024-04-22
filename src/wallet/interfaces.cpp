@@ -8,10 +8,12 @@
 #include <consensus/amount.h>
 #include <interfaces/chain.h>
 #include <interfaces/handler.h>
+#include <keva/common.h>
 #include <policy/fees.h>
 #include <primitives/transaction.h>
 #include <rpc/server.h>
 #include <scheduler.h>
+#include <script/keva.h>
 #include <support/allocators/secure.h>
 #include <sync.h>
 #include <uint256.h>
@@ -29,6 +31,7 @@
 #include <wallet/spend.h>
 #include <wallet/wallet.h>
 
+#include <base58.h>
 #include <memory>
 #include <string>
 #include <utility>
@@ -500,6 +503,44 @@ public:
             }
         }
         return result;
+    }
+    bool findKevaCoin(COutPoint& vCoin, const std::string* kevaNamespace) {
+        CCoinControl coin_control;
+        CoinFilterParams coins_params;
+        coins_params.only_spendable = false;
+        coins_params.skip_locked = false;
+        for (const COutput& coin : AvailableCoins(*m_wallet, &coin_control, /*feerate=*/std::nullopt, coins_params, kevaNamespace).All()) {
+            vCoin = coin.outpoint;
+            return true;
+        }
+        return false;
+    }
+    std::map<std::string, std::string> getNamespaceList() override
+    {
+        LOCK(m_wallet->cs_wallet);
+        std::map<std::string, std::string> result;
+        CCoinControl coin_control;
+        CoinFilterParams coins_params;
+
+        for (const COutput& coin : AvailableCoins(*m_wallet, &coin_control, /*feerate=*/std::nullopt, coins_params).All()) {
+            const CScript& scriptPubKey = coin.txout.scriptPubKey;
+            const CKevaScript kevaOp(scriptPubKey);
+            if (!kevaOp.isKevaOp()) {
+                continue;
+            }
+            if (!kevaOp.isNamespaceRegistration() && !kevaOp.isAnyUpdate()) {
+                continue;
+            }
+            const valtype nameSpace = kevaOp.getOpNamespace();
+            const std::string nameSpaceStr = EncodeBase58Check(nameSpace);
+            CKevaData data;
+
+            if (m_wallet->chain().getNamespace(nameSpace, data)) {
+                std::string displayName = ValtypeToString(data.getValue());
+                result[nameSpaceStr] = displayName;
+            }
+        }
+    return result;
     }
     std::vector<WalletTxOut> getCoins(const std::vector<COutPoint>& outputs) override
     {
