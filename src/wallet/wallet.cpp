@@ -1605,12 +1605,15 @@ isminetype CWallet::IsMine(const CScript& script) const
 {
     AssertLockHeld(cs_wallet);
 
+    // If we have a keva script, strip the prefix
+    const CKevaScript kevaOp(script);
+    const CScript& script1 = kevaOp.getAddress();
     // Search the cache so that IsMine is called only on the relevant SPKMs instead of on everything in m_spk_managers
-    const auto& it = m_cached_spks.find(script);
+    const auto& it = m_cached_spks.find(script1);
     if (it != m_cached_spks.end()) {
         isminetype res = ISMINE_NO;
         for (const auto& spkm : it->second) {
-            res = std::max(res, spkm->IsMine(script));
+            res = std::max(res, spkm->IsMine(script1));
         }
         Assume(res == ISMINE_SPENDABLE);
         return res;
