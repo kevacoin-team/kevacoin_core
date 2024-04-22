@@ -3582,7 +3582,10 @@ ScriptPubKeyMan* CWallet::GetScriptPubKeyMan(const uint256& id) const
 std::unique_ptr<SigningProvider> CWallet::GetSolvingProvider(const CScript& script) const
 {
     SignatureData sigdata;
-    return GetSolvingProvider(script, sigdata);
+    // If we have a keva script, strip the prefix
+    const CKevaScript kevaOp(script);
+    const CScript& script1 = kevaOp.getAddress();
+    return GetSolvingProvider(script1, sigdata);
 }
 
 std::unique_ptr<SigningProvider> CWallet::GetSolvingProvider(const CScript& script, SignatureData& sigdata) const
