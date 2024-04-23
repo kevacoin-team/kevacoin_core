@@ -297,7 +297,7 @@ public:
     UniValue sendMoneyToKevaScript(const opcodetype kevaOp,
                        const valtype& nsKey,
                        const valtype& nsValue,
-                       const CTxIn* withInput,
+                       const COutPoint* withInput,
                        valtype& kevaNamespace,
                        CAmount nValue,
                        bool fSubtractFeeFromAmount,

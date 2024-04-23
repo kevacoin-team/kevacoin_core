@@ -228,7 +228,7 @@ util::Result<CreatedTransactionResult> CreateTransaction(CWallet& wallet, const 
  */
 util::Result<CreatedTransactionResult> FundTransaction(CWallet& wallet, const CMutableTransaction& tx, const std::vector<CRecipient>& recipients, std::optional<unsigned int> change_pos, bool lockUnspents, CCoinControl);
 UniValue SendMoneyToKevaScript(CWallet& wallet, const opcodetype kevaOp, const valtype& nsKey,
-                                             const valtype& nsValue, const CTxIn* withInput,
+                                             const valtype& nsValue, const COutPoint* withInput,
                                              valtype& kevaNamespace, CAmount nValue, bool fSubtractFeeFromAmount,
                                              const CCoinControl& coin_control, bool verbose);
 } // namespace wallet

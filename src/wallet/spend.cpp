@@ -131,7 +131,10 @@ static std::optional<int64_t> GetSignedTxinWeight(const CWallet* wallet, const C
     }
 
     // Otherwise, use the maximum satisfaction size provided by the descriptor.
-    std::unique_ptr<Descriptor> desc{GetDescriptor(wallet, coin_control, txo.scriptPubKey)};
+    // If we have a keva script, strip the prefix
+    const CKevaScript kevaOp(txo.scriptPubKey);
+    const CScript& script1 = kevaOp.getAddress();
+    std::unique_ptr<Descriptor> desc{GetDescriptor(wallet, coin_control, script1)};
     if (desc) return MaxInputWeight(*desc, {txin}, coin_control, tx_is_segwit, can_grind_r);
 
     return {};
@@ -1500,7 +1503,7 @@ UniValue SendMoneyToKevaScript(CWallet& wallet,
                        const opcodetype kevaOp,
                        const valtype& nsKey,
                        const valtype& nsValue,
-                       const CTxIn* withInput,
+                       const COutPoint* withInput,
                        valtype& kevaNamespace,
                        CAmount nValue,
                        bool fSubtractFeeFromAmount,
@@ -1544,18 +1547,21 @@ UniValue SendMoneyToKevaScript(CWallet& wallet,
 
     // Create and send the transaction
     CScript newScript;
+    CScript nsAddr;
+    // NOTE: Refine below to not allocate address in event of error
+    // TODO: Kevacoin 0.16.8.0 Generates a new address each Op; Narwhallet reuses address.
+    //   Both ways valid but user should define
+    auto op_dest = wallet.GetNewDestination(OutputType::P2SH_SEGWIT, "Namespace");
+    nsAddr = GetScriptForDestination(*op_dest);
+
     if (kevaOp == OP_KEVA_NAMESPACE) {
         valtype namespaceDummy = ToByteVector(std::string(DUMMY_NAMESPACE));
         assert(namespaceDummy.size() == NAMESPACE_LENGTH);
-        CScript nsAddr;
-        // NOTE: Refine below to not allocate address in event of error
-        auto op_dest = wallet.GetNewDestination(OutputType::P2SH_SEGWIT, "Namespace");
-        nsAddr = GetScriptForDestination(*op_dest);
         newScript = CKevaScript::buildKevaNamespace(nsAddr, namespaceDummy, nsValue);
     } else if (kevaOp == OP_KEVA_DELETE) {
-        // newScript = CKevaScript::buildKevaDelete(addrName, nameSpace, nsKey);
+        newScript = CKevaScript::buildKevaDelete(nsAddr, kevaNamespace, nsKey);
     } else if (kevaOp == OP_KEVA_PUT) {
-        // newScript = CKevaScript::buildKevaPut(addrName, nameSpace, nsKey, nsValue);
+        newScript = CKevaScript::buildKevaPut(nsAddr, kevaNamespace, nsKey, nsValue);
     } else {
         throw JSONRPCError(RPC_WALLET_ERROR, "Invalid kevaOp");
     }
@@ -1564,7 +1570,6 @@ UniValue SendMoneyToKevaScript(CWallet& wallet,
     std::vector<CRecipient> vecSend;
     CRecipient recipient = {CNoDestination(newScript), nValue, fSubtractFeeFromAmount};
     vecSend.push_back(recipient);
-    // coin_control.m_change_type = OutputType::P2SH_SEGWIT;
 
     auto res = CreateTransaction(wallet, vecSend, /*change pos*/std::nullopt, coin_control, kevaNamespace, true);
     if (!res) {

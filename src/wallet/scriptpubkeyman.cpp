@@ -7,6 +7,7 @@
 #include <logging.h>
 #include <outputtype.h>
 #include <script/descriptor.h>
+#include <script/keva.h>
 #include <script/script.h>
 #include <script/sign.h>
 #include <script/solver.h>
@@ -2390,7 +2391,10 @@ std::unique_ptr<FlatSigningProvider> DescriptorScriptPubKeyMan::GetSigningProvid
     LOCK(cs_desc_man);
 
     // Find the index of the script
-    auto it = m_map_script_pub_keys.find(script);
+    // If we have a keva script, strip the prefix
+    const CKevaScript kevaOp(script);
+    const CScript& script1 = kevaOp.getAddress();
+    auto it = m_map_script_pub_keys.find(script1);
     if (it == m_map_script_pub_keys.end()) {
         return nullptr;
     }
