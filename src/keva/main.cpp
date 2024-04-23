@@ -280,7 +280,7 @@ bool CheckKevaTransaction(const CTransaction& tx, unsigned nHeight, const CCoins
     const CKevaScript op(coin.out.scriptPubKey);
     if (op.isKevaOp()) {
       if (nameIn != -1) {
-        LogError("%s: failed to fetch input coin for %s", __func__, txid);
+        LogError("%s: multiple keva inputs into transaction for %s", __func__, txid);
         return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: multiple keva inputs into transaction %s", __func__, txid));
       }
       nameIn = i;
@@ -295,7 +295,7 @@ bool CheckKevaTransaction(const CTransaction& tx, unsigned nHeight, const CCoins
     const CKevaScript op(tx.vout[i].scriptPubKey);
     if (op.isKevaOp()) {
       if (nameOut != -1) {
-        LogError("%s: failed to fetch input coin for %s", __func__, txid);
+        LogError("%s: multiple keva outputs from transaction for %s", __func__, txid);
         return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: multiple keva outputs from transaction %s", __func__, txid));
       }
       nameOut = i;
@@ -311,11 +311,11 @@ bool CheckKevaTransaction(const CTransaction& tx, unsigned nHeight, const CCoins
 
   if (!tx.IsKevacoin()) {
     if (nameIn != -1) {
-      LogError("%s: failed to fetch input coin for %s", __func__, txid);
+      LogError("%s: non-Kevacoin tx %s has keva inputs", __func__, txid);
       return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: non-Kevacoin tx %s has keva inputs", __func__, txid));
     }
     if (nameOut != -1) {
-      LogError("%s: failed to fetch input coin for %s", __func__, txid);
+      LogError("%s: non-Kevacoin tx %s at height %u has keva outputs", __func__, txid, nHeight);
       return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: non-Kevacoin tx %s at height %u has keva outputs",
                                      __func__, txid, nHeight));
     }
@@ -324,20 +324,20 @@ bool CheckKevaTransaction(const CTransaction& tx, unsigned nHeight, const CCoins
 
   assert(tx.IsKevacoin());
   if (nameOut == -1) {
-    LogError("%s: failed to fetch input coin for %s", __func__, txid);
+    LogError("%s: Kevacoin tx %s has no keva outputs", __func__, txid);
     return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: Kevacoin tx %s has no keva outputs", __func__, txid));
   }
 
   /* Reject "greedy names".  */
   if (tx.vout[nameOut].nValue < KEVA_LOCKED_AMOUNT) {
-    LogError("%s: failed to fetch input coin for %s", __func__, txid);
-    return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: greedy name", __func__));
+    LogError("%s: greedy name for %s", __func__, txid);
+    return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: greedy name for %s", __func__, txid));
   }
 
   if (nameOpOut.isNamespaceRegistration()) {
     if (nameOpOut.getOpNamespaceDisplayName().size() > MAX_VALUE_LENGTH) {
-      LogError("%s: failed to fetch input coin for %s", __func__, txid);
-      return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("CheckKevaTransaction: display name value too long"));
+      LogError("%s: display name value too long for %s", __func__, txid);
+      return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: display name value too long for %s", __func__, txid));
     }
 
     // TODO: Fix to derive fix activation status from chain
@@ -360,14 +360,14 @@ bool CheckKevaTransaction(const CTransaction& tx, unsigned nHeight, const CCoins
         checkResult = expectedNamespace == nameOpOut.getOpNamespace();
         if (!checkResult) {
           LogError("%s: namespace generation failure for %s", __func__, txid);
-          return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("CheckKevaTransaction: namespace generation failure"));
+          return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: namespace generation failure for", __func__, txid));
         }
     } else {
         CKevaScript::generateNamespace(tx.vin[0].prevout.hash, -1, expectedNamespace, Params(), false);
         checkResult = expectedNamespace == nameOpOut.getOpNamespace();
         if (!checkResult) {
           LogError("%s: namespace generation failure; ns_fix: false %s", __func__, txid);
-          return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("CheckKevaTransaction: namespace generation failure; ns_fix: false"));
+          return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: namespace generation failure; ns_fix: false for", __func__, txid));
         }
     }
     return checkResult;
@@ -376,38 +376,38 @@ bool CheckKevaTransaction(const CTransaction& tx, unsigned nHeight, const CCoins
   assert(nameOpOut.isAnyUpdate());
 
   if (nameIn == -1) {
-    LogError("%s: failed to fetch input coin for %s", __func__, txid);
-    return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("CheckKevaTransaction: update without previous keva input"));
+    LogError("%s: update without previous keva input for %s", __func__, txid);
+    return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: update without previous keva input for", __func__, txid));
   }
 
   const valtype& key = nameOpOut.getOpKey();
   if (key.size() > MAX_KEY_LENGTH) {
-    LogError("%s: failed to fetch input coin for %s", __func__, txid);
-    return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("CheckKevaTransaction: key too long"));
+    LogError("%s: key too long for %s", __func__, txid);
+    return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: key too long for", __func__, txid));
   }
 
   const valtype& nameSpace = nameOpOut.getOpNamespace();
   if (nameSpace != nameOpIn.getOpNamespace()) {
-    LogError("%s: failed to fetch input coin for %s", __func__, txid);
+    LogError("%s: KEVA_PUT namespace mismatch to prev tx found in %s", __func__, txid);
     return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: KEVA_PUT namespace mismatch to prev tx found in %s", __func__, txid));
   }
 
   if (nameOpOut.getKevaOp() == OP_KEVA_PUT) {
     if (nameOpOut.getOpValue().size() > MAX_VALUE_LENGTH) {
-      LogError("%s: failed to fetch input coin for %s", __func__, txid);
-      return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("CheckKevaTransaction: value too long"));
+      LogError("%s: value too long for %s", __func__, txid);
+      return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: value too long for %s", __func__, txid));
     }
 
     if (!nameOpIn.isAnyUpdate() && !nameOpIn.isNamespaceRegistration()) {
-      LogError("%s: failed to fetch input coin for %s", __func__, txid);
-      return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("CheckKevaTransaction: KEVA_PUT with prev input that is no update"));
+      LogError("%s: KEVA_PUT with prev input that is no update for %s", __func__, txid);
+      return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: KEVA_PUT with prev input that is no update for %s", __func__, txid));
     }
   }
 
   if (nameOpOut.getKevaOp() == OP_KEVA_DELETE) {
     if (!nameOpIn.isAnyUpdate() && !nameOpIn.isNamespaceRegistration()) {
-      LogError("%s: failed to fetch input coin for %s", __func__, txid);
-      return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("CheckKevaTransaction: KEVA_DELETE with prev input that is no update"));
+      LogError("%s: KEVA_DELETE with prev input that is no update for %s", __func__, txid);
+      return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: KEVA_DELETE with prev input that is no update for %s", __func__, txid));
     }
   }
   return true;
