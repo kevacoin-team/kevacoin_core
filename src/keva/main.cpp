@@ -325,7 +325,7 @@ bool CheckKevaTransaction(const CTransaction& tx, unsigned nHeight, const CCoins
   assert(tx.IsKevacoin());
   if (nameOut == -1) {
     LogError("%s: Kevacoin tx %s has no keva outputs", __func__, txid);
-    return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: Kevacoin tx %s has no keva outputs", __func__, txid));
+    return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: Kevacoin tx %s has no keva outputs %s", __func__, txid));
   }
 
   /* Reject "greedy names".  */
@@ -360,14 +360,14 @@ bool CheckKevaTransaction(const CTransaction& tx, unsigned nHeight, const CCoins
         checkResult = expectedNamespace == nameOpOut.getOpNamespace();
         if (!checkResult) {
           LogError("%s: namespace generation failure for %s", __func__, txid);
-          return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: namespace generation failure for", __func__, txid));
+          return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: namespace generation failure for %s", __func__, txid));
         }
     } else {
         CKevaScript::generateNamespace(tx.vin[0].prevout.hash, -1, expectedNamespace, Params(), false);
         checkResult = expectedNamespace == nameOpOut.getOpNamespace();
         if (!checkResult) {
           LogError("%s: namespace generation failure; ns_fix: false %s", __func__, txid);
-          return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: namespace generation failure; ns_fix: false for", __func__, txid));
+          return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: namespace generation failure; ns_fix: false for %s", __func__, txid));
         }
     }
     return checkResult;
@@ -377,13 +377,13 @@ bool CheckKevaTransaction(const CTransaction& tx, unsigned nHeight, const CCoins
 
   if (nameIn == -1) {
     LogError("%s: update without previous keva input for %s", __func__, txid);
-    return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: update without previous keva input for", __func__, txid));
+    return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: update without previous keva input for %s", __func__, txid));
   }
 
   const valtype& key = nameOpOut.getOpKey();
   if (key.size() > MAX_KEY_LENGTH) {
     LogError("%s: key too long for %s", __func__, txid);
-    return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: key too long for", __func__, txid));
+    return state.Invalid(TxValidationResult::TX_NOT_STANDARD, strprintf("%s: key too long for %s", __func__, txid));
   }
 
   const valtype& nameSpace = nameOpOut.getOpNamespace();
