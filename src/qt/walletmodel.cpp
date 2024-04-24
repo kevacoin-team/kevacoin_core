@@ -28,9 +28,12 @@
 #include <util/translation.h>
 #include <wallet/coincontrol.h>
 #include <wallet/wallet.h> // for CRecipient
+#include <validation.h>
 
+#include <base58.h>
 #include <stdint.h>
 #include <functional>
+#include <univalue.h>
 
 #include <QDebug>
 #include <QMessageBox>
@@ -662,270 +665,240 @@ CAmount WalletModel::getAvailableBalance(const CCoinControl* control)
 // TODO Refactor the below
 void WalletModel::getKevaEntries(std::vector<KevaEntry>& vKevaEntries, std::string nameSpace)
 {
-//     valtype nameSpaceVal = ValtypeFromString(nameSpace);
+    valtype nameSpaceVal = ValtypeFromString(nameSpace);
 
-//     {
-//         // Get the unconfirmed namespaces and list them at the beginning.
-//         CTxMemPool* m_mempool;
-//         LOCK(m_mempool->cs);
+    // {
+    //     // Get the unconfirmed namespaces and list them at the beginning.
+    //     CTxMemPool* m_mempool;
+    //     LOCK(m_mempool->cs);
 
-//         std::vector<std::tuple<valtype, valtype, valtype, uint256>> unconfirmedKeyValueList;
-//         m_mempool->getUnconfirmedKeyValueList(unconfirmedKeyValueList, nameSpaceVal);
+    //     std::vector<std::tuple<valtype, valtype, valtype, uint256>> unconfirmedKeyValueList;
+    //     m_mempool->getUnconfirmedKeyValueList(unconfirmedKeyValueList, nameSpaceVal);
 
-//         for (auto e : unconfirmedKeyValueList) {
-//             KevaEntry entry;
-//             entry.key = ValtypeToString(std::get<1>(e));
-//             entry.value = ValtypeToString(std::get<2>(e));
-//             entry.block = -1; // Unconfirmed.
-//             entry.date = QDateTime::currentDateTime();
-//             vKevaEntries.push_back(std::move(entry));
-//         }
-//     }
+    //     for (auto e : unconfirmedKeyValueList) {
+    //         KevaEntry entry;
+    //         entry.key = ValtypeToString(std::get<1>(e));
+    //         entry.value = ValtypeToString(std::get<2>(e));
+    //         entry.block = -1; // Unconfirmed.
+    //         entry.date = QDateTime::currentDateTime();
+    //         vKevaEntries.push_back(std::move(entry));
+    //     }
+    // }
 
-//     LOCK(cs_main);
+    LOCK(cs_main);
 
-//     valtype key;
-//     CKevaData data;
-//     std::unique_ptr<CKevaIterator> iter(pcoinsTip->IterateKeys(nameSpaceVal));
-//     while (iter->next(key, data)) {
-//         KevaEntry entry;
-//         entry.key = ValtypeToString(key);
-//         entry.value = ValtypeToString(data.getValue());
-//         entry.block = data.getHeight();
-//         CBlockIndex* pblockindex = chainActive[entry.block];
-//         if (pblockindex) {
-//             entry.date.setTime_t(pblockindex->nTime);
-//         }
-//         vKevaEntries.push_back(std::move(entry));
-//     }
+    valtype key;
+    CKevaData data;
+    std::unique_ptr<CKevaIterator> iter(g_chainman->ActiveChainstate().CoinsTip().IterateKeys(nameSpaceVal));
+    while (iter->next(key, data)) {
+        KevaEntry entry;
+        entry.key = ValtypeToString(key);
+        entry.value = ValtypeToString(data.getValue());
+        entry.block = data.getHeight();
+        CBlockIndex* pblockindex = g_chainman->ActiveChain()[entry.block];
+        if (pblockindex) {
+            entry.date.setTime_t(pblockindex->nTime);
+        }
+        vKevaEntries.push_back(std::move(entry));
+    }
 
 }
 
 void WalletModel::getNamespaceEntries(std::vector<NamespaceEntry>& vNamespaceEntries)
 {
-//     std::map<std::string, std::string> mapObjects;
-//     {
-//         LOCK2(cs_main, m_wallet);
-//         std::set<CTxDestination> destinations;
-//         std::vector<COutPoint> vecOutputs;
-//         bool include_unsafe = true;
-//         CAmount nMinimumAmount = 0;
-//         CAmount nMaximumAmount = MAX_MONEY;
-//         CAmount nMinimumSumAmount = MAX_MONEY;
-//         uint64_t nMaximumCount = 0;
-//         int nMinDepth = 1;
-//         int nMaxDepth = 99999999;
-//         wallet->AvailableCoins(vecOutputs, !include_unsafe, nullptr, nMinimumAmount, nMaximumAmount, nMinimumSumAmount, nMaximumCount, nMinDepth, nMaxDepth);
-//         for (const COutPoint& out : vecOutputs) {
-//             CTxDestination address;
-//             const CScript& scriptPubKey = out.tx->tx->vout[out.i].scriptPubKey;
-//             const CKevaScript kevaOp(scriptPubKey);
-//             if (!kevaOp.isKevaOp()) {
-//                 continue;
-//             }
-//             if (!kevaOp.isNamespaceRegistration() && !kevaOp.isAnyUpdate()) {
-//                 continue;
-//             }
-//             const valtype nameSpace = kevaOp.getOpNamespace();
-//             const std::string nameSpaceStr = EncodeBase58Check(nameSpace);
-//             CKevaData data;
-//             if (pcoinsTip->GetNamespace(nameSpace, data)) {
-//                 std::string displayName = ValtypeToString(data.getValue());
-//                 mapObjects[nameSpaceStr] = displayName;
-//             }
-//         };
-//     }
-//     {
-//         // Also get the unconfirmed namespaces and list them at the beginning.
-//         CTxMemPool* m_mempool;
-//         LOCK (m_mempool->cs);
+    std::map<std::string, std::string> mapObjects = wallet().getNamespaceList();
 
-//         std::vector<std::tuple<valtype, valtype, uint256>> unconfirmedNamespaces;
-//         m_mempool->getUnconfirmedNamespaceList(unconfirmedNamespaces);
+    // {
+    //     // Also get the unconfirmed namespaces and list them at the beginning.
+    //     CTxMemPool* m_mempool;
+    //     LOCK (m_mempool->cs);
 
-//         for (auto ns: unconfirmedNamespaces) {
-//             NamespaceEntry entry;
-//             entry.id = EncodeBase58Check(std::get<0>(ns));
-//             entry.name = ValtypeToString(std::get<1>(ns));
-//             entry.confirmed = false;
-//             vNamespaceEntries.push_back(std::move(entry));
-//         };
-//     }
+    //     std::vector<std::tuple<valtype, valtype, uint256>> unconfirmedNamespaces;
+    //     m_mempool->getUnconfirmedNamespaceList(unconfirmedNamespaces);
 
-//     // The confirmed namespaces.
-//     std::map<std::string, std::string>::iterator it = mapObjects.begin();
-// 	while (it != mapObjects.end()) {
-//         NamespaceEntry entry;
-//         entry.id = it->first;
-//         entry.name = it->second;
-//         vNamespaceEntries.push_back(std::move(entry));
-// 		it++;
-// 	}
+    //     for (auto ns: unconfirmedNamespaces) {
+    //         NamespaceEntry entry;
+    //         entry.id = EncodeBase58Check(std::get<0>(ns));
+    //         entry.name = ValtypeToString(std::get<1>(ns));
+    //         entry.confirmed = false;
+    //         vNamespaceEntries.push_back(std::move(entry));
+    //     };
+    // }
+
+    // The confirmed namespaces.
+    std::map<std::string, std::string>::iterator it = mapObjects.begin();
+	while (it != mapObjects.end()) {
+        NamespaceEntry entry;
+        entry.id = it->first;
+        entry.name = it->second;
+        vNamespaceEntries.push_back(std::move(entry));
+		it++;
+	}
 }
 
 int WalletModel::createNamespace(std::string displayNameStr, std::string& namespaceId)
 {
-//     const valtype displayName = ValtypeFromString (displayNameStr);
-//     if (displayName.size() > MAX_NAMESPACE_LENGTH) {
-//         return NamespaceTooLong;
-//     }
+    const valtype displayName = ValtypeFromString(displayNameStr);
+    if (displayName.size() > MAX_NAMESPACE_LENGTH) {
+        return NamespaceTooLong;
+    }
 
-//     WalletModel::UnlockContext ctx(requestUnlock());
-//     if(!ctx.isValid()) {
-//         return WalletLocked;
-//     }
+    WalletModel::UnlockContext ctx(requestUnlock());
+    if(!ctx.isValid()) {
+        return WalletLocked;
+    }
 
-//     CReserveKey keyName(wallet);
-//     CPubKey pubKey;
-//     const bool ok = keyName.GetReservedKey(pubKey, true);
-//     assert(ok);
+    CCoinControl coinControl;
+    coinControl.m_change_type = OutputType::P2SH_SEGWIT;
+    valtype kevaNamespace;
+    try {
+        UniValue res = wallet().sendMoneyToKevaScript(OP_KEVA_NAMESPACE, valtype{}, displayName, nullptr, kevaNamespace,
+                KEVA_LOCKED_AMOUNT, false, coinControl, false);
+    } catch (const UniValue& e) {
+        // UniValue code = objError["code"];
+        // if (code.get_int() == RPCErrorCode::RPC_WALLET_INSUFFICIENT_FUNDS) {
+        //     return WalletModel::InsufficientFund;
+        // }
+        return WalletModel::CannotUpdate;
+    }
 
-//     CKeyID keyId = pubKey.GetID();
-
-//     // The namespace name is: Hash160("first txin")
-//     // For now we don't know the first txin, so use dummy name here.
-//     // It will be replaced later in CreateTransaction.
-//     valtype namespaceDummy = ToByteVector(std::string(DUMMY_NAMESPACE));
-//     assert(namespaceDummy.size() == NAMESPACE_LENGTH);
-
-//     CScript redeemScript = GetScriptForDestination(WitnessV0KeyHash(keyId));
-//     CScriptID scriptHash = CScriptID(redeemScript);
-//     CScript addrName = GetScriptForDestination(scriptHash);
-//     const CScript newScript = CKevaScript::buildKevaNamespace(addrName, namespaceDummy, displayName);
-
-//     CCoinControl coinControl;
-//     CWalletTx wtx;
-//     valtype kevaNamespace;
-//     try {
-//         SendMoneyToScript(wallet, newScript, nullptr, kevaNamespace,
-//             KEVA_LOCKED_AMOUNT, false, wtx, coinControl);
-//     } catch (const UniValue& objError) {
-//         UniValue code = objError["code"];
-//         if (code.get_int() == RPC_WALLET_INSUFFICIENT_FUNDS) {
-//             return WalletModel::InsufficientFund;
-//         }
-//         return WalletModel::CannotUpdate;
-//     }
-
-//     keyName.KeepKey();
-//     namespaceId = EncodeBase58Check(kevaNamespace);
-//     return 0;
+    namespaceId = EncodeBase58Check(kevaNamespace);
+    return 0;
 }
 
 
 int WalletModel::deleteKevaEntry(std::string namespaceStr, std::string keyStr)
 {
-//     valtype nameSpace;
-//     if (!DecodeKevaNamespace(namespaceStr, Params(), nameSpace)) {
-//         return InvalidNamespace;
-//     }
+    valtype delKey = ValtypeFromString(keyStr);
+    valtype nameSpace;
+    if (!DecodeKevaNamespace(namespaceStr, Params(), nameSpace)) {
+        return InvalidNamespace;
+    }
 
-//     const valtype key = ValtypeFromString(keyStr);
-//     if (key.size() > MAX_KEY_LENGTH) {
-//         return KeyTooLong;
-//     }
+    const valtype xkey = ValtypeFromString(keyStr);
+    if (xkey.size() > MAX_KEY_LENGTH) {
+        return KeyTooLong;
+    }
 
-//     WalletModel::UnlockContext ctx(requestUnlock());
-//     if(!ctx.isValid()) {
-//         return WalletLocked;
-//     }
+    WalletModel::UnlockContext ctx(requestUnlock());
+    if(!ctx.isValid()) {
+        return WalletLocked;
+    }
 
-//     bool hasKey = false;
-//     CKevaData data;
-//     {
-//         CTxMemPool* m_mempool;
-//         LOCK2(cs_main, m_mempool->cs);
-//         std::vector<std::tuple<valtype, valtype, valtype, uint256>> unconfirmedKeyValueList;
-//         valtype val;
-//         if (m_mempool->getUnconfirmedKeyValue(nameSpace, key, val)) {
-//             if (val.size() > 0) {
-//                 hasKey = true;
-//             }
-//         } else if (pcoinsTip->GetName(nameSpace, key, data)) {
-//             hasKey = true;
-//         }
-//     }
+    // {
+    //     // Get the unconfirmed namespaces and list them at the beginning.
+    //     CTxMemPool* m_mempool;
+    //     LOCK(m_mempool->cs);
 
-//     if (!hasKey) {
-//         return KeyNotFound;
-//     }
+    //     std::vector<std::tuple<valtype, valtype, valtype, uint256>> unconfirmedKeyValueList;
+    //     m_mempool->getUnconfirmedKeyValueList(unconfirmedKeyValueList, nameSpaceVal);
 
-//     COutPoint output;
-//     std::string kevaNamespce = namespaceStr;
-//     if (!wallet->FindKevaCoin(output, kevaNamespce)) {
-//         // TODO: This namespace can not be updated
-//         return 0;
-//     }
-//     const COutPoint outp(output.hash, output.n);
-//     const CTxIn txIn(outp);
+    //     for (auto e : unconfirmedKeyValueList) {
+    //         KevaEntry entry;
+    //         entry.key = ValtypeToString(std::get<1>(e));
+    //         entry.value = ValtypeToString(std::get<2>(e));
+    //         entry.block = -1; // Unconfirmed.
+    //         entry.date = QDateTime::currentDateTime();
+    //         vKevaEntries.push_back(std::move(entry));
+    //     }
+    // }
 
-//     CReserveKey keyName(wallet);
-//     CPubKey pubKeyReserve;
-//     const bool ok = keyName.GetReservedKey(pubKeyReserve, true);
-//     assert(ok);
+    LOCK(cs_main);
+    bool hasKey = false;
 
-//     CScript redeemScript = GetScriptForDestination(WitnessV0KeyHash(pubKeyReserve.GetID()));
-//     CScriptID scriptHash = CScriptID(redeemScript);
-//     CScript addrName = GetScriptForDestination(scriptHash);
+    valtype key;
+    CKevaData data;
+    std::unique_ptr<CKevaIterator> iter(g_chainman->ActiveChainstate().CoinsTip().IterateKeys(nameSpace));
+    while (iter->next(key, data)) {
+        if (ValtypeToString(key) != keyStr) {
+            hasKey = true;
+            break;
+        }
+    }
+    
+    // CKevaData data;
+    // {
+    //     CTxMemPool* m_mempool;
+    //     LOCK2(cs_main, m_mempool->cs);
+    //     std::vector<std::tuple<valtype, valtype, valtype, uint256>> unconfirmedKeyValueList;
+    //     valtype val;
+    //     if (m_mempool->getUnconfirmedKeyValue(nameSpace, key, val)) {
+    //         if (val.size() > 0) {
+    //             hasKey = true;
+    //         }
+    //     } else if (pcoinsTip->GetName(nameSpace, key, data)) {
+    //         hasKey = true;
+    //     }
+    // }
 
-//     const CScript kevaScript = CKevaScript::buildKevaDelete(addrName, nameSpace, key);
+    if (!hasKey) {
+        return KeyNotFound;
+    }
 
-//     CCoinControl coinControl;
-//     CWalletTx wtx;
-//     valtype empty;
-//     SendMoneyToScript(wallet, kevaScript, &txIn, empty,
-//         KEVA_LOCKED_AMOUNT, false, wtx, coinControl);
+    COutPoint output;
+    if (!wallet().findKevaCoin(output, &namespaceStr)) {
+        return CannotUpdate;
+    }
 
-//     keyName.KeepKey();
-//     return 0;
+    CCoinControl coinControl;
+    coinControl.m_change_type = OutputType::P2SH_SEGWIT;
+    coinControl.Select(output);
+
+    try {
+        UniValue res = wallet().sendMoneyToKevaScript(OP_KEVA_DELETE, delKey, valtype{}, &output, nameSpace,
+                    KEVA_LOCKED_AMOUNT, false, coinControl, false);
+    } catch (const UniValue& e) {
+        // UniValue code = objError["code"];
+        // if (code.get_int() == RPCErrorCode::RPC_WALLET_INSUFFICIENT_FUNDS) {
+        //     return WalletModel::InsufficientFund;
+        // }
+        return WalletModel::CannotUpdate;
+    }
+
+    return 0;
 }
 
 int WalletModel::addKeyValue(std::string& namespaceStr, std::string& keyStr, std::string& valueStr)
 {
-//     valtype nameSpace;
-//     if (!DecodeKevaNamespace(namespaceStr, Params(), nameSpace)) {
-//         return InvalidNamespace;
-//     }
+    valtype nameSpace;
+    if (!DecodeKevaNamespace(namespaceStr, Params(), nameSpace)) {
+        return InvalidNamespace;
+    }
 
-//     const valtype key = ValtypeFromString(keyStr);
-//     if (keyStr.size() > MAX_KEY_LENGTH) {
-//         return KeyTooLong;
-//     }
+    const valtype key = ValtypeFromString(keyStr);
+    if (keyStr.size() > MAX_KEY_LENGTH) {
+        return KeyTooLong;
+    }
 
-//     const valtype value = ValtypeFromString(valueStr);
-//     if (value.size() > MAX_VALUE_LENGTH) {
-//         return ValueTooLong;
-//     }
+    const valtype value = ValtypeFromString(valueStr);
+    if (value.size() > MAX_VALUE_LENGTH) {
+        return ValueTooLong;
+    }
 
-//     WalletModel::UnlockContext ctx(requestUnlock());
-//     if(!ctx.isValid()) {
-//         return WalletLocked;
-//     }
+    WalletModel::UnlockContext ctx(requestUnlock());
+    if(!ctx.isValid()) {
+        return WalletLocked;
+    }
 
-//     COutPoint output;
-//     if (!wallet->FindKevaCoin(output, namespaceStr)) {
-//         return CannotUpdate;
-//     }
-//     const COutPoint outp(output.hash, output.n);
-//     const CTxIn txIn(outp);
+    COutPoint output;
+    if (!wallet().findKevaCoin(output, &namespaceStr)) {
+        return CannotUpdate;
+    }
 
-//     CReserveKey keyName(wallet);
-//     CPubKey pubKeyReserve;
-//     const bool ok = keyName.GetReservedKey(pubKeyReserve, true);
-//     assert(ok);
-//     CKeyID keyId = pubKeyReserve.GetID();
-//     CScript redeemScript = GetScriptForDestination(WitnessV0KeyHash(keyId));
-//     CScriptID scriptHash = CScriptID(redeemScript);
-//     CScript addrName = GetScriptForDestination(scriptHash);
+    CCoinControl coinControl;
+    coinControl.m_change_type = OutputType::P2SH_SEGWIT;
+    coinControl.Select(output);
 
-//     const CScript kevaScript = CKevaScript::buildKevaPut(addrName, nameSpace, key, value);
+    try {
+        UniValue res = wallet().sendMoneyToKevaScript(OP_KEVA_PUT, key, value, &output, nameSpace,
+                    KEVA_LOCKED_AMOUNT, false, coinControl, false);
+    } catch (const UniValue& e) {
+        // UniValue code = objError["code"];
+        // if (code.get_int() == RPCErrorCode::RPC_WALLET_INSUFFICIENT_FUNDS) {
+        //     return WalletModel::InsufficientFund;
+        // }
+        return WalletModel::CannotUpdate;
+    }
 
-//     CCoinControl coinControl;
-//     CWalletTx wtx;
-//     valtype empty;
-//     SendMoneyToScript(wallet, kevaScript, &txIn, empty,
-//         KEVA_LOCKED_AMOUNT, false, wtx, coinControl);
-
-//     keyName.KeepKey();
-//     return 0;
+    return 0;
 }
