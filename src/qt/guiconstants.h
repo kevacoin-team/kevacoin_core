@@ -47,7 +47,7 @@ static const int TOOLTIP_WRAP_THRESHOLD = 80;
 #define SPINNER_FRAMES 36
 
 #define QAPP_ORG_NAME "Kevacoin"
-#define QAPP_ORG_DOMAIN "kevacoin.org"
+#define QAPP_ORG_DOMAIN "kevacointeam.org"
 #define QAPP_APP_NAME_DEFAULT "Kevacoin-Qt"
 #define QAPP_APP_NAME_TESTNET "Kevacoin-Qt-testnet"
 #define QAPP_APP_NAME_SIGNET "Kevacoin-Qt-signet"
