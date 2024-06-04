@@ -23,6 +23,7 @@
 #include <keva/common.h>
 #include <keva/main.h>
 #include <key_io.h>
+#include <node/context.h>
 #include <node/interface_ui.h>
 #include <psbt.h>
 #include <util/translation.h>
@@ -667,23 +668,23 @@ void WalletModel::getKevaEntries(std::vector<KevaEntry>& vKevaEntries, std::stri
 {
     valtype nameSpaceVal = ValtypeFromString(nameSpace);
 
-    // {
-    //     // Get the unconfirmed namespaces and list them at the beginning.
-    //     CTxMemPool* m_mempool;
-    //     LOCK(m_mempool->cs);
+    {
+        // Get the unconfirmed namespace keys and list them at the beginning.
+        CTxMemPool& m_mempool = *node().context()->mempool;
+        LOCK(m_mempool.cs);
 
-    //     std::vector<std::tuple<valtype, valtype, valtype, uint256>> unconfirmedKeyValueList;
-    //     m_mempool->getUnconfirmedKeyValueList(unconfirmedKeyValueList, nameSpaceVal);
+        std::vector<std::tuple<valtype, valtype, valtype, uint256>> unconfirmedKeyValueList;
+        m_mempool.getUnconfirmedKeyValueList(unconfirmedKeyValueList, nameSpaceVal);
 
-    //     for (auto e : unconfirmedKeyValueList) {
-    //         KevaEntry entry;
-    //         entry.key = ValtypeToString(std::get<1>(e));
-    //         entry.value = ValtypeToString(std::get<2>(e));
-    //         entry.block = -1; // Unconfirmed.
-    //         entry.date = QDateTime::currentDateTime();
-    //         vKevaEntries.push_back(std::move(entry));
-    //     }
-    // }
+        for (auto e : unconfirmedKeyValueList) {
+            KevaEntry entry;
+            entry.key = ValtypeToString(std::get<1>(e));
+            entry.value = ValtypeToString(std::get<2>(e));
+            entry.block = -1; // Unconfirmed.
+            entry.date = QDateTime::currentDateTime();
+            vKevaEntries.push_back(std::move(entry));
+        }
+    }
 
     LOCK(cs_main);
 
@@ -708,22 +709,22 @@ void WalletModel::getNamespaceEntries(std::vector<NamespaceEntry>& vNamespaceEnt
 {
     std::map<std::string, std::string> mapObjects = wallet().getNamespaceList();
 
-    // {
-    //     // Also get the unconfirmed namespaces and list them at the beginning.
-    //     CTxMemPool* m_mempool;
-    //     LOCK (m_mempool->cs);
+    {
+        // Get the unconfirmed namespaces and list them at the beginning.
+        CTxMemPool& m_mempool = *node().context()->mempool;
+        LOCK(m_mempool.cs);
 
-    //     std::vector<std::tuple<valtype, valtype, uint256>> unconfirmedNamespaces;
-    //     m_mempool->getUnconfirmedNamespaceList(unconfirmedNamespaces);
+        std::vector<std::tuple<valtype, valtype, uint256>> unconfirmedNamespaces;
+        m_mempool.getUnconfirmedNamespaceList(unconfirmedNamespaces);
 
-    //     for (auto ns: unconfirmedNamespaces) {
-    //         NamespaceEntry entry;
-    //         entry.id = EncodeBase58Check(std::get<0>(ns));
-    //         entry.name = ValtypeToString(std::get<1>(ns));
-    //         entry.confirmed = false;
-    //         vNamespaceEntries.push_back(std::move(entry));
-    //     };
-    // }
+        for (auto ns: unconfirmedNamespaces) {
+            NamespaceEntry entry;
+            entry.id = EncodeBase58Check(std::get<0>(ns));
+            entry.name = ValtypeToString(std::get<1>(ns));
+            entry.confirmed = false;
+            vNamespaceEntries.push_back(std::move(entry));
+        };
+    }
 
     // The confirmed namespaces.
     std::map<std::string, std::string>::iterator it = mapObjects.begin();
@@ -775,8 +776,7 @@ int WalletModel::deleteKevaEntry(std::string namespaceStr, std::string keyStr)
         return InvalidNamespace;
     }
 
-    const valtype xkey = ValtypeFromString(keyStr);
-    if (xkey.size() > MAX_KEY_LENGTH) {
+    if (delKey.size() > MAX_KEY_LENGTH) {
         return KeyTooLong;
     }
 
@@ -785,51 +785,23 @@ int WalletModel::deleteKevaEntry(std::string namespaceStr, std::string keyStr)
         return WalletLocked;
     }
 
-    // {
-    //     // Get the unconfirmed namespaces and list them at the beginning.
-    //     CTxMemPool* m_mempool;
-    //     LOCK(m_mempool->cs);
-
-    //     std::vector<std::tuple<valtype, valtype, valtype, uint256>> unconfirmedKeyValueList;
-    //     m_mempool->getUnconfirmedKeyValueList(unconfirmedKeyValueList, nameSpaceVal);
-
-    //     for (auto e : unconfirmedKeyValueList) {
-    //         KevaEntry entry;
-    //         entry.key = ValtypeToString(std::get<1>(e));
-    //         entry.value = ValtypeToString(std::get<2>(e));
-    //         entry.block = -1; // Unconfirmed.
-    //         entry.date = QDateTime::currentDateTime();
-    //         vKevaEntries.push_back(std::move(entry));
-    //     }
-    // }
-
     LOCK(cs_main);
     bool hasKey = false;
 
-    valtype key;
     CKevaData data;
-    std::unique_ptr<CKevaIterator> iter(g_chainman->ActiveChainstate().CoinsTip().IterateKeys(nameSpace));
-    while (iter->next(key, data)) {
-        if (ValtypeToString(key) != keyStr) {
+    {
+        CTxMemPool& m_mempool = *node().context()->mempool;
+        LOCK2(cs_main, m_mempool.cs);
+        std::vector<std::tuple<valtype, valtype, valtype, uint256>> unconfirmedKeyValueList;
+        valtype val;
+        if (m_mempool.getUnconfirmedKeyValue(nameSpace, delKey, val)) {
+            if (val.size() > 0) {
+                hasKey = true;
+            }
+        } else if (g_chainman->ActiveChainstate().CoinsTip().GetName(nameSpace, delKey, data)) {
             hasKey = true;
-            break;
         }
     }
-    
-    // CKevaData data;
-    // {
-    //     CTxMemPool* m_mempool;
-    //     LOCK2(cs_main, m_mempool->cs);
-    //     std::vector<std::tuple<valtype, valtype, valtype, uint256>> unconfirmedKeyValueList;
-    //     valtype val;
-    //     if (m_mempool->getUnconfirmedKeyValue(nameSpace, key, val)) {
-    //         if (val.size() > 0) {
-    //             hasKey = true;
-    //         }
-    //     } else if (pcoinsTip->GetName(nameSpace, key, data)) {
-    //         hasKey = true;
-    //     }
-    // }
 
     if (!hasKey) {
         return KeyNotFound;
