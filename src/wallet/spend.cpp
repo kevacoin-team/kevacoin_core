@@ -1166,7 +1166,13 @@ static util::Result<CreatedTransactionResult> CreateTransactionInternal(
     // allowed (coins automatically selected by the wallet)
     CoinsResult available_coins;
     if (coin_control.m_allow_other_inputs) {
-        available_coins = AvailableCoins(wallet, &coin_control, coin_selection_params.m_effective_feerate);
+        for (const auto& [key, outputs] : AvailableCoins(wallet, &coin_control, coin_selection_params.m_effective_feerate).coins) {
+            for (const auto& output : outputs) {
+                if (output.spendable) {
+                    available_coins.Add(key, output);
+                }
+            }
+        }
     }
 
     // Choose coins to use
