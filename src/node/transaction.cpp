@@ -119,6 +119,23 @@ TransactionError BroadcastTransaction(NodeContext& node, const CTransactionRef t
         node.peerman->RelayTransaction(txid, wtxid);
     }
 
+    {
+        CKevaScript kevaOp;
+        auto _tx = tx;
+        if (_tx->IsKevacoin()) {
+            for (const auto& txOut : _tx->vout) {
+                const CKevaScript curKevaOp(txOut.scriptPubKey);
+                if (!curKevaOp.isKevaOp()) {
+                    continue;
+                }
+                assert(!kevaOp.isKevaOp());
+                kevaOp = curKevaOp;
+            }
+            assert(kevaOp.isKevaOp());
+            node.mempool->addKevaUnchecked(txid, kevaOp);
+        }
+    }
+
     return TransactionError::OK;
 }
 
