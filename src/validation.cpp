@@ -4471,6 +4471,16 @@ bool ChainstateManager::ProcessNewBlock(const std::shared_ptr<const CBlock>& blo
             LogError("%s: AcceptBlock FAILED (%s)\n", __func__, state.ToString());
             return false;
         }
+
+        CKevaNotifier kevaNotifier(m_options.signals);
+        CCoinsViewCache view(&ActiveChainstate().CoinsTip());
+        CBlockUndo blockundo;
+        blockundo.vtxundo.reserve(block->vtx.size() - 1);
+        for (unsigned int i = 0; i < block->vtx.size(); i++)
+        {
+            const CTransaction &tx = *(block->vtx[i]);
+            ApplyKevaTransaction(tx, pindex->nHeight, view, blockundo, kevaNotifier);
+        }
     }
 
     NotifyHeaderTip(*this);
@@ -4486,7 +4496,7 @@ bool ChainstateManager::ProcessNewBlock(const std::shared_ptr<const CBlock>& blo
     if (bg_chain && !bg_chain->ActivateBestChain(bg_state, block)) {
         LogError("%s: [background] ActivateBestChain failed (%s)\n", __func__, bg_state.ToString());
         return false;
-     }
+    }
 
     return true;
 }
