@@ -486,7 +486,10 @@ void CTxMemPool::addUnchecked(const CTxMemPoolEntry &entry, setEntries &setAnces
 
 void CTxMemPool::removeUnchecked(txiter it, MemPoolRemovalReason reason)
 {
-    kevaMemPool.remove (*it);
+    if (it->GetTx().IsKevacoin()) {
+        kevaMemPool.remove(it->GetTx().GetHash());
+    }
+
     // We increment mempool sequence value no matter removal reason
     // even if not directly reported below.
     uint64_t mempool_sequence = GetAndIncrementSequence();

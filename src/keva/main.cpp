@@ -109,26 +109,25 @@ void CKevaMemPool::getUnconfirmedNamespaceList(std::vector<std::tuple<valtype, v
   }
 }
 
-void CKevaMemPool::remove(const CTxMemPoolEntry& entry)
+void CKevaMemPool::remove(const uint256& hash)
 {
-  AssertLockHeld (pool.cs);
-  if (entry.isNamespaceRegistration()) {
-    auto hash = entry.GetTx().GetHash();
-    for (auto iter = listUnconfirmedNamespaces.begin(); iter != listUnconfirmedNamespaces.end(); ++iter) {
-      if (std::get<0>(*iter) == hash) {
-        listUnconfirmedNamespaces.erase(iter);
-        break;
-      }
+  AssertLockHeld(pool.cs);
+  bool removed = false;
+
+  for (auto iter = listUnconfirmedNamespaces.begin(); iter != listUnconfirmedNamespaces.end(); ++iter) {
+    if (std::get<0>(*iter) == hash) {
+      listUnconfirmedNamespaces.erase(iter);
+      removed = true;
+      break;
     }
   }
-
-  if (entry.isKeyUpdate() || entry.isKeyDelete()) {
-    auto hash = entry.GetTx().GetHash();
+  
+  if (!removed) {
     for (auto iter = listUnconfirmedKeyValues.begin(); iter != listUnconfirmedKeyValues.end(); ++iter) {
       if (std::get<0>(*iter) == hash) {
         listUnconfirmedKeyValues.erase(iter);
         break;
-      }
+        }
     }
   }
 }

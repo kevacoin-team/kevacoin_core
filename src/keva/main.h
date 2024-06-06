@@ -164,7 +164,7 @@ public:
    * Remove the given mempool entry.  It is assumed that it is present.
    * @param entry The entry to remove.
    */
-  void remove(const CTxMemPoolEntry& entry);
+  void remove(const uint256& hash);
 
   /**
    * Remove conflicts for the given tx, based on name operations.  I. e.,
